@@ -1,0 +1,17 @@
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.csproj.GenerateResource.cache
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.AssemblyInfoInputs.cache
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.AssemblyInfo.cs
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.csproj.CoreCompileInputs.cache
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.sourcelink.json
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\bin\Debug\net10.0-windows\VetCareProject.exe
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\bin\Debug\net10.0-windows\VetCareProject.deps.json
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\bin\Debug\net10.0-windows\VetCareProject.runtimeconfig.json
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\bin\Debug\net10.0-windows\VetCareProject.dll
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\bin\Debug\net10.0-windows\VetCareProject.pdb
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.Form1.resources
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.dll
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\refint\VetCareProject.dll
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.pdb
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\VetCareProject.genruntimeconfig.cache
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\obj\Debug\net10.0-windows\ref\VetCareProject.dll
