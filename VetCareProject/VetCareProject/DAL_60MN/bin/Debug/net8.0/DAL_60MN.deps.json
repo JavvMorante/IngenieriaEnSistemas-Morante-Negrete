@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "DAL_60MN/1.0.0": {
+        "dependencies": {
+          "Entidades_60MN": "1.0.0",
+          "Servicios_60MN": "1.0.0"
+        },
+        "runtime": {
+          "DAL_60MN.dll": {}
+        }
+      },
+      "Entidades_60MN/1.0.0": {
+        "runtime": {
+          "Entidades_60MN.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Servicios_60MN/1.0.0": {
+        "runtime": {
+          "Servicios_60MN.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DAL_60MN/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Entidades_60MN/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Servicios_60MN/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

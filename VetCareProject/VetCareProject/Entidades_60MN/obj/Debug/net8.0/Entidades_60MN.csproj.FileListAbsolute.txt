@@ -1,0 +1,12 @@
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\bin\Debug\net8.0\Entidades_60MN.deps.json
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\bin\Debug\net8.0\Entidades_60MN.dll
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\bin\Debug\net8.0\Entidades_60MN.pdb
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\Entidades_60MN.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\Entidades_60MN.AssemblyInfoInputs.cache
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\Entidades_60MN.AssemblyInfo.cs
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\Entidades_60MN.csproj.CoreCompileInputs.cache
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\Entidades_60MN.sourcelink.json
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\Entidades_60MN.dll
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\refint\Entidades_60MN.dll
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\Entidades_60MN.pdb
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCareProject\VetCareProject\Entidades_60MN\obj\Debug\net8.0\ref\Entidades_60MN.dll

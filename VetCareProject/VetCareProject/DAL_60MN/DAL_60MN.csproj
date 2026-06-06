@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Entidades_60MN\Entidades_60MN.csproj" />
+    <ProjectReference Include="..\Servicios_60MN\Servicios_60MN.csproj" />
+  </ItemGroup>
+
+</Project>
