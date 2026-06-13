@@ -33,6 +33,8 @@
             txtUsuario = new TextBox();
             txtPassword = new TextBox();
             btnIngresar = new Button();
+            chkCambiarClave = new CheckBox();
+            btnSalir = new Button();
             SuspendLayout();
             // 
             // label1
@@ -69,7 +71,7 @@
             // 
             // btnIngresar
             // 
-            btnIngresar.Location = new Point(526, 146);
+            btnIngresar.Location = new Point(525, 67);
             btnIngresar.Name = "btnIngresar";
             btnIngresar.Size = new Size(94, 29);
             btnIngresar.TabIndex = 4;
@@ -77,11 +79,34 @@
             btnIngresar.UseVisualStyleBackColor = true;
             btnIngresar.Click += btnIngresar_Click;
             // 
+            // chkCambiarClave
+            // 
+            chkCambiarClave.AutoSize = true;
+            chkCambiarClave.Location = new Point(525, 184);
+            chkCambiarClave.Name = "chkCambiarClave";
+            chkCambiarClave.Size = new Size(127, 24);
+            chkCambiarClave.TabIndex = 5;
+            chkCambiarClave.Text = "Cambiar Clave";
+            chkCambiarClave.UseVisualStyleBackColor = true;
+            chkCambiarClave.CheckedChanged += chkCambiarClave_CheckedChanged;
+            // 
+            // btnSalir
+            // 
+            btnSalir.Location = new Point(525, 146);
+            btnSalir.Name = "btnSalir";
+            btnSalir.Size = new Size(94, 29);
+            btnSalir.TabIndex = 6;
+            btnSalir.Text = "Salir";
+            btnSalir.UseVisualStyleBackColor = true;
+            btnSalir.Click += btnSalir_Click;
+            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 209);
+            Controls.Add(btnSalir);
+            Controls.Add(chkCambiarClave);
             Controls.Add(btnIngresar);
             Controls.Add(txtPassword);
             Controls.Add(txtUsuario);
@@ -100,5 +125,7 @@
         private TextBox txtUsuario;
         private TextBox txtPassword;
         private Button btnIngresar;
+        private CheckBox chkCambiarClave;
+        private Button btnSalir;
     }
 }

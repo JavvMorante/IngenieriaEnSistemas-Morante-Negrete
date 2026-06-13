@@ -5,14 +5,15 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace DAL_60MN
 {
     public class DigitosVerificadores_60MN
     {
         Encriptador_60MN crypt = new Encriptador_60MN();
-        Conexion_60MN con = new Conexion_60MN();    
-        DataTable dtUsuarios  = new DataTable();
+        Conexion_60MN con = new Conexion_60MN();
+        DataTable dtUsuarios = new DataTable();
         DataTable dtUsuarioOperacion = new DataTable();
         DataTable dtBitacora = new DataTable();
 
@@ -67,15 +68,23 @@ namespace DAL_60MN
 
                 foreach (DataRow item in dt.Rows)
                 {
-                    dvUsuario = item[0].ToString();
-                    dvUsuarioOperacion = item[1].ToString();
-                    dvBitacora = item[2].ToString();
-                    dvPerfilUsuario = item[3].ToString();
-                    dvOperacion = item[4].ToString();
+                    //dvUsuario = item[0].ToString();
+                    //dvUsuarioOperacion = item[1].ToString();
+                    //dvBitacora = item[2].ToString();
+                    //dvPerfilUsuario = item[3].ToString();
+                    //dvOperacion = item[4].ToString();
+
+                    // verifica si los valores vienen nulos
+
+                    dvUsuario = Convert.ToString(item[0]) ?? "";
+                    dvUsuarioOperacion = Convert.ToString(item[1]) ?? "";
+                    dvBitacora = Convert.ToString(item[2]) ?? "";
+                    dvPerfilUsuario = Convert.ToString(item[3]) ?? "";
+                    dvOperacion = Convert.ToString(item[4]) ?? "";
 
                 }
 
-                if (Convert.ToInt16(dvUsuario)==1)
+                if (Convert.ToInt16(dvUsuario) == 1)
                 {
                     return "Fallé Calculo de la DV de Usuario, contacte al administrador";
 
@@ -122,10 +131,11 @@ namespace DAL_60MN
                 return "ok";
             }
 
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return ex.Message;
+            }
         }
-    }
 
         private void RecalcularDVHProcess()
         {
@@ -166,15 +176,27 @@ namespace DAL_60MN
 
                 int flag = recalcularTablaDVH(concat);
 
-                string sql2 = "update Usuario set dvh = "+flag+" where UsuarioId= " + item[0].ToString() + ";";
+                string sql2 = "update Usuario set dvh = " + flag + " where UsuarioId= " + item[0].ToString() + ";";
                 con.Ejecutar(sql2);
+            }
+
+            foreach (DataRow item in dtUsuarioOperacion.Rows)
+            {
+                string concat = item[0].ToString() + item[1].ToString() + item[2].ToString();
+
+                int flag = recalcularTablaDVH(concat);
+
+                string sqluo = "update usuariooperacion set dvh = " + flag + " where usuarioid = " + item[0].ToString() + " " +
+                    " and OperacionID = " + item[1].ToString() + ";";
+
+                con.Ejecutar(sqluo);
             }
 
             foreach (DataRow item in dtBitacora.Rows)
             {
                 string concat = item[0].ToString() + item[1].ToString + item[2].ToString();
 
-                int flag = RecalcularTablaDVH(concat);
+                int flag = recalcularTablaDVH(concat);
 
                 string sqlbit = "update Bitacora set dvh = " + flag + " where BitacoraId = " + item[0].ToString() + " " +
                     "and UsuarioId = " + item[1].ToString() + ";";
@@ -185,9 +207,71 @@ namespace DAL_60MN
             foreach (DataRow item in dtPerfil.Rows)
             {
                 string concat = item[0].ToString() + item[1].ToString() + item[2].ToString();
-            }
-                
 
-            // continuar desde aca la op2
+                int flag = recalcularTablaDVH(concat);
+
+                string sqlperfil = "update PerfilUsuario set dvh = " + flag + " where PerfilUsuarioId = " + item[0].ToString() + " " +
+                    "and NombrePerfil like '" + item[1].ToString() + ";";
+                con.Ejecutar(sqlperfil);
+            }
+
+
+            // actualizo DVV
+
+            String sql3 = " DECLARE @RTA INT;" +
+               " select @RTA = SUM(CAST(DVH AS INT)) from usuario; " +
+                " update dvv set dvv =  @RTA " +
+                " where tabla like 'Usuario'";
+            dtUsuarios.Rows.Clear();
+            dtUsuarios = con.Ejecutarreader(sql3);
+
+            String sqlUsuarioOp = " DECLARE @RTA INT;" +
+          " select @RTA = SUM(CAST(DVH AS INT)) from usuariooperacion; " +
+           " update dvv set dvv =  @RTA " +
+           " where tabla like 'usuariooperacion'";
+            dtUsuarios.Rows.Clear();
+            dtUsuarios = con.Ejecutarreader(sqlUsuarioOp);
+
+            String sqlBita = " DECLARE @RTA INT;" +
+         " select @RTA = SUM(CAST(DVH AS INT)) from bitacora; " +
+          " update dvv set dvv =  @RTA " +
+          " where tabla like 'bitacora'";
+
+            dtUsuarios.Rows.Clear();
+            dtUsuarios = con.Ejecutarreader(sqlBita);
+
+            String sqlPerfil2 = " DECLARE @RTA INT;" +
+     " select @RTA = SUM(CAST(DVH AS INT)) from PerfilUsuario; " +
+      " update dvv set dvv =  @RTA " +
+      " where tabla like 'PerfilUsuario'";
+
+            dtUsuarios.Rows.Clear();
+            dtUsuarios = con.Ejecutarreader(sqlPerfil2);
+
+            String sqlOperaciones = " DECLARE @RTA INT;" +
+        " select @RTA = SUM(CAST(DVH AS INT)) from Operacion; " +
+        " update dvv set dvv =  @RTA " +
+        " where tabla like 'Operacion'";
+            dtUsuarios.Rows.Clear();
+            dtUsuarios = con.Ejecutarreader(sqlOperaciones);
+
+            con.Desconectar();
+
         }
+
+        private int recalcularTablaDVH(string cadenaRegistro)
+        {
+            int digitoHorizontal = 0;
+            byte[] ASCIIValues = Encoding.ASCII.GetBytes(cadenaRegistro);
+
+            int posicion = 1;
+            foreach (byte b in ASCIIValues)
+            {
+                digitoHorizontal += b * posicion;
+                posicion += 1;
+            }
+            return digitoHorizontal;
+
+        }
+    }
 }
