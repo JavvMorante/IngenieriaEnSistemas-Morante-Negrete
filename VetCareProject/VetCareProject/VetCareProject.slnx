@@ -1,7 +1,0 @@
-<Solution>
-  <Project Path="BLL_60MN/BLL_60MN.csproj" Id="98bd5187-acb3-496a-9f67-cf36d0cc1d97" />
-  <Project Path="DAL_60MN/DAL_60MN.csproj" Id="2eb6ede0-08d7-4a12-b6b3-ba79dfe7e796" />
-  <Project Path="Entidades_60MN/Entidades_60MN.csproj" Id="beff303a-0eca-40b9-9633-d755d6739984" />
-  <Project Path="Servicios_60MN/Servicios_60MN.csproj" Id="ee638e99-268b-4b5d-9756-da60578abb29" />
-  <Project Path="VetCareProject/VetCareProject.csproj" />
-</Solution>
