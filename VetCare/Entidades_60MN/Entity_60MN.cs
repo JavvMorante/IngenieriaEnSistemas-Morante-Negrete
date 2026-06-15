@@ -9,11 +9,7 @@ namespace Entidades_60MN
 {
     public class Entity_60MN : IEntity_60MN
     {
-        public Entity_60MN() 
-        {
-            Id = Guid.NewGuid();
-        }
 
-        public Guid Id { get; set; }
+        public long IdUsuario { get; set; }
     }
 }

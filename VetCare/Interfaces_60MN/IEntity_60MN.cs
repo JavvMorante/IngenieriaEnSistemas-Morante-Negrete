@@ -9,6 +9,6 @@ namespace Interfaces_60MN
     public interface IEntity_60MN
     {
 
-        Guid Id  { get; }
+        long IdUsuario { get; set; }
     }
 }

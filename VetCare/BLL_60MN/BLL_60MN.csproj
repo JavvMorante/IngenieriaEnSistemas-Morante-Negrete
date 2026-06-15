@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Servicios_60MN\Servicios_60MN.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Seguridad_MN60\" />
+  </ItemGroup>
+
 </Project>

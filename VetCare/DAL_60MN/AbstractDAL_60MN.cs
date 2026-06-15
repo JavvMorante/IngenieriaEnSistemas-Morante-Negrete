@@ -8,40 +8,23 @@ using Entidades_60MN;
 
 namespace DAL_60MN
 {
-    public abstract class AbstractDAL_60MN<T> : ICrud_60MN<T> where T : IEntity_60MN
+    public abstract class AbstractDAL_60MN<T> : ICrud_60MN<T>
+         where T : IEntity_60MN
     {
-        protected IList<T> dataContext;
+        protected readonly Conexion_60MN conexion;
 
-        public AbstractDAL_60MN()
+        protected AbstractDAL_60MN()
         {
-            dataContext = new List<T>();
+            conexion = new Conexion_60MN();
         }
 
-        public void Delete(T entity)
-        {
-            this.dataContext.Remove(entity);
-        }
+        public abstract void Save(T entity);
 
-        public IList<T> GetAll()
-        {
-            return dataContext;
-        }
+        public abstract void Delete(T entity);
 
-        public T GetById(Guid id)
-        {
-            return dataContext.Where(i => i.Id.Equals(id)).FirstOrDefault();
-        }
+        public abstract IList<T> GetAll();
 
-        public void Save(T entity)
-        {
-            if (dataContext.Contains(entity))
-            {
-                //si no fuesen objetos, habria que invocar la forma de actualizar el dato en el entorno de persistencia
-            }
-            else
-            {
-                dataContext.Add(entity);
-            }
-        }
+        public abstract T GetById(long id);
     }
 }
+

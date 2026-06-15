@@ -8,10 +8,12 @@ namespace Interfaces_60MN
 {
     public interface ICrud_60MN<T> where T : IEntity_60MN
     {
-        T GetById(Guid id);
-        IList<T> GetAll();
         void Save(T entity);
 
         void Delete(T entity);
+
+        IList<T> GetAll();
+
+        T GetById(long id);
     }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2S3Bu9Tx0Ik=",
+  "dgSpecHash": "9IG8yunFeiA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jmora\\source\\repos\\VetCare\\BLL_60MN\\BLL_60MN.csproj",
+  "projectFilePath": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\BLL_60MN\\BLL_60MN.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jmora\\.nuget\\packages\\microsoft.bcl.cryptography\\8.0.0\\microsoft.bcl.cryptography.8.0.0.nupkg.sha512",
     "C:\\Users\\jmora\\.nuget\\packages\\microsoft.data.sqlclient\\7.0.1\\microsoft.data.sqlclient.7.0.1.nupkg.sha512",

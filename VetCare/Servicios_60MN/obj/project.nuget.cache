@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "31BH3gdqvqg=",
+  "dgSpecHash": "MEsPsxAOMW8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jmora\\source\\repos\\VetCare\\Servicios_60MN\\Servicios_60MN.csproj",
+  "projectFilePath": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Servicios_60MN\\Servicios_60MN.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jmora\\.nuget\\packages\\system.configuration.configurationmanager\\8.0.1\\system.configuration.configurationmanager.8.0.1.nupkg.sha512",
     "C:\\Users\\jmora\\.nuget\\packages\\system.diagnostics.eventlog\\8.0.1\\system.diagnostics.eventlog.8.0.1.nupkg.sha512",

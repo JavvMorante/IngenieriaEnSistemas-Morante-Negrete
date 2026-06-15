@@ -10,7 +10,7 @@ using System.Configuration;
 
 namespace DAL_60MN
 {
-    internal class Conexion_60MN
+    public class Conexion_60MN
     {
         DataTable dt;
 
@@ -19,11 +19,12 @@ namespace DAL_60MN
 
 
         // casa
+
         static string connectionString = @"Data Source=DESKTOP-0BHQ8S5\SQLEXPRESS;Initial Catalog=VetCareBD;Integrated Security=True;TrustServerCertificate=True;";
-        static string stringconexiontest = ConfigurationManager.AppSettings["conexionBD"].ToString();
 
-        SqlConnection con = new SqlConnection(stringconexiontest);
+        //static string stringconexiontest = ConfigurationManager.AppSettings["conexionBD"].ToString();
 
+        SqlConnection con = new SqlConnection(connectionString);
         internal void Conectar()
         {
             con.Close();
@@ -127,13 +128,7 @@ namespace DAL_60MN
 
         internal void Desconectar()
         {
-            string stringconexiontest = "Data Source=ID705881;Initial Catalog=ELARA;Integrated Security=True";
-            SqlConnection con = new SqlConnection(stringconexiontest);
-            if (con.State == ConnectionState.Closed)
-            {
-
-            }
-            else
+            if (con.State == ConnectionState.Open)
             {
                 con.Close();
             }

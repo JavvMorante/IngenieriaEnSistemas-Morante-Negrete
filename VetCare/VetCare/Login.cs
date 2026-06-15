@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using BLL_60MN.Seguridad_MN60;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -48,7 +49,7 @@ namespace VetCare
 
             try
             {
-                BLL_60MN.UsuarioBLL_60MN USU1 = new BLL_60MN.UsuarioBLL_60MN();
+                UsuarioBLL_60MN USU1 = new BLL_60MN.UsuarioBLL_60MN();
 
                 USU1 = USU1.TraerDatosUsuario(txtUsuario.Text, var1);
             }

@@ -11,23 +11,35 @@ namespace Entidades_60MN
     public class Usuario_60MN : Entity_60MN, IUsuario_60MN
     {
 
-        private IList<IPermiso_60MN> _permisos;
+        private readonly IList<IPermiso_60MN> _permisos;
 
         public Usuario_60MN()
         {
             _permisos = new List<IPermiso_60MN>();
         }
 
-        public String Email { get; set; }
+        public long IdUsuario { get; set; }
 
-        public String Password { get; set; }
+        public long Dni { get; set; }
 
-        public IList<IPermiso_60MN> Permisos
-        {
-            get
-            {
-                return _permisos;
-            }
-        }
+        public string Apellido { get; set; }
+
+        public string Nombre { get; set; }
+
+        public string Email { get; set; }
+
+        public string Username { get; set; }
+
+        public string PasswordHash { get; set; }
+
+        public string Rol { get; set; }
+
+        public int LoginCount { get; set; }
+
+        public bool Locked { get; set; }
+
+        public bool Deleted { get; set; }
+
+        public IList<IPermiso_60MN> Permisos => _permisos;
     }
 }
