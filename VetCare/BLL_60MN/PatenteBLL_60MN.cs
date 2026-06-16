@@ -7,7 +7,7 @@ using Entidades_60MN;
 using BLL_60MN;
 using DAL_60MN;
 using Interfaces_60MN;
-using Servicios_60MN.Composite;
+//using Servicios_60MN.Composite;
 
 namespace BLL_60MN
 {
@@ -19,8 +19,12 @@ namespace BLL_60MN
 
         }
 
+        public override IPatente_60MN GetById(long id)
+        {
+            throw new NotImplementedException();
+        }
 
-        public void SimularDatos()
+       /* public void SimularDatos()
         {
             var p = new Patente_60MN();
             p.Nombre = "Puede gestionar usuarios";
@@ -31,6 +35,6 @@ namespace BLL_60MN
             p.Nombre = "Puede gestionar permisos";
             p.Tipo = TipoPermiso.GestorPermiso;
             _crud.Save(p);
-        }
+        }*/
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL_60MN;
 using DAL_60MN;
-using Servicios_60MN.Composite;
+//using Servicios_60MN.Composite;
 
 namespace BLL_60MN
 {
@@ -19,7 +19,12 @@ namespace BLL_60MN
             _crud = new FamiliaDAL_60MN();
         }
 
-        public void SimularDatos()
+        public override IFamilia_60MN GetById(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+      /*  public void SimularDatos()
         {
             _bllPatentes.SimularDatos();
 
@@ -41,7 +46,7 @@ namespace BLL_60MN
             f3.AgregarPermiso(f1);
             f3.AgregarPermiso(f2);
             _crud.Save(f3);
-        }
+        }*/
         
     }
 }

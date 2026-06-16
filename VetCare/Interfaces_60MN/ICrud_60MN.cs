@@ -15,5 +15,6 @@ namespace Interfaces_60MN
         IList<T> GetAll();
 
         T GetById(long id);
+        T GetById(Guid id);
     }
 }

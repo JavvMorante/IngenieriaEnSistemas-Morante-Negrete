@@ -39,14 +39,14 @@ namespace BLL_60MN
             }
         }
 
-        public Usuario TraerDatosUsuariobyID(int usuid)
+        public UsuarioBLL_60MN TraerDatosUsuariobyID(int usuid)
         {
-            DAL.Usuario usu = new DAL.Usuario();
-            Usuario usu1 = new Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
+            UsuarioBLL_60MN usu1 = new UsuarioBLL_60MN();
             usu.TraerDatosUsuariobyID(usuid);
             //convierto un objeto dal a uno bll y traigo datos
 
-            this.usuarioadapter(usu1, usu);
+            this.usuarioadapter(usu1,usu);
 
             return usu1;
 
@@ -56,7 +56,7 @@ namespace BLL_60MN
         public string traerDatosPerfil(string nombreUsuario)
         {
             string perfil;
-            DAL.Usuario usu = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
             perfil = usu.traerDatosPerfil(nombreUsuario);
             return perfil;
 
@@ -65,7 +65,7 @@ namespace BLL_60MN
         public int verificarDuplicidad(int dni, string email, string usuario)
         {
             int result = 0;
-            DAL.Usuario usu = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
 
             result = usu.verificarDuplicidad(dni, email, usuario);
 
@@ -76,7 +76,7 @@ namespace BLL_60MN
         public List<string> MostraroperacionUsuario(string nombreUsuario)
         {
             List<string> listaopusuario = new List<string>();
-            DAL.Usuario usu = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
 
             listaopusuario = usu.MostraroperacionUsuario(nombreUsuario);
 
@@ -86,7 +86,7 @@ namespace BLL_60MN
         public List<string> MostrarOperacionesBloqueadas(string nombreUsuario)
         {
             List<string> listaopusuario = new List<string>();
-            DAL.Usuario usu = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
 
             listaopusuario = usu.MostrarOperacionesBloqueadas(nombreUsuario);
 
@@ -96,13 +96,13 @@ namespace BLL_60MN
 
         }
 
-        public static Usuario instancia;
+        public static UsuarioBLL_60MN instancia;
 
-        public static Usuario DevolverInstancia()
+        public static UsuarioBLL_60MN DevolverInstancia()
         {
             if (instancia == null)
             {
-                instancia = new Usuario();
+                instancia = new UsuarioBLL_60MN();
             }
 
             return instancia;
@@ -114,13 +114,13 @@ namespace BLL_60MN
 
 
 
-            DAL.Usuario usu = new DAL.Usuario(_Usuario, Apellido, Nombre, Email, Dni, Habilitado, Clave);
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN(_Usuario, Apellido, Nombre, Email, Dni, Habilitado, Clave);
             usu.Dar_Alta_Usuario(_Usuario, Apellido, Nombre, Email, Dni, Habilitado, Clave);
         }
 
         public string verificarPatentesBloqueo(string nombreUsuario, string patente)
         {
-            DAL.ManejadorPerfilUsuario MPU = new DAL.ManejadorPerfilUsuario();
+            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
             string rta = MPU.verificarPatentesBloqueo(nombreUsuario, patente);
 
             return rta;
@@ -129,10 +129,10 @@ namespace BLL_60MN
 
         }
 
-        public Usuario TraerDatosUsuario(string usuario, string clave)
+        public UsuarioBLL_60MN TraerDatosUsuario(string usuario, string clave)
         {
-            DAL.Usuario usu = new DAL.Usuario();
-            Usuario usu1 = new Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
+            UsuarioBLL_60MN usu1 = new UsuarioBLL_60MN();
             usu.TraerDatosUsuario(usuario, clave);
             //convierto un objeto dal a uno bll y traigo datos
 
@@ -141,10 +141,10 @@ namespace BLL_60MN
             return usu1;
         }
 
-        public Usuario TraerDatosUsuario(string NombreUsuario)
+        public UsuarioBLL_60MN TraerDatosUsuario(string NombreUsuario)
         {
-            Usuario BLL_USU = new BLL.Usuario();
-            DAL.Usuario usu = new DAL.Usuario();
+            UsuarioBLL_60MN BLL_USU = new BLL_60MN.UsuarioBLL_60MN();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
             usu = usu.TraerDatosUsuario(NombreUsuario);
 
             this.usuarioadapter(BLL_USU, usu);
@@ -157,7 +157,7 @@ namespace BLL_60MN
         {
 
 
-            DAL.Usuario usu = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
             string flag = usu.ModificarDatosUsuario(_Usuario, apellido, nombre, email, dni, habilitado, usuarioid);
 
 
@@ -167,13 +167,13 @@ namespace BLL_60MN
 
         public string EliminarUsuario(int usuarioid)
         {
-            DAL.Usuario usu = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
             string result = usu.EliminarUsuario(usuarioid);
 
             return result;
         }
 
-        public Usuario usuarioadapter(Usuario u, DAL.Usuario ud)
+        public UsuarioBLL_60MN usuarioadapter(UsuarioBLL_60MN u, DAL_60MN.UsuarioDAL_60MN ud)
         {
 
             u.UsuarioID = ud.UsuarioID;
@@ -195,7 +195,7 @@ namespace BLL_60MN
 
         public string CambiarClave(string Usuario, string ClaveNueva, int Usuarioid)
         {
-            DAL.Usuario usu = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
 
 
             string rta = usu.CambiarClave(Usuario, ClaveNueva, Usuarioid);
@@ -205,14 +205,14 @@ namespace BLL_60MN
 
         public string verificarPatentesEscenciales(int usuarioID)
         {
-            DAL.ManejadorPerfilUsuario MPU = new DAL.ManejadorPerfilUsuario();
+            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
             string rta = MPU.verificarPatentesEscenciales(usuarioID);
 
             return rta;
         }
         public string verificarPatentesEscenciales(string NombreUsuario)
         {
-            DAL.ManejadorPerfilUsuario MPU = new DAL.ManejadorPerfilUsuario();
+            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
             string rta = MPU.verificarPatentesEscenciales(NombreUsuario);
 
             return rta;
@@ -226,7 +226,7 @@ namespace BLL_60MN
         public DataTable MostrarUsuarios()
         {
             DataTable dt = new DataTable();
-            DAL.Usuario USU = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN USU = new DAL_60MN.UsuarioDAL_60MN();
 
             dt = USU.MostrarUsuarios();
 
@@ -241,7 +241,7 @@ namespace BLL_60MN
         public string Clave { get; set; }
 
         //CONSTRUCTOR
-        public Usuario(int Usuarioid, string _Usuario, string apellido, string _nombre, string _email, int _dni, bool _habilitado, int _FlagIntentos)
+        public UsuarioBLL_60MN(int Usuarioid, string _Usuario, string apellido, string _nombre, string _email, int _dni, bool _habilitado, int _FlagIntentos)
         {
             this.UsuarioID = Usuarioid;
             this._Usuario = _Usuario;
@@ -256,16 +256,21 @@ namespace BLL_60MN
 
         public void SumarFlagIntentos(int usuID)
         {
-            DAL.Usuario USU = new DAL.Usuario();
+            DAL_60MN.UsuarioDAL_60MN USU = new DAL_60MN.UsuarioDAL_60MN();
             USU.SumarFlagIntentos(usuID);
 
         }
 
-        public Usuario() { }
+        public override Usuario_60MN GetById(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UsuarioBLL_60MN() { }
 
 
 
-        public Usuario(string _Usuario, string apellido, string nombre, string email, int dni, bool habilitado, string clave)
+        public UsuarioBLL_60MN(string _Usuario, string apellido, string nombre, string email, int dni, bool habilitado, string clave)
         {
             this._Usuario = _Usuario;
             this.Apellido = apellido;

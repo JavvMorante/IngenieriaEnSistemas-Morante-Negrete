@@ -28,6 +28,8 @@ namespace BLL_60MN
             return _crud.GetById(id);
         }
 
+        public abstract T GetById(long id);
+
         public void Save(T entity)
         {
             _crud.Save(entity);

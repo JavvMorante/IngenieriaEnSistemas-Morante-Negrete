@@ -266,54 +266,49 @@ namespace DAL_60MN
             dv.RecalcularDVH();
         }
 
-        public UsuarioDAL_60MN TraerDatosUsuario(string usuario, string clave)
+        public Usuario_60MN TraerDatosUsuario(string usuario, string clave)
         {
+            // Ajustamos la consulta con las columnas reales de tu tabla [Usuario_60MN]
+            // Usamos Locked = 0 (Falso) que equivale a "Habilitado = 1"
+            string sql = "SELECT IdUsuario, dni, apellido, nombre, rol, email, username, password, logincount, locked, deleted " +
+                         "FROM [VetCareBD].[dbo].[Usuario_60MN] " +
+                         "WHERE username = '" + usuario + "' AND password = '" + clave + "' AND locked = 0 AND deleted = 0";
 
-
-            string sql = "select UsuarioID,Usuario,Clave,Nombre,Apellido,DNI,Email,Habilitado,FlagIntentosLogin From Usuario " +
-                          " where usuario = '" + usuario + "'" +
-                          " and clave = '" + clave + "' " +
-                          " and Habilitado = 1";
             try
             {
-                DataTable dt = new DataTable();
-                dt = con.Ejecutarreader(sql);
+                // Ejecutamos el reader (con tu método corregido de Conexion_60MN)
+                DataTable dt = con.Ejecutarreader(sql);
 
-
-
-                if (dt.Rows.Count > 0)
+                // Si no se encuentra el usuario, devolvemos null de forma segura
+                if (dt == null || dt.Rows.Count == 0)
                 {
-                    Console.WriteLine("entró reader " + Convert.ToString(dt.Rows[0][0].ToString()));
-
-                    this.UsuarioID = Convert.ToInt32(dt.Rows[0][0].ToString());
-                    this._Usuario = Convert.ToString(dt.Rows[0][1].ToString());
-                    this.apellido = Convert.ToString(dt.Rows[0][4].ToString());
-                    this.nombre = Convert.ToString(dt.Rows[0][3].ToString());
-                    this.email = Convert.ToString(dt.Rows[0][6].ToString());
-                    this.dni = Convert.ToInt32(dt.Rows[0][5].ToString());
-                    this.habilitado = Convert.ToBoolean(dt.Rows[0][7].ToString());
-                    this.FlagIntentosLogin = Convert.ToInt32(dt.Rows[0][8].ToString());
-
-                }
-                else
-                {
-
-
+                    return null;
                 }
 
-                UsuarioDAL_60MN usu = new UsuarioDAL_60MN(this.UsuarioID, this._Usuario, this.apellido, this.nombre, this.email, this.dni, this.habilitado, this.FlagIntentosLogin);
+                DataRow row = dt.Rows[0];
+
+                // Instanciamos y mapeamos directamente sobre tu objeto de ENTIDADES
+                Usuario_60MN usu = new Usuario_60MN
+                {
+                    IdUsuario = Convert.ToInt64(row["IdUsuario"]),
+                    Dni = Convert.ToInt64(row["dni"]),
+                    Apellido = row["apellido"].ToString(),
+                    Nombre = row["nombre"].ToString(),
+                    Rol = row["rol"].ToString(),
+                    Email = row["email"].ToString(),
+                    Username = row["username"].ToString(),
+                    PasswordHash = row["password"].ToString(),
+                    LoginCount = Convert.ToInt32(row["logincount"]),
+                    Locked = Convert.ToBoolean(row["locked"]),
+                    Deleted = Convert.ToBoolean(row["deleted"])
+                };
 
                 return usu;
-
             }
             catch (Exception)
             {
-
                 throw;
             }
-
-
-
         }
 
         public DataTable MostrarUsuarios()
@@ -409,6 +404,11 @@ namespace DAL_60MN
         }
 
         public override Usuario_60MN GetById(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Usuario_60MN GetById(Guid id)
         {
             throw new NotImplementedException();
         }

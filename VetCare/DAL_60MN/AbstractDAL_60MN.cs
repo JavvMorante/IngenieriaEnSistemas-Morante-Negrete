@@ -25,6 +25,7 @@ namespace DAL_60MN
         public abstract IList<T> GetAll();
 
         public abstract T GetById(long id);
+        public abstract T GetById(Guid id);
     }
 }
 

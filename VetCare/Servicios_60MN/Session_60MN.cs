@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Interfaces_60MN;
-using Servicios_60MN.Composite;
+//using Servicios_60MN.Composite_60MN;
 
 namespace Servicios_60MN
 {
@@ -32,7 +32,7 @@ namespace Servicios_60MN
             _user = null; 
         }
 
-        private bool IsInRoleRecursivo(IPermiso_60MN p, Enum tipoPermiso, bool valid)
+  /*      private bool IsInRoleRecursivo(IPermiso_60MN p, Enum tipoPermiso, bool valid)
         {
             foreach (var item in p.ObtenerHijos())
             {
@@ -75,5 +75,7 @@ namespace Servicios_60MN
         {
             return _user != null;
         }
+  */
     }
+  
 }

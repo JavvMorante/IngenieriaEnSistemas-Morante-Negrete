@@ -12,229 +12,142 @@ namespace DAL_60MN
 {
     public class Conexion_60MN
     {
-        DataTable dt;
-
-        //facu
-        //static string connectionString = @"Data Source=DESKTOP-0BHQ8S5\SQLEXPRESS;Initial Catalog=VetCareBD;Integrated Security=True;TrustServerCertificate=True;";
-
-
-        // casa
-
-        static string connectionString = @"Data Source=DESKTOP-0BHQ8S5\SQLEXPRESS;Initial Catalog=VetCareBD;Integrated Security=True;TrustServerCertificate=True;";
-
-        //static string stringconexiontest = ConfigurationManager.AppSettings["conexionBD"].ToString();
-
-        SqlConnection con = new SqlConnection(connectionString);
-        internal void Conectar()
+        // 1. Centralizamos la obtención de la cadena de conexión de forma segura
+        private string ObtenerCadenaConexion()
         {
-            con.Close();
-            if (con.State == ConnectionState.Open)
+            // Intentamos leer del App.config / Web.config, si no, usamos el fallback
+            if (ConfigurationManager.AppSettings["conexionBD"] != null)
             {
-
+                return ConfigurationManager.AppSettings["conexionBD"].ToString();
             }
-            else
-            {
-                con.Open();
-            }
-            Console.WriteLine("Conexion abierta correctamente");
 
+            // Tu cadena local (Casa / Facu)
+            return @"Data Source=DESKTOP-0BHQ8S5\SQLEXPRESS;Initial Catalog=VetCareBD;Integrated Security=True;TrustServerCertificate=True;";
         }
 
-        internal string VerificarStringConexion(string cadena)
+        // 2. Cambiados a PUBLIC para evitar problemas de incoherencia de accesibilidad (CS0052)
+        public string VerificarStringConexion(string cadena)
         {
-            SqlConnection con = new SqlConnection(cadena);
-
-            if (con.State != ConnectionState.Open)
+            using (SqlConnection testCon = new SqlConnection(cadena))
             {
                 try
                 {
-                    con.Open();
+                    testCon.Open();
                     return "OK";
                 }
                 catch (Exception ex)
                 {
-                    return ex.Message.ToString();
-                    throw;
+                    return ex.Message;
                 }
-            }
-            else
-            {
-                return "no se puede abrir la conexion";
-            }
+            } // El bloque using cierra automáticamente la conexión acá
         }
 
-        internal string EjecutarRestore(int cant)
+        public string EjecutarRestore(int cant)
         {
             try
             {
-                string stringcon = ConfigurationManager.AppSettings["conexionBD"].ToString();
+                using (SqlConnection con = new SqlConnection(ObtenerCadenaConexion()))
+                using (SqlCommand com = new SqlCommand("RealizarRestore", con))
+                {
+                    com.CommandType = CommandType.StoredProcedure;
+                    com.Parameters.Add(new SqlParameter("@CANT", cant));
 
-
-                SqlConnection con1 = new SqlConnection(stringcon);
-                con1.Open();
-
-                SqlCommand com = new SqlCommand("RealizarRestore", con1);
-                com.CommandType = CommandType.StoredProcedure;
-
-                SqlParameter Parametro1 = new SqlParameter("@CANT", cant);
-
-                com.Parameters.Add(Parametro1);
-
-
-                com.ExecuteReader();
-
-                con1.Close();
-                return "Restore OK";
-
+                    con.Open();
+                    com.ExecuteNonQuery(); // Para restores, inserts o updates se usa ExecuteNonQuery, no Reader
+                    return "Restore OK";
+                }
             }
-
             catch (Exception ex)
             {
                 return ex.Message;
             }
         }
 
-        internal void EjecutarProcedureconListaParametros(string NombreParametro, List<SqlParameter> parametrosSP)
+        public void EjecutarProcedureconListaParametros(string nombreSP, List<SqlParameter> parametrosSP)
         {
-
-            Conectar();
-            SqlCommand com = new SqlCommand(NombreParametro, con);
-            com.CommandType = CommandType.StoredProcedure;
-
-            foreach (SqlParameter parametros in parametrosSP)
+            using (SqlConnection con = new SqlConnection(ObtenerCadenaConexion()))
+            using (SqlCommand com = new SqlCommand(nombreSP, con))
             {
-                com.Parameters.Add(parametros);
+                com.CommandType = CommandType.StoredProcedure;
+
+                if (parametrosSP != null)
+                {
+                    foreach (SqlParameter param in parametrosSP)
+                    {
+                        // Clonamos el parámetro para evitar problemas si se reutiliza en bucles
+                        com.Parameters.Add((SqlParameter)((ICloneable)param).Clone());
+                    }
+                }
+
+                con.Open();
+                com.ExecuteNonQuery(); // Modifica o ejecuta lógica, usamos NonQuery para evitar fugas del Reader
             }
-
-            com.ExecuteReader();
-
-            Desconectar();
-
-
-        }
-        internal void EjecutarProcedure(string sp, int usuID)
-        {
-            Conectar();
-            SqlCommand com = new SqlCommand(sp, con);
-            com.CommandType = CommandType.StoredProcedure;
-
-            com.Parameters.AddWithValue("@usuid", usuID);
-
-            com.ExecuteReader();
-
-            Desconectar();
-
         }
 
-        internal void Desconectar()
+        public void EjecutarProcedure(string sp, int usuID)
         {
-            if (con.State == ConnectionState.Open)
+            using (SqlConnection con = new SqlConnection(ObtenerCadenaConexion()))
+            using (SqlCommand com = new SqlCommand(sp, con))
             {
-                con.Close();
+                com.CommandType = CommandType.StoredProcedure;
+                com.Parameters.AddWithValue("@usuid", usuID);
+
+                con.Open();
+                com.ExecuteNonQuery();
             }
-
-
-            Console.WriteLine("Conexion cerrada Correctamente");
         }
 
-        internal string Ejecutar(string sql)
+        public string Ejecutar(string sql)
         {
             try
             {
-                Conectar();
-                SqlCommand com = con.CreateCommand();
-                com.CommandText = sql;
-                int fil = com.ExecuteNonQuery();
-
-                if (fil > 0)
+                using (SqlConnection con = new SqlConnection(ObtenerCadenaConexion()))
+                using (SqlCommand com = new SqlCommand(sql, con))
                 {
-                    Console.WriteLine("Se ejecutó satisfactoriamente");
-                    return "Se ejecutó satisfactoriamente";
+                    con.Open();
+                    int filasAfectadas = com.ExecuteNonQuery();
+
+                    return filasAfectadas > 0
+                        ? "Se ejecutó satisfactoriamente"
+                        : "No se pudo ejecutar la consulta o no afectó filas";
                 }
-                else
-                {
-
-                    return "No se pudo ejecutar la consulta";
-
-                }
-
             }
-
             catch (Exception)
             {
                 throw;
-
-
             }
-
-            finally { Desconectar(); }
-
-
-
         }
 
-        internal string Modificar(string sql)
+        public DataTable Ejecutarreader(string sql)
         {
-            throw new NotImplementedException();
-        }
+            // Definimos el DataTable de forma LOCAL para que sea Thread-Safe
+            DataTable dt = new DataTable();
 
-        internal DataTable Ejecutarreader(string sql) //SELECCIONAR DATOS
-        {
-
-            SqlCommand com = new SqlCommand(sql, con);
-            // SqlCommand com = con.CreateCommand();
-            //com.CommandText = sql;
-
-            Conectar();
-
-            SqlDataReader reader = com.ExecuteReader();
-            dt = new DataTable();
-            dt.Load(reader);
-            Desconectar();
+            using (SqlConnection con = new SqlConnection(ObtenerCadenaConexion()))
+            using (SqlCommand com = new SqlCommand(sql, con))
+            {
+                con.Open();
+                using (SqlDataReader reader = com.ExecuteReader())
+                {
+                    dt.Load(reader);
+                } // El reader se destruye de forma segura acá
+            } // La conexión se cierra de forma segura acá
 
             return dt;
-
         }
 
-        internal string Dar_Baja(string sql)
+        public string VerificarDatoTabla(string sql)
         {
-            throw new NotImplementedException();
-        }
-
-
-        internal string VerificarDatoTabla(string sql)
-        {
-            DataTable dt = new DataTable();
-            string rta;
-            SqlCommand com = new SqlCommand(sql, con);
-
-            Conectar();
-
-            SqlDataReader reader = com.ExecuteReader();
-
-            dt.Load(reader);
-            Desconectar();
-
-            Console.WriteLine();
-
-            if (dt.Rows.Count > 0)
+            using (SqlConnection con = new SqlConnection(ObtenerCadenaConexion()))
+            using (SqlCommand com = new SqlCommand(sql, con))
             {
-                rta = System.Convert.ToString((dt.Rows[0][0]));
+                con.Open();
+                // ExecuteScalar ejecuta la consulta y devuelve únicamente la primer columna de la primer fila.
+                // Es muchísimo más rápido que instanciar un DataReader y cargar un DataTable completo.
+                object resultado = com.ExecuteScalar();
 
-
-                return rta;
-
+                return resultado != null ? resultado.ToString() : "";
             }
-            else
-            {
-
-                rta = "";
-                return rta;
-
-            }
-
-
         }
-
     }
 }
