@@ -37,6 +37,8 @@
             ventasToolStripMenuItem = new ToolStripMenuItem();
             reportesToolStripMenuItem = new ToolStripMenuItem();
             configuracionToolStripMenuItem = new ToolStripMenuItem();
+            usuariosToolStripMenuItem = new ToolStripMenuItem();
+            gestionDeUsuariosToolStripMenuItem = new ToolStripMenuItem();
             ayudaToolStripMenuItem = new ToolStripMenuItem();
             pictureBox4 = new PictureBox();
             pictureBox1 = new PictureBox();
@@ -77,7 +79,7 @@
             // 
             // menuToolStripMenuItem
             // 
-            menuToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { pacientesToolStripMenuItem, turnosToolStripMenuItem, toolStripMenuItem1, serviciosToolStripMenuItem, ventasToolStripMenuItem, reportesToolStripMenuItem, configuracionToolStripMenuItem, ayudaToolStripMenuItem });
+            menuToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { pacientesToolStripMenuItem, turnosToolStripMenuItem, toolStripMenuItem1, serviciosToolStripMenuItem, ventasToolStripMenuItem, reportesToolStripMenuItem, configuracionToolStripMenuItem, usuariosToolStripMenuItem, ayudaToolStripMenuItem });
             menuToolStripMenuItem.Name = "menuToolStripMenuItem";
             menuToolStripMenuItem.Size = new Size(60, 24);
             menuToolStripMenuItem.Text = "Menu";
@@ -124,6 +126,20 @@
             configuracionToolStripMenuItem.Size = new Size(224, 26);
             configuracionToolStripMenuItem.Text = "Configuracion";
             // 
+            // usuariosToolStripMenuItem
+            // 
+            usuariosToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { gestionDeUsuariosToolStripMenuItem });
+            usuariosToolStripMenuItem.Name = "usuariosToolStripMenuItem";
+            usuariosToolStripMenuItem.Size = new Size(224, 26);
+            usuariosToolStripMenuItem.Text = "Usuarios";
+            // 
+            // gestionDeUsuariosToolStripMenuItem
+            // 
+            gestionDeUsuariosToolStripMenuItem.Name = "gestionDeUsuariosToolStripMenuItem";
+            gestionDeUsuariosToolStripMenuItem.Size = new Size(224, 26);
+            gestionDeUsuariosToolStripMenuItem.Text = "Gestion de Usuarios";
+            gestionDeUsuariosToolStripMenuItem.Click += gestionDeUsuariosToolStripMenuItem_Click;
+            // 
             // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
@@ -132,6 +148,7 @@
             // 
             // pictureBox4
             // 
+            pictureBox4.BackColor = SystemColors.GrayText;
             pictureBox4.Location = new Point(257, 306);
             pictureBox4.Name = "pictureBox4";
             pictureBox4.Size = new Size(146, 95);
@@ -140,6 +157,7 @@
             // 
             // pictureBox1
             // 
+            pictureBox1.BackColor = SystemColors.GrayText;
             pictureBox1.Location = new Point(796, 306);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(146, 95);
@@ -148,6 +166,7 @@
             // 
             // pictureBox2
             // 
+            pictureBox2.BackColor = SystemColors.GrayText;
             pictureBox2.Location = new Point(620, 306);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(146, 95);
@@ -156,6 +175,7 @@
             // 
             // pictureBox3
             // 
+            pictureBox3.BackColor = SystemColors.GrayText;
             pictureBox3.Location = new Point(436, 306);
             pictureBox3.Name = "pictureBox3";
             pictureBox3.Size = new Size(146, 95);
@@ -164,6 +184,7 @@
             // 
             // pictureBox5
             // 
+            pictureBox5.BackColor = SystemColors.GrayText;
             pictureBox5.Location = new Point(796, 182);
             pictureBox5.Name = "pictureBox5";
             pictureBox5.Size = new Size(146, 95);
@@ -172,6 +193,7 @@
             // 
             // pictureBox6
             // 
+            pictureBox6.BackColor = SystemColors.GrayText;
             pictureBox6.Location = new Point(620, 182);
             pictureBox6.Name = "pictureBox6";
             pictureBox6.Size = new Size(146, 95);
@@ -180,6 +202,7 @@
             // 
             // pictureBox7
             // 
+            pictureBox7.BackColor = SystemColors.GrayText;
             pictureBox7.Location = new Point(436, 182);
             pictureBox7.Name = "pictureBox7";
             pictureBox7.Size = new Size(146, 95);
@@ -188,6 +211,7 @@
             // 
             // pictureBox8
             // 
+            pictureBox8.BackColor = SystemColors.GrayText;
             pictureBox8.Location = new Point(257, 182);
             pictureBox8.Name = "pictureBox8";
             pictureBox8.Size = new Size(146, 95);
@@ -199,74 +223,74 @@
             label1.AutoSize = true;
             label1.Location = new Point(266, 194);
             label1.Name = "label1";
-            label1.Size = new Size(50, 20);
+            label1.Size = new Size(109, 20);
             label1.TabIndex = 24;
-            label1.Text = "label1";
+            label1.Text = "Administracion";
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Location = new Point(446, 194);
             label2.Name = "label2";
-            label2.Size = new Size(50, 20);
+            label2.Size = new Size(70, 20);
             label2.TabIndex = 25;
-            label2.Text = "label2";
+            label2.Text = "Pacientes";
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Location = new Point(633, 194);
             label3.Name = "label3";
-            label3.Size = new Size(50, 20);
+            label3.Size = new Size(53, 20);
             label3.TabIndex = 26;
-            label3.Text = "label3";
+            label3.Text = "Turnos";
             // 
             // label4
             // 
             label4.AutoSize = true;
             label4.Location = new Point(806, 194);
             label4.Name = "label4";
-            label4.Size = new Size(50, 20);
+            label4.Size = new Size(121, 20);
             label4.TabIndex = 27;
-            label4.Text = "label4";
+            label4.Text = "Historias Clinicas";
             // 
             // label5
             // 
             label5.AutoSize = true;
             label5.Location = new Point(266, 319);
             label5.Name = "label5";
-            label5.Size = new Size(50, 20);
+            label5.Size = new Size(52, 20);
             label5.TabIndex = 28;
-            label5.Text = "label5";
+            label5.Text = "Ventas";
             // 
             // label6
             // 
             label6.AutoSize = true;
             label6.Location = new Point(446, 319);
             label6.Name = "label6";
-            label6.Size = new Size(50, 20);
+            label6.Size = new Size(78, 20);
             label6.TabIndex = 29;
-            label6.Text = "label6";
+            label6.Text = "Cobranzas";
             // 
             // label7
             // 
             label7.AutoSize = true;
             label7.Location = new Point(633, 319);
             label7.Name = "label7";
-            label7.Size = new Size(50, 20);
+            label7.Size = new Size(68, 20);
             label7.TabIndex = 30;
-            label7.Text = "label7";
+            label7.Text = "Reportes";
             // 
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(806, 327);
+            label8.Location = new Point(806, 319);
             label8.Name = "label8";
-            label8.Size = new Size(50, 20);
+            label8.Size = new Size(117, 20);
             label8.TabIndex = 31;
-            label8.Text = "label8";
+            label8.Text = "Productos/Stock";
             // 
-            // Form1
+            // MenuPrincipal
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -289,7 +313,7 @@
             Controls.Add(pictureBox4);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
-            Name = "Form1";
+            Name = "MenuPrincipal";
             Text = "VetCare";
             Load += Form1_Load;
             menuStrip1.ResumeLayout(false);
@@ -334,5 +358,7 @@
         private Label label6;
         private Label label7;
         private Label label8;
+        private ToolStripMenuItem usuariosToolStripMenuItem;
+        private ToolStripMenuItem gestionDeUsuariosToolStripMenuItem;
     }
 }

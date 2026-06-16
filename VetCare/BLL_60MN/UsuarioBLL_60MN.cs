@@ -1,101 +1,78 @@
 ﻿using DAL_60MN;
 using Entidades_60MN;
 using Servicios_60MN;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BLL_60MN
 {
     public class UsuarioBLL_60MN : AbstractBLL<Usuario_60MN>
     {
-        private string text1;
-        private string text2;
-        private string text3;
-        private string text4;
-        private int v;
-        private bool _habilitado;
+        // Se eliminaron las variables privadas huérfanas como text1, text2, v, _habilitado, etc.
 
-        public int UsuarioID { get; set; }
-        public string _Usuario { get; set; }
-
+        // PROPIEDADES ACTUALIZADAS
+        public int IdUsuario { get; set; }
+        public int Dni { get; set; }
         public string Apellido { get; set; }
         public string Nombre { get; set; }
+        public string Rol { get; set; }
         public string Email { get; set; }
-        public int Dni { get; set; }
-        public bool Habilitado { get; set; }
-        public int FlagIntentosLogin { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public int LoginCount { get; set; }
+        public bool Locked { get; set; }
+        public bool Deleted { get; set; }
+        public string Clave { get; set; }
 
         public int DatasetOperaciones
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-
-            }
+            get { throw new System.NotImplementedException(); }
+            set { }
         }
 
+        // MÉTODOS DE BÚSQUEDA Y MAPEO
         public UsuarioBLL_60MN TraerDatosUsuariobyID(int usuid)
         {
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
             UsuarioBLL_60MN usu1 = new UsuarioBLL_60MN();
-            usu.TraerDatosUsuariobyID(usuid);
-            //convierto un objeto dal a uno bll y traigo datos
 
-            this.usuarioadapter(usu1,usu);
+            // Guardamos el retorno de la DAL
+            usu = usu.TraerDatosUsuariobyID(usuid);
+
+            if (usu != null)
+            {
+                this.usuarioadapter(usu1, usu);
+            }
 
             return usu1;
-
-
         }
 
         public string traerDatosPerfil(string nombreUsuario)
         {
-            string perfil;
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
-            perfil = usu.traerDatosPerfil(nombreUsuario);
-            return perfil;
-
+            return usu.traerDatosPerfil(nombreUsuario);
         }
 
         public int verificarDuplicidad(int dni, string email, string usuario)
         {
-            int result = 0;
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
-
-            result = usu.verificarDuplicidad(dni, email, usuario);
-
-            return result;
-
+            return usu.verificarDuplicidad(dni, email, usuario);
         }
 
         public List<string> MostraroperacionUsuario(string nombreUsuario)
         {
-            List<string> listaopusuario = new List<string>();
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
-
-            listaopusuario = usu.MostraroperacionUsuario(nombreUsuario);
-
-            return listaopusuario;
+            return usu.MostraroperacionUsuario(nombreUsuario);
         }
 
         public List<string> MostrarOperacionesBloqueadas(string nombreUsuario)
         {
-            List<string> listaopusuario = new List<string>();
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
-
-            listaopusuario = usu.MostrarOperacionesBloqueadas(nombreUsuario);
-
-            return listaopusuario;
-
-
-
+            return usu.MostrarOperacionesBloqueadas(nombreUsuario);
         }
 
+        // SINGLETON
         public static UsuarioBLL_60MN instancia;
 
         public static UsuarioBLL_60MN DevolverInstancia()
@@ -104,39 +81,48 @@ namespace BLL_60MN
             {
                 instancia = new UsuarioBLL_60MN();
             }
-
             return instancia;
         }
 
-
+        // OPERACIONES DE ABM (ALTA, BAJA, MODIFICACIÓN)
         public void Dar_Alta_Usuario()
         {
+            // Locked funciona al revés que habilitado: si está bloqueado, Locked es true.
+            // Si la BLL no tiene la propiedad "Habilitado", usamos !Locked.
+            bool isLocked = !Locked;
 
+            // Instanciamos usando el constructor de 7 parámetros de la DAL
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN(Username, Apellido, Nombre, Email, Dni, isLocked, Clave);
 
-
-            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN(_Usuario, Apellido, Nombre, Email, Dni, Habilitado, Clave);
-            usu.Dar_Alta_Usuario(_Usuario, Apellido, Nombre, Email, Dni, Habilitado, Clave);
+            // Ejecutamos el método
+            usu.Dar_Alta_Usuario(Username, Apellido, Nombre, Email, Dni, isLocked, Clave);
         }
 
-        public string verificarPatentesBloqueo(string nombreUsuario, string patente)
+        public string ModificarDatosUsuario(string usuario, string apellido, string nombre, string email, Int64 dni, bool habilitado, int usuarioid)
         {
-            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
-            string rta = MPU.verificarPatentesBloqueo(nombreUsuario, patente);
-
-            return rta;
-
-
-
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
+            return usu.ModificarDatosUsuario(usuario, apellido, nombre, email, dni, habilitado, usuarioid);
         }
 
+        public string EliminarUsuario(int usuarioid)
+        {
+            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
+            return usu.EliminarUsuario(usuarioid);
+        }
+
+        // CONSULTAS DE LOGIN
         public UsuarioBLL_60MN TraerDatosUsuario(string usuario, string clave)
         {
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
             UsuarioBLL_60MN usu1 = new UsuarioBLL_60MN();
-            usu.TraerDatosUsuario(usuario, clave);
-            //convierto un objeto dal a uno bll y traigo datos
 
-            this.usuarioadapter(usu1, usu);
+            // Capturamos la respuesta de la DAL (pasa por el método que devuelve UsuarioDAL_60MN o el adaptado)
+            var datosDal = usu.TraerDatosUsuario(usuario);
+
+            if (datosDal != null)
+            {
+                this.usuarioadapter(usu1, datosDal);
+            }
 
             return usu1;
         }
@@ -147,75 +133,103 @@ namespace BLL_60MN
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
             usu = usu.TraerDatosUsuario(NombreUsuario);
 
-            this.usuarioadapter(BLL_USU, usu);
+            if (usu != null)
+            {
+                this.usuarioadapter(BLL_USU, usu);
+            }
 
             return BLL_USU;
-
         }
 
-        public string ModificarDatosUsuario(string _Usuario, string apellido, string nombre, string email, Int64 dni, bool habilitado, int usuarioid)
-        {
-
-
-            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
-            string flag = usu.ModificarDatosUsuario(_Usuario, apellido, nombre, email, dni, habilitado, usuarioid);
-
-
-            return flag;
-
-        }
-
-        public string EliminarUsuario(int usuarioid)
-        {
-            DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
-            string result = usu.EliminarUsuario(usuarioid);
-
-            return result;
-        }
-
+        // ADAPTADOR (MAPEO)
         public UsuarioBLL_60MN usuarioadapter(UsuarioBLL_60MN u, DAL_60MN.UsuarioDAL_60MN ud)
         {
-
-            u.UsuarioID = ud.UsuarioID;
-            u.Apellido = ud.apellido;
-            u.Nombre = ud.nombre;
-            u.Email = ud.email;
-            u.Dni = ud.dni;
-            u.Habilitado = ud.habilitado;
-            u._Usuario = ud._Usuario;
-            u.FlagIntentosLogin = ud.FlagIntentosLogin;
+            u.IdUsuario = ud.IdUsuario;
+            u.Dni = ud.Dni;
+            u.Apellido = ud.Apellido;
+            u.Nombre = ud.Nombre;
+            u.Rol = ud.Rol;
+            u.Email = ud.Email;
+            u.Username = ud.Username;
+            u.Password = ud.Password;
+            u.LoginCount = ud.LoginCount;
+            u.Locked = ud.Locked;
+            u.Deleted = ud.Deleted;
 
             return u;
         }
 
-        public void VerificarOperacionesBloqueadas()
-        {
-            throw new System.NotImplementedException();
-        }
-
+        // SEGURIDAD Y CLAVES
         public string CambiarClave(string Usuario, string ClaveNueva, int Usuarioid)
         {
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
+            return usu.CambiarClave(Usuario, ClaveNueva, Usuarioid);
+        }
 
-
-            string rta = usu.CambiarClave(Usuario, ClaveNueva, Usuarioid);
-
-            return rta;
+        public string verificarPatentesBloqueo(string nombreUsuario, string patente)
+        {
+            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
+            return MPU.verificarPatentesBloqueo(nombreUsuario, patente);
         }
 
         public string verificarPatentesEscenciales(int usuarioID)
         {
             DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
-            string rta = MPU.verificarPatentesEscenciales(usuarioID);
-
-            return rta;
+            return MPU.verificarPatentesEscenciales(usuarioID);
         }
+
         public string verificarPatentesEscenciales(string NombreUsuario)
         {
             DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
-            string rta = MPU.verificarPatentesEscenciales(NombreUsuario);
+            return MPU.verificarPatentesEscenciales(NombreUsuario);
+        }
 
-            return rta;
+        public void SumarFlagIntentos(int usuID)
+        {
+            DAL_60MN.UsuarioDAL_60MN USU = new DAL_60MN.UsuarioDAL_60MN();
+            USU.SumarFlagIntentos(usuID);
+        }
+
+        public DataTable MostrarUsuarios()
+        {
+            DAL_60MN.UsuarioDAL_60MN USU = new DAL_60MN.UsuarioDAL_60MN();
+            return USU.MostrarUsuarios();
+        }
+
+        // CONSTRUCTORES ACTUALIZADOS
+        public UsuarioBLL_60MN() { }
+
+        // Constructor Completo (10 parámetros principales)
+        public UsuarioBLL_60MN(int idUsuario, string username, string apellido, string nombre, string rol, string email, int dni, bool locked, int loginCount, bool deleted)
+        {
+            this.IdUsuario = idUsuario;
+            this.Username = username;
+            this.Apellido = apellido;
+            this.Nombre = nombre;
+            this.Rol = rol;
+            this.Email = email;
+            this.Dni = dni;
+            this.Locked = locked;
+            this.LoginCount = loginCount;
+            this.Deleted = deleted;
+        }
+
+        // Constructor para altas (7 parámetros)
+        public UsuarioBLL_60MN(string username, string apellido, string nombre, string email, int dni, bool locked, string clave)
+        {
+            this.Username = username;
+            this.Apellido = apellido;
+            this.Nombre = nombre;
+            this.Email = email;
+            this.Dni = dni;
+            this.Locked = locked;
+            this.Clave = clave;
+        }
+
+        // MÉTODOS OVERRIDE O COMPLEMENTARIOS NO IMPLEMENTADOS
+        public void VerificarOperacionesBloqueadas()
+        {
+            throw new System.NotImplementedException();
         }
 
         public void ValidarClaveNueva()
@@ -223,64 +237,14 @@ namespace BLL_60MN
             throw new System.NotImplementedException();
         }
 
-        public DataTable MostrarUsuarios()
-        {
-            DataTable dt = new DataTable();
-            DAL_60MN.UsuarioDAL_60MN USU = new DAL_60MN.UsuarioDAL_60MN();
-
-            dt = USU.MostrarUsuarios();
-
-
-            return dt;
-        }
-
         public void Encriptar()
         {
             throw new System.NotImplementedException();
-        }
-        public string Clave { get; set; }
-
-        //CONSTRUCTOR
-        public UsuarioBLL_60MN(int Usuarioid, string _Usuario, string apellido, string _nombre, string _email, int _dni, bool _habilitado, int _FlagIntentos)
-        {
-            this.UsuarioID = Usuarioid;
-            this._Usuario = _Usuario;
-            this.Apellido = apellido;
-            this.Nombre = _nombre;
-            this.Email = _email;
-            this.Dni = _dni;
-            this.Habilitado = _habilitado;
-            this.FlagIntentosLogin = _FlagIntentos;
-
-        }
-
-        public void SumarFlagIntentos(int usuID)
-        {
-            DAL_60MN.UsuarioDAL_60MN USU = new DAL_60MN.UsuarioDAL_60MN();
-            USU.SumarFlagIntentos(usuID);
-
         }
 
         public override Usuario_60MN GetById(long id)
         {
             throw new NotImplementedException();
         }
-
-        public UsuarioBLL_60MN() { }
-
-
-
-        public UsuarioBLL_60MN(string _Usuario, string apellido, string nombre, string email, int dni, bool habilitado, string clave)
-        {
-            this._Usuario = _Usuario;
-            this.Apellido = apellido;
-            this.Nombre = nombre;
-            this.Email = email;
-            this.Dni = dni;
-            this.Habilitado = habilitado;
-            this.Clave = clave;
-        }
-
-
     }
 }

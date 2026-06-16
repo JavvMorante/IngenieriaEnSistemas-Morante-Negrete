@@ -68,6 +68,7 @@
             txtPassword.Name = "txtPassword";
             txtPassword.Size = new Size(125, 27);
             txtPassword.TabIndex = 3;
+            txtPassword.UseSystemPasswordChar = true;
             // 
             // btnIngresar
             // 
@@ -114,6 +115,7 @@
             Controls.Add(label1);
             Name = "Login";
             Text = "Login";
+            Load += Login_Load;
             ResumeLayout(false);
             PerformLayout();
         }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Entidades_60MN")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+82e49138cc42e02d8bc3661a65e5df7ae271c84a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06f7b82a52f083929527863dd06f68e6e90bfed0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Entidades_60MN")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Entidades_60MN")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -12,6 +12,46 @@ namespace DAL_60MN
 {
     public class Conexion_60MN
     {
+
+        DataTable dt;
+
+        static string stringconexiontest = @"Data Source=.\SQLEXPRESS01,1433;Initial Catalog=VetCareBD;Integrated Security=True;TrustServerCertificate=True;";
+        SqlConnection con = new SqlConnection(stringconexiontest);
+        public void Conectar()
+        {
+
+            con.Close();
+            if (con.State == ConnectionState.Open)
+            {
+
+
+            }
+            else
+            {
+                con.Open();
+
+            }
+
+            Console.WriteLine("Conexion abierta Correctamente");
+
+        }
+
+        internal void Desconectar()
+        {
+            // string stringconexiontest = "Data Source=ID705881;Initial Catalog=ELARA;Integrated Security=True";
+            SqlConnection con = new SqlConnection(stringconexiontest);
+            if (con.State == ConnectionState.Closed)
+            {
+
+            }
+            else
+            {
+                con.Close();
+            }
+
+
+            Console.WriteLine("Conexion cerrada Correctamente");
+        }
         // 1. Centralizamos la obtención de la cadena de conexión de forma segura
         private string ObtenerCadenaConexion()
         {
@@ -22,7 +62,9 @@ namespace DAL_60MN
             }
 
             // Tu cadena local (Casa / Facu)
-            return @"Data Source=DESKTOP-0BHQ8S5\SQLEXPRESS;Initial Catalog=VetCareBD;Integrated Security=True;TrustServerCertificate=True;";
+            return @"Data Source=.\SQLEXPRESS01,1433;Initial Catalog=VetCareBD;Integrated Security=True;TrustServerCertificate=True;";
+            
+
         }
 
         // 2. Cambiados a PUBLIC para evitar problemas de incoherencia de accesibilidad (CS0052)
