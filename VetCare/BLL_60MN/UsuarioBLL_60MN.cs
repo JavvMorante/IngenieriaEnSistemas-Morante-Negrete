@@ -168,19 +168,19 @@ namespace BLL_60MN
 
         public string verificarPatentesBloqueo(string nombreUsuario, string patente)
         {
-            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
+            DAL_60MN.ManejadorPerfilUsuarioDAL_60MN MPU = new DAL_60MN.ManejadorPerfilUsuarioDAL_60MN();
             return MPU.verificarPatentesBloqueo(nombreUsuario, patente);
         }
 
         public string verificarPatentesEscenciales(int usuarioID)
         {
-            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
+            DAL_60MN.ManejadorPerfilUsuarioDAL_60MN MPU = new DAL_60MN.ManejadorPerfilUsuarioDAL_60MN();
             return MPU.verificarPatentesEscenciales(usuarioID);
         }
 
         public string verificarPatentesEscenciales(string NombreUsuario)
         {
-            DAL_60MN.ManejadorPerfilUsuario_60MN MPU = new DAL_60MN.ManejadorPerfilUsuario_60MN();
+            DAL_60MN.ManejadorPerfilUsuarioDAL_60MN MPU = new DAL_60MN.ManejadorPerfilUsuarioDAL_60MN();
             return MPU.verificarPatentesEscenciales(NombreUsuario);
         }
 

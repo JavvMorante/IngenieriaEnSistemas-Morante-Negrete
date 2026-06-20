@@ -31,6 +31,7 @@
             label1 = new Label();
             dgvUsuarios = new DataGridView();
             btSalir = new Button();
+            btnAltaUsuario = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).BeginInit();
             SuspendLayout();
             // 
@@ -51,10 +52,11 @@
             dgvUsuarios.RowHeadersWidth = 51;
             dgvUsuarios.Size = new Size(639, 296);
             dgvUsuarios.TabIndex = 1;
+            dgvUsuarios.CellClick += dgvUsuarios_CellClick;
             // 
             // btSalir
             // 
-            btSalir.Location = new Point(611, 411);
+            btSalir.Location = new Point(618, 404);
             btSalir.Name = "btSalir";
             btSalir.Size = new Size(94, 29);
             btSalir.TabIndex = 2;
@@ -62,11 +64,22 @@
             btSalir.UseVisualStyleBackColor = true;
             btSalir.Click += btSalir_Click;
             // 
+            // btnAltaUsuario
+            // 
+            btnAltaUsuario.Location = new Point(425, 404);
+            btnAltaUsuario.Name = "btnAltaUsuario";
+            btnAltaUsuario.Size = new Size(123, 29);
+            btnAltaUsuario.TabIndex = 3;
+            btnAltaUsuario.Text = "Alta Usuario";
+            btnAltaUsuario.UseVisualStyleBackColor = true;
+            btnAltaUsuario.Click += btnAltaUsuario_Click;
+            // 
             // ABMUsuarios
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnAltaUsuario);
             Controls.Add(btSalir);
             Controls.Add(dgvUsuarios);
             Controls.Add(label1);
@@ -83,5 +96,6 @@
         private Label label1;
         private DataGridView dgvUsuarios;
         private Button btSalir;
+        private Button btnAltaUsuario;
     }
 }

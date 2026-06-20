@@ -257,6 +257,14 @@
           }
         }
       },
+      "Microsoft.Office.Interop.Excel/16.0.18925.20022": {
+        "runtime": {
+          "lib/net5.0/Microsoft.Office.Interop.Excel.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.18925.20022"
+          }
+        }
+      },
       "Microsoft.SqlServer.Server/1.0.0": {
         "runtime": {
           "lib/netstandard2.0/Microsoft.SqlServer.Server.dll": {
@@ -515,6 +523,13 @@
       "sha512": "sha512-rtViGJcGsN7WcfUNErwNeQgjuU5cJNl6FDQsfi9TncwO+Epzn0FTfBsg3YuFW1Q0Ch/KPxaVdjLw3/+5Z5ceFQ==",
       "path": "microsoft.identitymodel.tokens/8.16.0",
       "hashPath": "microsoft.identitymodel.tokens.8.16.0.nupkg.sha512"
+    },
+    "Microsoft.Office.Interop.Excel/16.0.18925.20022": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Wlhtqu3QfLnDRHc77bJewv5k27VASgcINA3eDAljfZQX9iTuM+12Mt7EJYZpxn+2gBw9dlK7q6riUxuXd4cviw==",
+      "path": "microsoft.office.interop.excel/16.0.18925.20022",
+      "hashPath": "microsoft.office.interop.excel.16.0.18925.20022.nupkg.sha512"
     },
     "Microsoft.SqlServer.Server/1.0.0": {
       "type": "package",

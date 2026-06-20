@@ -348,6 +348,15 @@
           }
         }
       },
+      "Microsoft.Office.Interop.Excel/16.0.18925.20022": {
+        "type": "package",
+        "compile": {
+          "lib/net5.0/Microsoft.Office.Interop.Excel.dll": {}
+        },
+        "runtime": {
+          "lib/net5.0/Microsoft.Office.Interop.Excel.dll": {}
+        }
+      },
       "Microsoft.SqlServer.Server/1.0.0": {
         "type": "package",
         "compile": {
@@ -1144,6 +1153,22 @@
         "microsoft.identitymodel.tokens.nuspec"
       ]
     },
+    "Microsoft.Office.Interop.Excel/16.0.18925.20022": {
+      "sha512": "Wlhtqu3QfLnDRHc77bJewv5k27VASgcINA3eDAljfZQX9iTuM+12Mt7EJYZpxn+2gBw9dlK7q6riUxuXd4cviw==",
+      "type": "package",
+      "path": "microsoft.office.interop.excel/16.0.18925.20022",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "docs/readme.md",
+        "lib/net40/Microsoft.Office.Interop.Excel.dll",
+        "lib/net5.0/Microsoft.Office.Interop.Excel.dll",
+        "lib/netstandard2.0/Microsoft.Office.Interop.Excel.dll",
+        "microsoft.office.interop.excel.16.0.18925.20022.nupkg.sha512",
+        "microsoft.office.interop.excel.nuspec",
+        "nuget.exe"
+      ]
+    },
     "Microsoft.SqlServer.Server/1.0.0": {
       "sha512": "N4KeF3cpcm1PUHym1RmakkzfkEv3GRMyofVv40uXsQhCQeglr2OHNcUk2WOG51AKpGO8ynGpo9M/kFXSzghwug==",
       "type": "package",
@@ -1456,6 +1481,7 @@
     "net8.0-windows7.0": [
       "BLL_60MN >= 1.0.0",
       "Entidades_60MN >= 1.0.0",
+      "Microsoft.Office.Interop.Excel >= 16.0.18925.20022",
       "Servicios_60MN >= 1.0.0",
       "System.Configuration.ConfigurationManager >= 8.0.1"
     ]
@@ -1520,6 +1546,10 @@
       "net8.0-windows7.0": {
         "targetAlias": "net8.0-windows",
         "dependencies": {
+          "Microsoft.Office.Interop.Excel": {
+            "target": "Package",
+            "version": "[16.0.18925.20022, )"
+          },
           "System.Configuration.ConfigurationManager": {
             "target": "Package",
             "version": "[8.0.1, )"

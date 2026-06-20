@@ -445,6 +445,10 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "Microsoft.Office.Interop.Excel": {
+              "target": "Package",
+              "version": "[16.0.18925.20022, )"
+            },
             "System.Configuration.ConfigurationManager": {
               "target": "Package",
               "version": "[8.0.1, )"
