@@ -16,22 +16,20 @@ namespace BLL_60MN.Seguridad_MN60
             byte[] keyArray;
             byte[] Arreglo_a_Cifrar = UTF8Encoding.UTF8.GetBytes(texto);
 
-            MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
-
+            MD5 hashmd5 = MD5.Create();
             //se guarda la llave para que se le realice hashing
             keyArray = hashmd5.ComputeHash(UTF8Encoding.UTF8.GetBytes(key));
 
             hashmd5.Clear();
 
             //Algoritmo 3DAS
-            TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider();
+            TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider(); 
             tdes.Key = keyArray;
             tdes.Mode = CipherMode.ECB;
             tdes.Padding = PaddingMode.PKCS7;
 
             //se empieza con la transformación de la cadena
-            ICryptoTransform cTransform = tdes.CreateEncryptor();
-
+            ICryptoTransform cTransform = tdes.CreateEncryptor(); 
             byte[] ArrayResultado = cTransform.TransformFinalBlock(Arreglo_a_Cifrar, 0, Arreglo_a_Cifrar.Length);
             tdes.Clear();
 
@@ -49,7 +47,7 @@ namespace BLL_60MN.Seguridad_MN60
 
             //se llama a las clases que tienen los algoritmos //de encriptación se le aplica hashing
 
-            MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
+            MD5 hashmd5 = MD5.Create();
 
             keyArray = hashmd5.ComputeHash(UTF8Encoding.UTF8.GetBytes(key));
             hashmd5.Clear();

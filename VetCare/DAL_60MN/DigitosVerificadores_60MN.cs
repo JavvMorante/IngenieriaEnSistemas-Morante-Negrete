@@ -11,7 +11,7 @@ namespace DAL_60MN
 {
     public class DigitosVerificadores_60MN
     {
-        Encriptador_60MN crypt = new Encriptador_60MN();
+        Encriptador_60MN cryptt = new Encriptador_60MN();
         Conexion_60MN con = new Conexion_60MN();
         DataTable dtUsuarios = new DataTable();
         DataTable dtUsuarioOperacion = new DataTable();
@@ -68,11 +68,11 @@ namespace DAL_60MN
 
                 foreach (DataRow item in dt.Rows)
                 {
-                    //dvUsuario = item[0].ToString();
-                    //dvUsuarioOperacion = item[1].ToString();
-                    //dvBitacora = item[2].ToString();
-                    //dvPerfilUsuario = item[3].ToString();
-                    //dvOperacion = item[4].ToString();
+                    dvUsuario = item[0].ToString();
+                    dvUsuarioOperacion = item[1].ToString();
+                    dvBitacora = item[2].ToString();
+                    dvPerfilUsuario = item[3].ToString();
+                    dvOperacion = item[4].ToString();
 
                     // verifica si los valores vienen nulos
 
@@ -210,8 +210,9 @@ namespace DAL_60MN
 
                 int flag = recalcularTablaDVH(concat);
 
-                string sqlperfil = "update PerfilUsuario set dvh = " + flag + " where PerfilUsuarioId = " + item[0].ToString() + " " +
-                    "and NombrePerfil like '" + item[1].ToString() + ";";
+                string sqlperfil = "update PerfilUsuario set dvh = " + flag +
+                 " where PerfilUsuarioId = " + item[0].ToString() +
+                 " and NombrePerfil = '" + item[1].ToString() + "';";
                 con.Ejecutar(sqlperfil);
             }
 

@@ -27,7 +27,7 @@ namespace VetCare
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+            BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
             BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
             BLL_60MN.UsuarioBLL_60MN usulog = BLL_60MN.UsuarioBLL_60MN.DevolverInstancia();
             try
@@ -41,8 +41,8 @@ namespace VetCare
 
 
 
-                clave = cryp.CrearPassword(8);
-                claveencriptada = cryp.Encriptar(clave);
+                clave = crypt.CrearPassword(8);
+                claveencriptada = crypt.Encriptar(clave);
 
 
 
@@ -93,7 +93,8 @@ namespace VetCare
 
                             string[] lineas = { " Usuario: " + txtUsuario.Text, " Clave: " + clave };
 
-                            using (StreamWriter outputfile = new StreamWriter("C:\\Users\\Default\\Desktop\\Nueva carpeta\\Usuario.txt"))
+                            using (StreamWriter outputfile = new StreamWriter("C:\\Users\\jmora\\Desktop\\Nueva carpeta\\Usuario.txt"))
+                            //C:\Users\jmora\Desktop
                             {
                                 foreach (string linea in lineas)
                                 {
@@ -102,8 +103,8 @@ namespace VetCare
 
                             }
 
-                            log.NombreOperacion = cryp.Encriptar("Alta Usuario");
-                            log.Descripcion = cryp.Encriptar("Alta de " + txtUsuario.Text + " realizada con Exito!");
+                            log.NombreOperacion = crypt.Encriptar("Alta Usuario");
+                            log.Descripcion = crypt.Encriptar("Alta de " + txtUsuario.Text + " realizada con Exito!");
                             log.Criticidad = 1;
 
                             string rta = log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, usulog.UsuarioID);

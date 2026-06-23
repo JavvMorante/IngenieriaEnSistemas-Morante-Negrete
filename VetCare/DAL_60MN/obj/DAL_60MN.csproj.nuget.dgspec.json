@@ -61,6 +61,10 @@
               "target": "Package",
               "version": "[7.0.1, )"
             },
+            "Microsoft.Office.Interop.Excel": {
+              "target": "Package",
+              "version": "[16.0.18925.20022, )"
+            },
             "System.Configuration.ConfigurationManager": {
               "target": "Package",
               "version": "[8.0.1, )"
@@ -140,6 +144,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.Office.Interop.Excel": {
+              "target": "Package",
+              "version": "[16.0.18925.20022, )"
+            },
             "System.Configuration.ConfigurationManager": {
               "target": "Package",
               "version": "[8.0.1, )"
@@ -210,6 +218,16 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Office.Interop.Excel": {
+              "target": "Package",
+              "version": "[16.0.18925.20022, )"
+            },
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -280,6 +298,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.Office.Interop.Excel": {
+              "target": "Package",
+              "version": "[16.0.18925.20022, )"
+            },
             "System.Configuration.ConfigurationManager": {
               "target": "Package",
               "version": "[8.0.1, )"

@@ -14,7 +14,7 @@ namespace VetCare
     {
 
         BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
-        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
 
         public ConsultarBitacora()
         {
@@ -118,7 +118,7 @@ namespace VetCare
                         break;
 
                     case "Todas":
-                        sqlcriticidad = "select distinct criticidad from bitacora";
+                        sqlcriticidad = "select distinct Criticidad from Bitacora";
 
                         break;
 
@@ -137,9 +137,9 @@ namespace VetCare
 
                 foreach (DataRow item in dt.Rows)
                 {
-                    item[0] = cryp.Desencriptar(item[0].ToString());
+                    item[0] = crypt.Desencriptar(item[0].ToString());
 
-                    item[1] = cryp.Desencriptar(item[1].ToString());
+                    item[1] = crypt.Desencriptar(item[1].ToString());
 
                 }
 

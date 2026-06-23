@@ -56,6 +56,7 @@
             label6 = new Label();
             label7 = new Label();
             label8 = new Label();
+            bitacoraToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -104,6 +105,7 @@
             // 
             // serviciosToolStripMenuItem
             // 
+            serviciosToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { bitacoraToolStripMenuItem });
             serviciosToolStripMenuItem.Name = "serviciosToolStripMenuItem";
             serviciosToolStripMenuItem.Size = new Size(224, 26);
             serviciosToolStripMenuItem.Text = "Servicios";
@@ -290,6 +292,13 @@
             label8.TabIndex = 31;
             label8.Text = "Productos/Stock";
             // 
+            // bitacoraToolStripMenuItem
+            // 
+            bitacoraToolStripMenuItem.Name = "bitacoraToolStripMenuItem";
+            bitacoraToolStripMenuItem.Size = new Size(224, 26);
+            bitacoraToolStripMenuItem.Text = "Bitacora";
+            bitacoraToolStripMenuItem.Click += bitacoraToolStripMenuItem_Click;
+            // 
             // MenuPrincipal
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -360,5 +369,6 @@
         private Label label8;
         private ToolStripMenuItem usuariosToolStripMenuItem;
         private ToolStripMenuItem gestionDeUsuariosToolStripMenuItem;
+        private ToolStripMenuItem bitacoraToolStripMenuItem;
     }
 }

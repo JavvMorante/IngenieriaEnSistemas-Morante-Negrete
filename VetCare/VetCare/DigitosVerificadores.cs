@@ -16,7 +16,7 @@ namespace VetCare
         string rta;
         BLL_60MN.UsuarioBLL_60MN usu = BLL_60MN.UsuarioBLL_60MN.DevolverInstancia();
         BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
-        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
 
         BLL_60MN.Seguridad_MN60.DigitoVerificadorBLL_60MN digitos = new BLL_60MN.Seguridad_MN60.DigitoVerificadorBLL_60MN();
 
@@ -38,8 +38,8 @@ namespace VetCare
                    MessageBoxIcon.Information);
 
 
-            log.NombreOperacion = cryp.Encriptar("Recalculo de Digitos Verificadores");
-            log.Descripcion = cryp.Encriptar("Recalculo de digitos realizado con Exito!");
+            log.NombreOperacion = crypt.Encriptar("Recalculo de Digitos Verificadores");
+            log.Descripcion = crypt.Encriptar("Recalculo de digitos realizado con Exito!");
             log.Criticidad = 1;
             log.Usuarioid = 0;
 
@@ -56,8 +56,8 @@ namespace VetCare
                    MessageBoxIcon.Information);
 
 
-            log.NombreOperacion = cryp.Encriptar("Consultar Digitos Verificadores");
-            log.Descripcion = cryp.Encriptar("Consulta de  digitos realizado con Exito!");
+            log.NombreOperacion = crypt.Encriptar("Consultar Digitos Verificadores");
+            log.Descripcion = crypt.Encriptar("Consulta de  digitos realizado con Exito!");
             log.Criticidad = 1;
             log.Usuarioid = 0;
 

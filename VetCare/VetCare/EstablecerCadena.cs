@@ -1,8 +1,6 @@
-﻿using Microsoft.VisualBasic.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -10,32 +8,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Configuration;
 
 namespace VetCare
 {
     public partial class EstablecerCadena : Form
     {
         BLL_60MN.Seguridad_MN60.ConfigBLL_60MN conf = new BLL_60MN.Seguridad_MN60.ConfigBLL_60MN();
+        string configPath =
+        ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+                        .FilePath;
         public EstablecerCadena()
         {
             InitializeComponent();
         }
 
-        private void EstablecerCadena_Load(object sender, EventArgs e)
-        {
-            verificarConexion();
-        }
+       
 
-        private void verificarconexion()
+        private void verificarConexion()
         {
 
-            conf.Cadena = ConfigurationManager.AppSettings["conexionBD"].ToString();
-
+            conf.Cadena = ConfigurationManager.AppSettings["conexionBD"]!.ToString();
             if (conf.LeerStringConexion(conf.Cadena))
             {
 
                 //entra
-                LogIn login = new LogIn();
+                Login login = new Login();
                 login.Show();
 
                 this.Close();
@@ -49,6 +47,11 @@ namespace VetCare
                 MessageBox.Show("No se pudo establecer conexion a la base de datos, pro favor complete la cadena");
 
             }
+        }
+
+        private void EstablecerCadena_Load(object sender, EventArgs e)
+        {
+            verificarConexion();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -70,7 +73,7 @@ namespace VetCare
 
                     XmlDocument xmldoc = new XmlDocument();
 
-                    xmldoc.Load(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+                    xmldoc.Load(configPath);
 
                     foreach (XmlElement element in xmldoc.DocumentElement)
                     {
@@ -88,7 +91,7 @@ namespace VetCare
                         }
                     }
 
-                    xmldoc.Save(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+                    xmldoc.Save(configPath);
                     // config.Save(ConfigurationSaveMode.Modified); ConfigurationManager.RefreshSection(config.AppSettings.SectionInformation.Name);
 
                     Configuration config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath);
@@ -104,7 +107,7 @@ namespace VetCare
 
                     MessageBox.Show("Verificando cadena");
 
-                    verificarconexion();
+                    verificarConexion();
 
 
                 }

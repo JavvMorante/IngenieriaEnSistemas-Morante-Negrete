@@ -26,7 +26,7 @@ namespace VetCare
             this.Show();
         }
 
-        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
         BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
         MenuPrincipal mp = MenuPrincipal.Instance;
 
@@ -156,7 +156,7 @@ namespace VetCare
                             log.FechayHora = DateTime.Now;
                             log.NombreOperacion = "Eliminar Perfil";
 
-                            log.IngresarDatoBitacora(cryp.Encriptar(log.NombreOperacion), cryp.Encriptar(log.Descripcion), log.Criticidad, mp.Usuarioid);
+                            log.IngresarDatoBitacora(crypt.Encriptar(log.NombreOperacion), crypt.Encriptar(log.Descripcion), log.Criticidad, mp.Usuarioid);
 
                             // Recargar DataGrid
                             this.Load += new EventHandler(ABMFamilias_Load);

@@ -34,4 +34,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Idioma\" />
+  </ItemGroup>
+
 </Project>

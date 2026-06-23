@@ -15,7 +15,7 @@ namespace VetCare
 
         BLL_60MN.ManejadorPerfilUsuarioBLL_60MN mpu = new BLL_60MN.ManejadorPerfilUsuarioBLL_60MN();
         BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
-        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
 
 
         VetCare.MenuPrincipal mp = MenuPrincipal.Instance;
@@ -55,7 +55,7 @@ namespace VetCare
                     log.Descripcion = txtDescripcionPerfil.Text + " " + txtDescripcionPerfil.Text;
                     log.FechayHora = DateTime.Now;
                     log.NombreOperacion = "Alta Perfil";
-                    log.IngresarDatoBitacora(cryp.Encriptar(log.NombreOperacion), cryp.Encriptar(log.Descripcion), log.Criticidad, mp.Usuarioid);
+                    log.IngresarDatoBitacora(crypt.Encriptar(log.NombreOperacion), crypt.Encriptar(log.Descripcion), log.Criticidad, mp.Usuarioid);
 
                     txtDescripcionPerfil.Text = "";
                     txtDescripcionPerfil.Text = "";

@@ -13,11 +13,10 @@ namespace VetCare
 {
     public partial class ABMUsuarios : Form
     {
-        private static ABMUsuarios? instance;
 
-        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
 
-        //agregar bitacora
+        BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
 
         public void cargar()
         {
@@ -29,9 +28,9 @@ namespace VetCare
             InitializeComponent();
         }
         DataGridViewButtonColumn uninstallButtonColumn = new DataGridViewButtonColumn();
-        DataGridViewButtonColumn modifyButtonColumn = new DataGridViewButtonColumn();
+        DataGridViewButtonColumn ModifyButtonColumn = new DataGridViewButtonColumn();
 
-        private void ABMUsuarios_Load(object sender, EventArgs e)
+        public void ABMUsuarios_Load(object sender, EventArgs e)
         {
             System.Windows.Forms.Timer actualizar_automatico = new System.Windows.Forms.Timer();
             actualizar_automatico.Interval = 10000;
@@ -45,8 +44,8 @@ namespace VetCare
 
             // añado boton de borrar usuario
 
-            uninstallButtonColumn.Name = "EliminarUsuario";
-            uninstallButtonColumn.Text = "Eliminar Usuario";
+            uninstallButtonColumn.Name = "BorrarUsuario";
+            uninstallButtonColumn.Text = "Borrar Usuario";
             uninstallButtonColumn.UseColumnTextForButtonValue = true;
             this.dgvUsuarios.Columns.Add(uninstallButtonColumn);
 
@@ -54,13 +53,13 @@ namespace VetCare
 
             // añado boton de modificar usuario
 
-            modifyButtonColumn.Name = "ModificarUsuario";
-            modifyButtonColumn.Text = "Modificar Usuario";
-            modifyButtonColumn.UseColumnTextForButtonValue = true;
-            this.dgvUsuarios.Columns.Add(modifyButtonColumn);
+            ModifyButtonColumn.Name = "ModificarUsuario";
+            ModifyButtonColumn.Text = "Modificar Usuario";
+            ModifyButtonColumn.UseColumnTextForButtonValue = true;
+            this.dgvUsuarios.Columns.Add(ModifyButtonColumn);
 
             dgvUsuarios.Columns["UsuarioId"].Visible = false;
-            dgvUsuarios.Columns["Password"].Visible = false;
+            dgvUsuarios.Columns["Clave"].Visible = false;
 
             HelpProvider helpProvider = new HelpProvider();
 
@@ -106,76 +105,54 @@ namespace VetCare
 
         private void dgvUsuarios_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0) return;
+
             BLL_60MN.UsuarioBLL_60MN usu = new BLL_60MN.UsuarioBLL_60MN();
+
             if (e.ColumnIndex == dgvUsuarios.Columns["ModificarUsuario"].Index)
             {
-                //Modify 
-
-                string usuid = dgvUsuarios.Rows[e.RowIndex].Cells[2].Value.ToString();
+                string usuid = dgvUsuarios.Rows[e.RowIndex].Cells["UsuarioID"].Value.ToString();
                 ModifyUser_60MN mu = new ModifyUser_60MN(usuid);
-
                 mu.Show();
-
-
             }
-
             else if (e.ColumnIndex == dgvUsuarios.Columns["BorrarUsuario"].Index)
             {
-                //delete it!
-
-                string usuid = dgvUsuarios.Rows[e.RowIndex].Cells[2].Value.ToString();
-
-
-
+                string usuid = dgvUsuarios.Rows[e.RowIndex].Cells["UsuarioID"].Value.ToString();
 
                 if ((MessageBox.Show("¿Esta seguro que desea Eliminar al usuario " + usu.Nombre + " de forma permanente?", "Eliminar Usuario",
-    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-    MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes))
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes))
                 {
                     try
                     {
-
                         string Eliminar = usu.verificarPatentesEscenciales(Convert.ToInt16(usuid));
 
                         if (Eliminar == "True")
                         {
+                            log.Criticidad = 2;
+                            string a = dgvUsuarios.Rows[e.RowIndex].Cells["Nombre"].Value.ToString();
+                            string b = dgvUsuarios.Rows[e.RowIndex].Cells["Apellido"].Value.ToString();
+                            log.Descripcion = a + " " + b;
+                            log.FechayHora = DateTime.Now;
+                            log.NombreOperacion = "Eliminar Usuario";
 
-
-
-
-                            // log.Criticidad = 2;
-                            //string a = dgvUsuarios.Rows[e.RowIndex].Cells[3].Value.ToString();
-                            //string b = dgvUsuarios.Rows[e.RowIndex].Cells[3].Value.ToString();
-                            //log.Descripcion = a + " " + b;
-                            // log.FechayHora = DateTime.Now;
-                            //log.NombreOperacion = "Eliminar Usuario";
-
-                            //log.IngresarDatoBitacora(cryp.Encriptar(log.NombreOperacion), cryp.Encriptar(log.Descripcion), log.Criticidad, usu.UsuarioID);
+                            log.IngresarDatoBitacora(cryp.Encriptar(log.NombreOperacion), cryp.Encriptar(log.Descripcion), log.Criticidad, usu.UsuarioID);
 
                             string result = usu.EliminarUsuario(Convert.ToInt16(usuid));
-
 
                             // Recargar DataGrid
                             this.Load += new EventHandler(ABMUsuarios_Load);
                             MessageBox.Show("Usuario eliminado correctamente");
-
                         }
                         else
                         {
                             MessageBox.Show("Usuario con Patentes Unicas,no se puede eliminar!,Patentes: " + Eliminar, "Error al Borrado", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-
-
                         }
-
-
-
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message.ToString());
-
                     }
-
                 }
             }
         }

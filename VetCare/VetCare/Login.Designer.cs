@@ -31,7 +31,7 @@
             label1 = new Label();
             label2 = new Label();
             txtUsuario = new TextBox();
-            txtPassword = new TextBox();
+            txtClave = new TextBox();
             btnIngresar = new Button();
             chkCambiarClave = new CheckBox();
             btnSalir = new Button();
@@ -62,13 +62,13 @@
             txtUsuario.Size = new Size(125, 27);
             txtUsuario.TabIndex = 2;
             // 
-            // txtPassword
+            // txtClave
             // 
-            txtPassword.Location = new Point(190, 152);
-            txtPassword.Name = "txtPassword";
-            txtPassword.Size = new Size(125, 27);
-            txtPassword.TabIndex = 3;
-            txtPassword.UseSystemPasswordChar = true;
+            txtClave.Location = new Point(190, 152);
+            txtClave.Name = "txtClave";
+            txtClave.Size = new Size(125, 27);
+            txtClave.TabIndex = 3;
+            txtClave.UseSystemPasswordChar = true;
             // 
             // btnIngresar
             // 
@@ -109,7 +109,7 @@
             Controls.Add(btnSalir);
             Controls.Add(chkCambiarClave);
             Controls.Add(btnIngresar);
-            Controls.Add(txtPassword);
+            Controls.Add(txtClave);
             Controls.Add(txtUsuario);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -125,7 +125,7 @@
         private Label label1;
         private Label label2;
         private TextBox txtUsuario;
-        private TextBox txtPassword;
+        private TextBox txtClave;
         private Button btnIngresar;
         private CheckBox chkCambiarClave;
         private Button btnSalir;

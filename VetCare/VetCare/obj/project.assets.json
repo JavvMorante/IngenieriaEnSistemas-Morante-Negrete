@@ -542,6 +542,7 @@
           "DAL_60MN": "1.0.0",
           "Entidades_60MN": "1.0.0",
           "Interfaces_60MN": "1.0.0",
+          "Microsoft.Office.Interop.Excel": "16.0.18925.20022",
           "Servicios_60MN": "1.0.0",
           "System.Configuration.ConfigurationManager": "8.0.1"
         },
@@ -558,6 +559,7 @@
         "dependencies": {
           "Entidades_60MN": "1.0.0",
           "Microsoft.Data.SqlClient": "7.0.1",
+          "Microsoft.Office.Interop.Excel": "16.0.18925.20022",
           "Servicios_60MN": "1.0.0",
           "System.Configuration.ConfigurationManager": "8.0.1",
           "System.Data.SqlClient": "4.9.1"
@@ -573,6 +575,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
+          "Microsoft.Office.Interop.Excel": "16.0.18925.20022",
           "Servicios_60MN": "1.0.0",
           "System.Configuration.ConfigurationManager": "8.0.1"
         },
@@ -586,6 +589,10 @@
       "Interfaces_60MN/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Microsoft.Office.Interop.Excel": "16.0.18925.20022",
+          "System.Configuration.ConfigurationManager": "8.0.1"
+        },
         "compile": {
           "bin/placeholder/Interfaces_60MN.dll": {}
         },
@@ -598,6 +605,7 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "Interfaces_60MN": "1.0.0",
+          "Microsoft.Office.Interop.Excel": "16.0.18925.20022",
           "System.Configuration.ConfigurationManager": "8.0.1"
         },
         "compile": {

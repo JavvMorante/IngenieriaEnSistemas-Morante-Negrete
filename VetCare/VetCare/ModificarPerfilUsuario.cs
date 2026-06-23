@@ -16,5 +16,20 @@ namespace VetCare
         {
             InitializeComponent();
         }
+
+        public void Show(object sender, EventArgs e)
+        {
+            this.Show();
+        }
+
+        private void btncrearperfil_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

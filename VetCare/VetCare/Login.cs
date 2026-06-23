@@ -47,91 +47,105 @@ namespace VetCare
 
         private void btnIngresar_Click(object sender, EventArgs e)
         {
-            // Validamos primero que no dejen campos vacíos en la interfaz
-            if (string.IsNullOrWhiteSpace(txtUsuario.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
-            {
-                MessageBox.Show("Por favor, complete todos los campos.", "Campos Incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            var1 = crypt.Encriptar(txtClave.Text);
 
-            string claveEncriptada = crypt.Encriptar(txtPassword.Text);
 
             try
             {
-                UsuarioBLL_60MN USU1 = new BLL_60MN.UsuarioBLL_60MN();
+                BLL_60MN.UsuarioBLL_60MN USU1 = new BLL_60MN.UsuarioBLL_60MN();
 
-                // Intentamos buscar el usuario con user y password correctos
-                USU1 = USU1.TraerDatosUsuario(txtUsuario.Text, claveEncriptada);
+                USU1 = USU1.TraerDatosUsuario(txtUsuario.Text, var1);
 
-                // 1. CASO EXITOSO: Si encontró el usuario con esa clave y no devolvió un objeto vacío
-                if (USU1 != null && !string.IsNullOrEmpty(USU1.Username))
+                if (USU1.FlagIntentosLogin >= 3)
                 {
-                    // Verificamos si ya estaba bloqueado por las dudas
-                    if (USU1.Locked || USU1.LoginCount >= 3)
-                    {
-                        MessageBox.Show("El Usuario se encuentra Bloqueado", "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                        return;
-                    }
+                    MessageBox.Show("El Usuario se encuentra Bloqueado");
 
-                    // LOGIN EXITOSO: Registramos en bitácora e ingresamos- agregar bitacora
-                   
-                   
-                   /* log.NombreOperacion = crypt.Encriptar("Login");
-                    log.Descripcion = crypt.Encriptar("Login Exitoso: " + txtUsuario.Text + " ");
-                    log.Criticidad = 5;
-                    log.Usuarioid = USU1.IdUsuario; // Usamos IdUsuario renovado
 
-                    string rta = log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);
-                   */
-                    MenuPrincipal mp = MenuPrincipal.Instance;
-                    mp.Usuarioid = USU1.IdUsuario; // Asignamos el ID correcto al menú principal
-                    mp.Show();
-
-                    this.Hide();
                 }
-                // 2. CASO FALLIDO: No se encontró la combinación User/Password
                 else
                 {
-                    // Buscamos al usuario sólo por su nombre para ver si existe y erró la clave, o si ya está bloqueado
-                    USU1 = new BLL_60MN.UsuarioBLL_60MN();
-                    USU1 = USU1.TraerDatosUsuario(txtUsuario.Text);
 
-                    if (USU1 == null || string.IsNullOrEmpty(USU1.Username))
+                    if (USU1._Usuario == null)
                     {
-                        // El usuario directamente no existe en la base de datos
-                        MessageBox.Show("Usuario no Encontrado: Error 104", "ErrorUser", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        USU1 = USU1.TraerDatosUsuario(txtUsuario.Text);
 
-                       /* log.NombreOperacion = crypt.Encriptar("Login");
-                        log.Descripcion = crypt.Encriptar("Login Usuario no encontrado: " + txtUsuario.Text + " ");
-                        log.Criticidad = 4;
-                        log.Usuarioid = 0;
-                        log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);*/
-                    }
-                    else
-                    {
-                        // El usuario EXISTE, pero la clave fue incorrecta
-                        if (USU1.Locked || USU1.LoginCount >= 3)
+                        if (USU1._Usuario == null)
                         {
-                            MessageBox.Show("El Usuario se encuentra Bloqueado", "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
+                            MessageBox.Show("Usuario no Encontrado:Error 104", "ErrorUser", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            log.NombreOperacion = crypt.Encriptar("Login");
+                            log.Descripcion = crypt.Encriptar("Login Usuario no encontrado" + txtUsuario.Text + " ");
+                            log.Criticidad = 4;
+                            log.Usuarioid = 0;
+                            string rta = log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);
+
                         }
                         else
                         {
-                            MessageBox.Show("Clave incorrecta para el usuario.", "Error de Autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            switch (USU1.Nombre.ToString())
+                            {
+                                case "null":
+                                    MessageBox.Show("Usuario no Encontrado:Error 105", "ErrorUser", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    break;
+                                case "":
+                                    MessageBox.Show("Complete el campo usuario por favor", "ErrorUser", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            // Incrementamos el contador de intentos fallidos
-                            USU1.SumarFlagIntentos(USU1.IdUsuario);
+                                    log.NombreOperacion = crypt.Encriptar("Login");
+                                    log.Descripcion = crypt.Encriptar("Login Usuario no encontrado" + txtUsuario.Text + " ");
+                                    log.Criticidad = 4;
+                                    log.Usuarioid = 0;
+                                    string rta = log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);
 
-                            // Grabamos la alerta en la bitácora
-                            /*
-                            log.NombreOperacion = crypt.Encriptar("Login");
-                            log.Descripcion = crypt.Encriptar("Clave incorrecta para usuario: " + txtUsuario.Text + " ");
-                            log.Criticidad = 4;
-                            log.Usuarioid = USU1.IdUsuario;
-                            log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);*/
+                                    break;
+
+                                default:
+
+                                    MessageBox.Show("Clave incorrecta para usuario ");
+                                    if (USU1.FlagIntentosLogin >= 3)
+                                    {
+                                        MessageBox.Show("El Usuario se encuentra Bloqueado");
+
+                                    }
+                                    else
+                                    {
+                                        log.NombreOperacion = crypt.Encriptar("Login");
+                                        log.Descripcion = crypt.Encriptar("Clave incorrecta para usuario" + txtUsuario.Text + " ");
+                                        log.Criticidad = 4;
+                                        log.Usuarioid = USU1.UsuarioID;
+                                        rta = log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);
+                                        USU1.SumarFlagIntentos(USU1.UsuarioID);
+                                    }
+                                    break;
+                            }
                         }
+
+                    }
+                    else
+                    {
+
+                        log.NombreOperacion = crypt.Encriptar("Login");
+                        log.Descripcion = crypt.Encriptar("Login Exitoso: " + txtUsuario.Text + " ");
+                        log.Criticidad = 5;
+                        log.Usuarioid = USU1.UsuarioID;
+
+
+
+                        //USUARIO Y CLAVE CORRECTOS
+                        string rta = log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);
+                        MenuPrincipal mp = MenuPrincipal.Instance;
+
+                        mp.Usuarioid = USU1.UsuarioID; //asigno var usuarioid en mp
+
+                        mp.Show();
+
+
+                        this.Hide();
+
+
                     }
                 }
-            }
+                }
             catch (Exception ex)
             {
                 MessageBox.Show("Ocurrió un error al intentar iniciar sesión: " + ex.Message, "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);

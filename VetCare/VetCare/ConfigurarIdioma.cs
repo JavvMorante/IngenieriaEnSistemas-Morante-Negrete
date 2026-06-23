@@ -30,7 +30,7 @@ namespace VetCare
         private void btnConfirmar_Click(object sender, EventArgs e)
         {
             BLL_60MN.IdiomaBLL_60MN idioma = new BLL_60MN.IdiomaBLL_60MN();
-            BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+            BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
             BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
 
             try

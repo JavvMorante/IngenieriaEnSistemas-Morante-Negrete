@@ -1,4 +1,4 @@
-﻿using VetCare.Properties;
+﻿//using VetCare.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,8 +21,8 @@ namespace VetCare
 
         private void DefaultForm_Load(object sender, EventArgs e)
         {
-            this.BackgroundImage = Resources.backgray;
-            this.BackgroundImageLayout = ImageLayout.Stretch;
+           // this.BackgroundImage = Resources.backgray;
+           // this.BackgroundImageLayout = ImageLayout.Stretch;
         }
     }
 }

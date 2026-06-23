@@ -3,32 +3,80 @@
   "WorkspaceRootPath": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\logout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\logout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\consultarbitacora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\consultarbitacora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\logout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\logout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\dal_60mn\\digitosverificadores_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|solutionrelative:dal_60mn\\digitosverificadores_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\consultarbitacora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\consultarbitacora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\dal_60mn\\bitacoradal_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|solutionrelative:dal_60mn\\bitacoradal_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
       "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\importarbitacora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\importarbitacora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\establecercadena.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\establecercadena.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\modificarusuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\modificarusuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\establecercadena.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\establecercadena.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\abmusuarios.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\abmusuarios.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC40A326-9A3F-466E-B72B-F0EA178CF00F}|BLL_60MN\\BLL_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\bll_60mn\\seguridad_mn60\\configbll_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC40A326-9A3F-466E-B72B-F0EA178CF00F}|BLL_60MN\\BLL_60MN.csproj|solutionrelative:bll_60mn\\seguridad_mn60\\configbll_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\abmusuarios.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\abmusuarios.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\dal_60mn\\configdal_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|solutionrelative:dal_60mn\\configdal_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\modifyuser_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\modifyuser_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\dal_60mn\\usuariodal_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|solutionrelative:dal_60mn\\usuariodal_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62EF5795-C5F3-4D45-93F8-9A7F9D3B651F}|Servicios_60MN\\Servicios_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\servicios_60mn\\encriptador_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62EF5795-C5F3-4D45-93F8-9A7F9D3B651F}|Servicios_60MN\\Servicios_60MN.csproj|solutionrelative:servicios_60mn\\encriptador_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC40A326-9A3F-466E-B72B-F0EA178CF00F}|BLL_60MN\\BLL_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\bll_60mn\\seguridad_mn60\\encriptacionbll_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AC40A326-9A3F-466E-B72B-F0EA178CF00F}|BLL_60MN\\BLL_60MN.csproj|solutionrelative:bll_60mn\\seguridad_mn60\\encriptacionbll_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\modifyuser_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\modifyuser_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\dal_60mn\\conexion_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F7DBF1F9-0762-4D4F-9C97-E2046A015E3D}|DAL_60MN\\DAL_60MN.csproj|solutionrelative:dal_60mn\\conexion_60mn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\vetcare\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{360D92C2-84DE-4C86-828C-85F2FAEA91B0}|VetCare\\VetCare.csproj|solutionrelative:vetcare\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     }
   ],
   "DocumentGroupContainers": [
@@ -43,89 +91,242 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "LogOut.cs",
-              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\LogOut.cs",
-              "RelativeDocumentMoniker": "VetCare\\LogOut.cs",
-              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\LogOut.cs",
-              "RelativeToolTip": "VetCare\\LogOut.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAAwBwAAAAaAAAAAAAAAA==",
+              "Title": "ConsultarBitacora.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ConsultarBitacora.cs",
+              "RelativeDocumentMoniker": "VetCare\\ConsultarBitacora.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ConsultarBitacora.cs",
+              "RelativeToolTip": "VetCare\\ConsultarBitacora.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAA5wDQAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-20T15:15:40Z",
+              "WhenOpened": "2026-06-23T19:24:31.203Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ConsultarBitacora.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ConsultarBitacora.cs",
+              "RelativeDocumentMoniker": "VetCare\\ConsultarBitacora.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ConsultarBitacora.cs [Dise\u00F1o]",
+              "RelativeToolTip": "VetCare\\ConsultarBitacora.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T19:24:29.427Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ModificarUsuario.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ModificarUsuario.cs",
+              "RelativeDocumentMoniker": "VetCare\\ModificarUsuario.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ModificarUsuario.cs",
+              "RelativeToolTip": "VetCare\\ModificarUsuario.cs",
+              "ViewState": "AgIAAGUAAAAAAAAAAAAgwGYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T18:52:58.659Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ABMUsuarios.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ABMUsuarios.cs",
+              "RelativeDocumentMoniker": "VetCare\\ABMUsuarios.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ABMUsuarios.cs",
+              "RelativeToolTip": "VetCare\\ABMUsuarios.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAgwHMAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-22T13:47:22.119Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Login.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\Login.cs",
+              "RelativeDocumentMoniker": "VetCare\\Login.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\Login.cs [Dise\u00F1o]",
+              "RelativeToolTip": "VetCare\\Login.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-22T13:45:48.647Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "UsuarioDAL_60MN.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\UsuarioDAL_60MN.cs",
+              "RelativeDocumentMoniker": "DAL_60MN\\UsuarioDAL_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\UsuarioDAL_60MN.cs",
+              "RelativeToolTip": "DAL_60MN\\UsuarioDAL_60MN.cs",
+              "ViewState": "AgIAAPgAAAAAAAAAAAAgwAIBAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T17:34:21.339Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "EncriptacionBLL_60MN.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\BLL_60MN\\Seguridad_MN60\\EncriptacionBLL_60MN.cs",
+              "RelativeDocumentMoniker": "BLL_60MN\\Seguridad_MN60\\EncriptacionBLL_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\BLL_60MN\\Seguridad_MN60\\EncriptacionBLL_60MN.cs",
+              "RelativeToolTip": "BLL_60MN\\Seguridad_MN60\\EncriptacionBLL_60MN.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAuwEEAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-22T13:52:02.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Login.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\Login.cs",
+              "RelativeDocumentMoniker": "VetCare\\Login.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\Login.cs",
+              "RelativeToolTip": "VetCare\\Login.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAkwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-20T18:32:12.827Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "LogOut.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\LogOut.cs",
-              "RelativeDocumentMoniker": "VetCare\\LogOut.cs",
-              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\LogOut.cs [Dise\u00F1o]",
-              "RelativeToolTip": "VetCare\\LogOut.cs [Dise\u00F1o]",
+              "Title": "DigitosVerificadores_60MN.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\DigitosVerificadores_60MN.cs",
+              "RelativeDocumentMoniker": "DAL_60MN\\DigitosVerificadores_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\DigitosVerificadores_60MN.cs",
+              "RelativeToolTip": "DAL_60MN\\DigitosVerificadores_60MN.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-20T15:13:48.943Z",
+              "WhenOpened": "2026-06-23T16:40:00.09Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BitacoraDAL_60MN.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\BitacoraDAL_60MN.cs",
+              "RelativeDocumentMoniker": "DAL_60MN\\BitacoraDAL_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\BitacoraDAL_60MN.cs",
+              "RelativeToolTip": "DAL_60MN\\BitacoraDAL_60MN.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAawDsAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T19:29:00.025Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MenuPrincipal.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\MenuPrincipal.cs",
+              "RelativeDocumentMoniker": "VetCare\\MenuPrincipal.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\MenuPrincipal.cs [Dise\u00F1o]",
+              "RelativeToolTip": "VetCare\\MenuPrincipal.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T16:49:21.096Z",
               "EditorCaption": " [Dise\u00F1o]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
+              "Title": "MenuPrincipal.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\MenuPrincipal.cs",
+              "RelativeDocumentMoniker": "VetCare\\MenuPrincipal.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\MenuPrincipal.cs",
+              "RelativeToolTip": "VetCare\\MenuPrincipal.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAQwD8AAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T16:49:24.996Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "ImportarBitacora.cs [Dise\u00F1o]",
               "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ImportarBitacora.cs",
               "RelativeDocumentMoniker": "VetCare\\ImportarBitacora.cs",
               "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ImportarBitacora.cs [Dise\u00F1o]",
               "RelativeToolTip": "VetCare\\ImportarBitacora.cs [Dise\u00F1o]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-20T15:10:45.178Z",
+              "WhenOpened": "2026-06-23T19:19:10.41Z",
               "EditorCaption": " [Dise\u00F1o]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "EstablecerCadena.cs",
-              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\EstablecerCadena.cs",
-              "RelativeDocumentMoniker": "VetCare\\EstablecerCadena.cs",
-              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\EstablecerCadena.cs",
-              "RelativeToolTip": "VetCare\\EstablecerCadena.cs",
-              "ViewState": "AgIAAFwAAAAAAAAAAAAuwDUAAAA5AAAAAAAAAA==",
+              "DocumentIndex": 11,
+              "Title": "ABMUsuarios.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ABMUsuarios.cs",
+              "RelativeDocumentMoniker": "VetCare\\ABMUsuarios.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ABMUsuarios.cs [Dise\u00F1o]",
+              "RelativeToolTip": "VetCare\\ABMUsuarios.cs [Dise\u00F1o]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-20T15:03:37.142Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "EstablecerCadena.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\EstablecerCadena.cs",
-              "RelativeDocumentMoniker": "VetCare\\EstablecerCadena.cs",
-              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\EstablecerCadena.cs [Dise\u00F1o]",
-              "RelativeToolTip": "VetCare\\EstablecerCadena.cs [Dise\u00F1o]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-20T15:03:28.125Z",
+              "WhenOpened": "2026-06-23T17:00:55.949Z",
               "EditorCaption": " [Dise\u00F1o]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ConfigBLL_60MN.cs",
-              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\BLL_60MN\\Seguridad_MN60\\ConfigBLL_60MN.cs",
-              "RelativeDocumentMoniker": "BLL_60MN\\Seguridad_MN60\\ConfigBLL_60MN.cs",
-              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\BLL_60MN\\Seguridad_MN60\\ConfigBLL_60MN.cs",
-              "RelativeToolTip": "BLL_60MN\\Seguridad_MN60\\ConfigBLL_60MN.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 16,
+              "Title": "ModifyUser_60MN.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ModifyUser_60MN.cs",
+              "RelativeDocumentMoniker": "VetCare\\ModifyUser_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ModifyUser_60MN.cs",
+              "RelativeToolTip": "VetCare\\ModifyUser_60MN.cs",
+              "ViewState": "AgIAAFIAAAAAAAAAAAAhwGIAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-20T15:01:43.187Z",
+              "WhenOpened": "2026-06-22T13:47:00.471Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ConfigDAL_60MN.cs",
-              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\ConfigDAL_60MN.cs",
-              "RelativeDocumentMoniker": "DAL_60MN\\ConfigDAL_60MN.cs",
-              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\ConfigDAL_60MN.cs",
-              "RelativeToolTip": "DAL_60MN\\ConfigDAL_60MN.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAsAAAAAAAAAA==",
+              "DocumentIndex": 14,
+              "Title": "Encriptador_60MN.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Servicios_60MN\\Encriptador_60MN.cs",
+              "RelativeDocumentMoniker": "Servicios_60MN\\Encriptador_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Servicios_60MN\\Encriptador_60MN.cs",
+              "RelativeToolTip": "Servicios_60MN\\Encriptador_60MN.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-20T15:00:44.946Z",
+              "WhenOpened": "2026-06-22T13:48:25.275Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ModifyUser_60MN.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ModifyUser_60MN.cs",
+              "RelativeDocumentMoniker": "VetCare\\ModifyUser_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\ModifyUser_60MN.cs [Dise\u00F1o]",
+              "RelativeToolTip": "VetCare\\ModifyUser_60MN.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T18:02:45.743Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Conexion_60MN.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\Conexion_60MN.cs",
+              "RelativeDocumentMoniker": "DAL_60MN\\Conexion_60MN.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\DAL_60MN\\Conexion_60MN.cs",
+              "RelativeToolTip": "DAL_60MN\\Conexion_60MN.cs",
+              "ViewState": "AgIAALwAAAAAAAAAAAASwM0AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-23T14:17:10.829Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "App.config",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\App.config",
+              "RelativeDocumentMoniker": "VetCare\\App.config",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\VetCare\\App.config",
+              "RelativeToolTip": "VetCare\\App.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-06-23T14:15:09.576Z",
               "EditorCaption": ""
             }
           ]

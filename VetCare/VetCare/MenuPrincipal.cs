@@ -56,5 +56,12 @@ namespace VetCare
             this.Hide();
 
         }
+
+        private void bitacoraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ConsultarBitacora consultarBitacora = new ConsultarBitacora();
+            consultarBitacora.Show();
+            this.Hide();
+        }
     }
 }

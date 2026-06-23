@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "9IG8yunFeiA=",
+  "dgSpecHash": "TlQ1L7923ts=",
   "success": true,
   "projectFilePath": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\BLL_60MN\\BLL_60MN.csproj",
   "expectedPackageFiles": [
@@ -21,6 +21,7 @@
     "C:\\Users\\jmora\\.nuget\\packages\\microsoft.identitymodel.protocols\\8.16.0\\microsoft.identitymodel.protocols.8.16.0.nupkg.sha512",
     "C:\\Users\\jmora\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\8.16.0\\microsoft.identitymodel.protocols.openidconnect.8.16.0.nupkg.sha512",
     "C:\\Users\\jmora\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.16.0\\microsoft.identitymodel.tokens.8.16.0.nupkg.sha512",
+    "C:\\Users\\jmora\\.nuget\\packages\\microsoft.office.interop.excel\\16.0.18925.20022\\microsoft.office.interop.excel.16.0.18925.20022.nupkg.sha512",
     "C:\\Users\\jmora\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "C:\\Users\\jmora\\.nuget\\packages\\runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "C:\\Users\\jmora\\.nuget\\packages\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",

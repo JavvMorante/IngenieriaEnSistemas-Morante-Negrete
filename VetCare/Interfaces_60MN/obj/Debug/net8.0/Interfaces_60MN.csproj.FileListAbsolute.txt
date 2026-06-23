@@ -1,6 +1,7 @@
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\bin\Debug\net8.0\Interfaces_60MN.deps.json
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\bin\Debug\net8.0\Interfaces_60MN.dll
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\bin\Debug\net8.0\Interfaces_60MN.pdb
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\obj\Debug\net8.0\Interfaces_60MN.csproj.AssemblyReference.cache
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\obj\Debug\net8.0\Interfaces_60MN.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\obj\Debug\net8.0\Interfaces_60MN.AssemblyInfoInputs.cache
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\obj\Debug\net8.0\Interfaces_60MN.AssemblyInfo.cs

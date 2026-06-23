@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BLL_60MN;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,7 +15,7 @@ namespace VetCare
     {
 
         BLL_60MN.UsuarioBLL_60MN usu = BLL_60MN.UsuarioBLL_60MN.DevolverInstancia();
-        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
         BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
         public LogOut()
         {
@@ -23,7 +24,7 @@ namespace VetCare
 
         private void LogOut_Load(object sender, EventArgs e)
         {
-            BLL_60MN.Idioma_60MN idi = BLL_60MN.Idioma_60MN();
+            BLL_60MN.IdiomaBLL_60MN idi = new BLL_60MN.IdiomaBLL_60MN();
             string idiom = idi.CargarIdioma();
 
             switch (idiom)
@@ -64,8 +65,8 @@ namespace VetCare
 
         private void btn_salir_Click(object sender, EventArgs e)
         {
-            log.NombreOperacion = cryp.Encriptar("LogOut");
-            log.Descripcion = cryp.Encriptar("LogOut Usuario " + usu.UsuarioID + " ");
+            log.NombreOperacion = crypt.Encriptar("LogOut");
+            log.Descripcion = crypt.Encriptar("LogOut Usuario " + usu.UsuarioID + " ");
             log.Criticidad = 4;
             log.Usuarioid = usu.UsuarioID;
             string rta = log.IngresarDatoBitacora(log.NombreOperacion, log.Descripcion, log.Criticidad, log.Usuarioid);

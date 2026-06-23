@@ -14,7 +14,7 @@ namespace VetCare
     public partial class ModifyUser_60MN : Form
     {
 
-        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN cryp = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
+        BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
         BLL_60MN.UsuarioBLL_60MN usu = new BLL_60MN.UsuarioBLL_60MN();
         BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
 
@@ -33,6 +33,7 @@ namespace VetCare
         private void ModifyUser_60MN_Load(object sender, EventArgs e)
         {
             usu = usu.TraerDatosUsuariobyID(Convert.ToInt16(Dato));
+           
 
             txtNombre.Text = usu.Nombre.ToString();
             txtDNI.Text = usu.Dni.ToString();
@@ -106,7 +107,7 @@ namespace VetCare
                         log.FechayHora = DateTime.Now;
                         log.NombreOperacion = "Modificar Usuario";
 
-                        log.IngresarDatoBitacora(cryp.Encriptar(log.NombreOperacion), cryp.Encriptar(log.Descripcion), log.Criticidad, usu.UsuarioID);
+                        log.IngresarDatoBitacora(crypt.Encriptar(log.NombreOperacion), crypt.Encriptar(log.Descripcion), log.Criticidad, usu.UsuarioID);
 
                         ABMUsuarios abmusu = new ABMUsuarios();
                         abmusu.Load += new EventHandler(abmusu.ABMUsuarios_Load);
