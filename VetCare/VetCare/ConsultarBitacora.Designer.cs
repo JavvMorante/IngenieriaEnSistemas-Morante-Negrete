@@ -83,6 +83,7 @@
             // 
             // cmbUsuario
             // 
+            cmbUsuario.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbUsuario.FormattingEnabled = true;
             cmbUsuario.Location = new Point(432, 124);
             cmbUsuario.Name = "cmbUsuario";
@@ -91,6 +92,7 @@
             // 
             // cmbCriticidad
             // 
+            cmbCriticidad.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbCriticidad.FormattingEnabled = true;
             cmbCriticidad.Location = new Point(23, 124);
             cmbCriticidad.Name = "cmbCriticidad";

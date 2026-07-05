@@ -46,6 +46,7 @@
             // cmbIdioma
             // 
             cmbIdioma.FormattingEnabled = true;
+            cmbIdioma.Items.AddRange(new object[] { "Español", "Ingles" });
             cmbIdioma.Location = new Point(56, 99);
             cmbIdioma.Name = "cmbIdioma";
             cmbIdioma.Size = new Size(298, 28);

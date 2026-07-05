@@ -66,7 +66,9 @@ namespace DAL_60MN
                         this.apellido = Convert.ToString(dt.Rows[0]["Apellido"]);
                         this.dni = Convert.ToInt32(dt.Rows[0]["DNI"]); 
                         this.email = Convert.ToString(dt.Rows[0]["Email"]);
-                        this.habilitado = Convert.ToBoolean(dt.Rows[0]["Habilitado"]);
+                        //this.habilitado = Convert.ToBoolean(dt.Rows[0]["Habilitado"]);
+                        // Si es nulo en la BD, le asignamos false por defecto. Si no, lo convertimos de forma segura.
+                        this.habilitado = dt.Rows[0]["Habilitado"] != DBNull.Value && Convert.ToBoolean(dt.Rows[0]["Habilitado"]);
                         this.FlagIntentosLogin = Convert.ToInt32(dt.Rows[0]["FlagIntentosLogin"]);
                     }
 
@@ -209,10 +211,10 @@ namespace DAL_60MN
 
         }
 
-        public string ModificarDatosUsuario(string _Usuario, string apellido, string nombre, string email, Int64 dni, bool habilitado, int usuarioid)
+        public string ModificarDatosUsuario(int usuarioid, string _Usuario = null, string apellido = null, string nombre = null, string email = null, Int64? dni = null, bool? habilitado = null)
         {
 
-            int h;
+            /*int h;
             if (habilitado.ToString() == "True")
             {
                 h = 1;
@@ -227,6 +229,61 @@ namespace DAL_60MN
             string result = con.Ejecutar(sql);
 
             dv.RecalcularDVH();
+            return result;*/
+
+            // List para ir guardando los fragmentos de las columnas a actualizar
+            List<string> columnasAActualizar = new List<string>();
+
+            // Vamos evaluando uno por uno si el parámetro fue enviado (no es nulo)
+            if (!string.IsNullOrEmpty(_Usuario))
+            {
+                columnasAActualizar.Add("Usuario = '" + _Usuario + "'");
+            }
+
+            if (!string.IsNullOrEmpty(apellido))
+            {
+                columnasAActualizar.Add("apellido = '" + apellido + "'");
+            }
+
+            if (!string.IsNullOrEmpty(nombre))
+            {
+                columnasAActualizar.Add("nombre = '" + nombre + "'");
+            }
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                columnasAActualizar.Add("email = '" + email + "'");
+            }
+
+            if (dni.HasValue)
+            {
+                columnasAActualizar.Add("DNI = " + dni.Value);
+            }
+
+            if (habilitado.HasValue)
+            {
+                int h = habilitado.Value ? 1 : 0;
+                columnasAActualizar.Add("Habilitado = " + h);
+            }
+
+            // Si no se pasó ningún parámetro para modificar, salimos sin hacer nada
+            if (columnasAActualizar.Count == 0)
+            {
+                return "No se especificaron cambios para actualizar.";
+            }
+
+            // Unimos todos los fragmentos usando una coma como separador
+            string setSql = string.Join(", ", columnasAActualizar);
+
+            // Armamos el query final
+            string sql = "UPDATE Usuario SET " + setSql + " WHERE Usuarioid = " + usuarioid + ";";
+
+            // Ejecutamos en la base de datos
+            string result = con.Ejecutar(sql);
+
+            // Como bien tenías, recalculamos los dígitos verificadores por consistencia
+            dv.RecalcularDVH();
+
             return result;
 
         }

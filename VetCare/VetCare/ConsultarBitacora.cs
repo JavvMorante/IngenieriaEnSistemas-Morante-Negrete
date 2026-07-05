@@ -16,6 +16,9 @@ namespace VetCare
         BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN log = new BLL_60MN.Seguridad_MN60.BitacoraBLL_60MN();
         BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN crypt = new BLL_60MN.Seguridad_MN60.EncriptacionBLL_60MN();
 
+
+
+
         public ConsultarBitacora()
         {
             InitializeComponent();
@@ -23,17 +26,30 @@ namespace VetCare
 
         private void ConsultarBitacora_Load(object sender, EventArgs e)
         {
+
             //cargar combo de usuarios
             DataTable datausuario = new DataTable();
+            DataTable dataCriticidad = new DataTable();
+
             datausuario = log.traerUsuarios();
+            dataCriticidad = log.traerCriticidad();
 
             cmbUsuario.Items.Add("Todos");
+            cmbCriticidad.Items.Add("Todas");
+
 
             foreach (DataRow item in datausuario.Rows)
             {
                 cmbUsuario.Items.Add(item[0].ToString());
             }
 
+            foreach (DataRow item in dataCriticidad.Rows)
+            {
+                cmbCriticidad.Items.Add(item[0].ToString());
+            }
+
+            cmbCriticidad.SelectedIndex = 0;
+            cmbUsuario.SelectedIndex = 0;
         }
         public void Show(object sender, EventArgs e)
         {
@@ -47,119 +63,148 @@ namespace VetCare
 
         private void btnExpExcel_Click(object sender, EventArgs e)
         {
-            SaveFileDialog fichero = new SaveFileDialog();
-            fichero.Filter = "Excel (*.xls)|*.xls";
-            if (fichero.ShowDialog() == DialogResult.OK)
+            if (dgvBitacora.Rows.Count == 0)
             {
-                Microsoft.Office.Interop.Excel.Application aplicacion;
-                Microsoft.Office.Interop.Excel.Workbook libros_trabajo;
-                Microsoft.Office.Interop.Excel.Worksheet hoja_trabajo;
-                aplicacion = new Microsoft.Office.Interop.Excel.Application();
-                libros_trabajo = aplicacion.Workbooks.Add();
-                hoja_trabajo =
-                    (Microsoft.Office.Interop.Excel.Worksheet)libros_trabajo.Worksheets.get_Item(1);
-                //Recorremos el DataGridView rellenando la hoja de trabajo
-                for (int i = 0; i < dgvBitacora.Rows.Count - 1; i++)
-                {
-                    for (int j = 0; j < dgvBitacora.Columns.Count; j++)
-                    {
-                        hoja_trabajo.Cells[i + 1, j + 1] = dgvBitacora.Rows[i].Cells[j].Value.ToString();
-                    }
-                }
-                libros_trabajo.SaveAs(fichero.FileName,
-                    Microsoft.Office.Interop.Excel.XlFileFormat.xlWorkbookNormal);
-                libros_trabajo.Close(true);
-                aplicacion.Quit();
+                MessageBox.Show("No hay datos para exportar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
+            SaveFileDialog fichero = new SaveFileDialog();
+            // Cambiamos el filtro a .csv para asegurar la compatibilidad total de columnas en Excel
+            fichero.Filter = "Archivo separado por comas (*.csv)|*.csv";
+            fichero.FileName = "Bitacora_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
-            MessageBox.Show("Excel Exportado con Exito", "Exportacion Excel OK", MessageBoxButtons.OK,
-                     MessageBoxIcon.Information);
-            //fin
+            if (fichero.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    // Usamos UTF-8 con BOM (siglas de Byte Order Mark) para que Excel detecte los acentos y eñes al toque
+                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(fichero.FileName, false, System.Text.Encoding.UTF8))
+                    {
+                        // 1. IMPORTANTE: Le indicamos a Excel que el separador de listas es el punto y coma
+                        sw.WriteLine("sep=;");
+
+                        // 2. Escribir las Cabeceras de la grilla
+                        for (int i = 0; i < dgvBitacora.Columns.Count; i++)
+                        {
+                            string cabecera = dgvBitacora.Columns[i].HeaderText;
+                            sw.Write(cabecera + (i == dgvBitacora.Columns.Count - 1 ? "" : ";"));
+                        }
+                        sw.WriteLine();
+
+                        // 3. Escribir todas las Filas de datos
+                        for (int i = 0; i < dgvBitacora.Rows.Count; i++)
+                        {
+                            if (dgvBitacora.Rows[i].IsNewRow) continue;
+
+                            for (int j = 0; j < dgvBitacora.Columns.Count; j++)
+                            {
+                                var val = dgvBitacora.Rows[i].Cells[j].Value;
+                                string celda = "";
+
+                                if (val != null)
+                                {
+                                    celda = val.ToString();
+                                    // Limpiamos saltos de línea o comas internas que puedan romper las columnas
+                                    celda = celda.Replace("\n", " ").Replace("\r", " ").Replace(";", ",");
+                                }
+
+                                // Si es la columna de Fecha y Hora, la envolvemos en comillas para que Excel no la mutile
+                                if (dgvBitacora.Columns[j].HeaderText.ToLower().Contains("fecha") || j == 4)
+                                {
+                                    sw.Write($"\"{celda}\"");
+                                }
+                                else
+                                {
+                                    sw.Write(celda);
+                                }
+
+                                // Agregamos el punto y coma si no es la última columna
+                                if (j < dgvBitacora.Columns.Count - 1)
+                                {
+                                    sw.Write(";");
+                                }
+                            }
+                            sw.WriteLine();
+                        }
+                    }
+
+                    MessageBox.Show("Archivo exportado con éxito", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al guardar el archivo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void btnConsultar_Click(object sender, EventArgs e)
         {
             try
             {
+                // Forzamos el formato universal YYYY-MM-DD para que SQL Server no falle
+                // string fechadesde = dtpdesde.Value.ToString("yyyy-MM-dd 00:00:00");
+                //string fechahasta = dtphasta.Value.AddDays(1).ToString("yyyy-MM-dd 00:00:00");
 
-                DateTime fechadesde = Convert.ToDateTime(dtpdesde.Text);
-                DateTime fechahasta = Convert.ToDateTime(dtphasta.Text);
+                //  Usa .Value y dale un formato numérico universal que SQL entienda sí o sí
+                string fechadesde = dtpdesde.Value.ToString("yyyyMMdd 00:00:00");
+                string fechahasta = dtphasta.Value.AddDays(1).ToString("yyyyMMdd 00:00:00");
+
                 string criticidad = cmbCriticidad.Text;
                 string usuario = cmbUsuario.Text;
                 string sqlusuario = "";
                 string sqlcriticidad = "";
 
-                switch (usuario)
+                // Validaciones previas
+                if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(criticidad))
                 {
-                    case "":
-                        MessageBox.Show("seccione un usuario", "Usuario Vacio", MessageBoxButtons.OK,
-                      MessageBoxIcon.Hand);
-
-                        break;
-
-                    case "Todos":
-
-                        sqlusuario = "select usuarioid from usuario";
-
-                        break;
-
-
-                    default:
-                        sqlusuario = "select usuarioid from usuario where usuario like '" + usuario + "'";
-                        break;
+                    MessageBox.Show("Por favor seleccione una opción en los filtros de Usuario y Criticidad.", "Filtros vacíos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
 
-                switch (criticidad)
+                // Configuración de Subconsulta de Usuario
+                if (usuario == "Todos")
                 {
-                    case "":
-                        MessageBox.Show("seccione un usuario", "Usuario Vacio", MessageBoxButtons.OK,
-                      MessageBoxIcon.Hand);
-                        break;
-
-                    case "Todas":
-                        sqlcriticidad = "select distinct Criticidad from Bitacora";
-
-                        break;
-
-                    default:
-                        sqlcriticidad = "select criticidad from bitacora where criticidad = " + Convert.ToInt16(criticidad) + "";
-                        break;
+                    sqlusuario = "SELECT UsuarioID FROM Usuario";
+                }
+                else
+                {
+                    sqlusuario = $"SELECT UsuarioID FROM Usuario WHERE Usuario LIKE '{usuario}'";
                 }
 
-                //llenamos la bitacora con todo lo filtrado
+                // Configuración de Subconsulta de Criticidad
+                if (criticidad == "Todas")
+                {
+                    sqlcriticidad = "SELECT DISTINCT Criticidad FROM Bitacora";
+                }
+                else
+                {
+                    // Si elige un número, pasamos directamente el número limpio
+                    sqlcriticidad = Convert.ToInt16(criticidad).ToString();
+                }
 
-                DataTable dt = new DataTable();
+                // Instanciamos la lógica y traemos los datos de forma segura pasándole los strings de fecha
+                DataTable dt = log.ConsultarBitacora(fechadesde, fechahasta, sqlcriticidad, sqlusuario);
 
-                dt = log.ConsultarBitacora(fechadesde, fechahasta, sqlcriticidad, sqlusuario);
-
-
-
+                // Desencriptamos las columnas correspondientes
                 foreach (DataRow item in dt.Rows)
                 {
-                    item[0] = crypt.Desencriptar(item[0].ToString());
-
-                    item[1] = crypt.Desencriptar(item[1].ToString());
-
+                    if (item[0] != DBNull.Value) item[0] = crypt.Desencriptar(item[0].ToString());
+                    if (item[1] != DBNull.Value) item[1] = crypt.Desencriptar(item[1].ToString());
                 }
 
                 dgvBitacora.DataSource = dt;
                 dgvBitacora.ReadOnly = true;
 
-                this.dgvBitacora.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                this.dgvBitacora.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                this.dgvBitacora.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                this.dgvBitacora.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                this.dgvBitacora.Columns[4].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-
-
-
-
+                // Autoajustar columnas
+                for (int i = 0; i < dgvBitacora.Columns.Count; i++)
+                {
+                    dgvBitacora.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                }
             }
             catch (Exception ex)
             {
-
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Error en la consulta: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

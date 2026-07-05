@@ -50,13 +50,13 @@
             dgvUsuarios.Location = new Point(57, 74);
             dgvUsuarios.Name = "dgvUsuarios";
             dgvUsuarios.RowHeadersWidth = 51;
-            dgvUsuarios.Size = new Size(639, 296);
+            dgvUsuarios.Size = new Size(1115, 296);
             dgvUsuarios.TabIndex = 1;
             dgvUsuarios.CellClick += dgvUsuarios_CellClick;
             // 
             // btSalir
             // 
-            btSalir.Location = new Point(618, 404);
+            btSalir.Location = new Point(1077, 446);
             btSalir.Name = "btSalir";
             btSalir.Size = new Size(94, 29);
             btSalir.TabIndex = 2;
@@ -66,7 +66,7 @@
             // 
             // btnAltaUsuario
             // 
-            btnAltaUsuario.Location = new Point(425, 404);
+            btnAltaUsuario.Location = new Point(884, 446);
             btnAltaUsuario.Name = "btnAltaUsuario";
             btnAltaUsuario.Size = new Size(123, 29);
             btnAltaUsuario.TabIndex = 3;
@@ -78,7 +78,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1196, 636);
             Controls.Add(btnAltaUsuario);
             Controls.Add(btSalir);
             Controls.Add(dgvUsuarios);

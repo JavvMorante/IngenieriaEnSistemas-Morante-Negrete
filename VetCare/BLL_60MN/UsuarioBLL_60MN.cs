@@ -153,12 +153,12 @@ namespace BLL_60MN
 
         }
 
-        public string ModificarDatosUsuario(string _Usuario, string apellido, string nombre, string email, Int64 dni, bool habilitado, int usuarioid)
+        public string ModificarDatosUsuario(int usuarioid, string _Usuario = null, string apellido = null, string nombre = null, string email = null, Int64? dni = null, bool? habilitado = null)
         {
 
 
             DAL_60MN.UsuarioDAL_60MN usu = new DAL_60MN.UsuarioDAL_60MN();
-            string flag = usu.ModificarDatosUsuario(_Usuario, apellido, nombre, email, dni, habilitado, usuarioid);
+            string flag = usu.ModificarDatosUsuario(usuarioid, _Usuario, apellido, nombre, email, dni, habilitado);
 
 
             return flag;

@@ -33,308 +33,314 @@
             pacientesToolStripMenuItem = new ToolStripMenuItem();
             turnosToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItem1 = new ToolStripMenuItem();
-            serviciosToolStripMenuItem = new ToolStripMenuItem();
             ventasToolStripMenuItem = new ToolStripMenuItem();
             reportesToolStripMenuItem = new ToolStripMenuItem();
             configuracionToolStripMenuItem = new ToolStripMenuItem();
-            usuariosToolStripMenuItem = new ToolStripMenuItem();
-            gestionDeUsuariosToolStripMenuItem = new ToolStripMenuItem();
             ayudaToolStripMenuItem = new ToolStripMenuItem();
-            pictureBox4 = new PictureBox();
-            pictureBox1 = new PictureBox();
-            pictureBox2 = new PictureBox();
-            pictureBox3 = new PictureBox();
-            pictureBox5 = new PictureBox();
-            pictureBox6 = new PictureBox();
-            pictureBox7 = new PictureBox();
-            pictureBox8 = new PictureBox();
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            label6 = new Label();
-            label7 = new Label();
-            label8 = new Label();
-            bitacoraToolStripMenuItem = new ToolStripMenuItem();
+            seguridadYProcesosToolStripMenuItem = new ToolStripMenuItem();
+            hacerBackupToolStripMenuItem = new ToolStripMenuItem();
+            gestionUsuariosToolStripMenuItem1 = new ToolStripMenuItem();
+            gestionPerfilUsuarioToolStripMenuItem = new ToolStripMenuItem();
+            configuracionIdiomaToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            hacerRestoreToolStripMenuItem = new ToolStripMenuItem();
+            consultarBitacoraToolStripMenuItem = new ToolStripMenuItem();
+            digitosVerificadoresToolStripMenuItem = new ToolStripMenuItem();
+            asignacionDePatentesToolStripMenuItem = new ToolStripMenuItem();
+            bloqueoDeOperacionesToolStripMenuItem = new ToolStripMenuItem();
+            desbloqueoDeOperacionesToolStripMenuItem = new ToolStripMenuItem();
+            pbVentas = new PictureBox();
+            pbProductosStock = new PictureBox();
+            pbReportes = new PictureBox();
+            pbCobranzas = new PictureBox();
+            pbHC = new PictureBox();
+            pbTurnos = new PictureBox();
+            pbPacientes = new PictureBox();
+            pbAdministracion = new PictureBox();
+            btnSalir = new Button();
+            GestionBox = new GroupBox();
+            btnSalida = new Button();
             menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox5).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox6).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox7).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox8).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbVentas).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbProductosStock).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbReportes).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbCobranzas).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbHC).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbTurnos).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbPacientes).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAdministracion).BeginInit();
+            GestionBox.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { menuToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { menuToolStripMenuItem, seguridadYProcesosToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1076, 28);
+            menuStrip1.Size = new Size(1465, 28);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
             // menuToolStripMenuItem
             // 
-            menuToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { pacientesToolStripMenuItem, turnosToolStripMenuItem, toolStripMenuItem1, serviciosToolStripMenuItem, ventasToolStripMenuItem, reportesToolStripMenuItem, configuracionToolStripMenuItem, usuariosToolStripMenuItem, ayudaToolStripMenuItem });
+            menuToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { pacientesToolStripMenuItem, turnosToolStripMenuItem, toolStripMenuItem1, ventasToolStripMenuItem, reportesToolStripMenuItem, configuracionToolStripMenuItem, ayudaToolStripMenuItem });
             menuToolStripMenuItem.Name = "menuToolStripMenuItem";
-            menuToolStripMenuItem.Size = new Size(60, 24);
-            menuToolStripMenuItem.Text = "Menu";
+            menuToolStripMenuItem.Size = new Size(144, 24);
+            menuToolStripMenuItem.Text = "Gestion Comercial";
             // 
             // pacientesToolStripMenuItem
             // 
             pacientesToolStripMenuItem.Name = "pacientesToolStripMenuItem";
-            pacientesToolStripMenuItem.Size = new Size(224, 26);
+            pacientesToolStripMenuItem.Size = new Size(204, 26);
             pacientesToolStripMenuItem.Text = "Pacientes";
             // 
             // turnosToolStripMenuItem
             // 
             turnosToolStripMenuItem.Name = "turnosToolStripMenuItem";
-            turnosToolStripMenuItem.Size = new Size(224, 26);
+            turnosToolStripMenuItem.Size = new Size(204, 26);
             turnosToolStripMenuItem.Text = "Turnos";
             // 
             // toolStripMenuItem1
             // 
             toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(224, 26);
+            toolStripMenuItem1.Size = new Size(204, 26);
             toolStripMenuItem1.Text = "Historias Clinicas";
-            // 
-            // serviciosToolStripMenuItem
-            // 
-            serviciosToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { bitacoraToolStripMenuItem });
-            serviciosToolStripMenuItem.Name = "serviciosToolStripMenuItem";
-            serviciosToolStripMenuItem.Size = new Size(224, 26);
-            serviciosToolStripMenuItem.Text = "Servicios";
             // 
             // ventasToolStripMenuItem
             // 
             ventasToolStripMenuItem.Name = "ventasToolStripMenuItem";
-            ventasToolStripMenuItem.Size = new Size(224, 26);
+            ventasToolStripMenuItem.Size = new Size(204, 26);
             ventasToolStripMenuItem.Text = "Ventas";
             // 
             // reportesToolStripMenuItem
             // 
             reportesToolStripMenuItem.Name = "reportesToolStripMenuItem";
-            reportesToolStripMenuItem.Size = new Size(224, 26);
+            reportesToolStripMenuItem.Size = new Size(204, 26);
             reportesToolStripMenuItem.Text = "Reportes";
             // 
             // configuracionToolStripMenuItem
             // 
             configuracionToolStripMenuItem.Name = "configuracionToolStripMenuItem";
-            configuracionToolStripMenuItem.Size = new Size(224, 26);
+            configuracionToolStripMenuItem.Size = new Size(204, 26);
             configuracionToolStripMenuItem.Text = "Configuracion";
-            // 
-            // usuariosToolStripMenuItem
-            // 
-            usuariosToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { gestionDeUsuariosToolStripMenuItem });
-            usuariosToolStripMenuItem.Name = "usuariosToolStripMenuItem";
-            usuariosToolStripMenuItem.Size = new Size(224, 26);
-            usuariosToolStripMenuItem.Text = "Usuarios";
-            // 
-            // gestionDeUsuariosToolStripMenuItem
-            // 
-            gestionDeUsuariosToolStripMenuItem.Name = "gestionDeUsuariosToolStripMenuItem";
-            gestionDeUsuariosToolStripMenuItem.Size = new Size(224, 26);
-            gestionDeUsuariosToolStripMenuItem.Text = "Gestion de Usuarios";
-            gestionDeUsuariosToolStripMenuItem.Click += gestionDeUsuariosToolStripMenuItem_Click;
             // 
             // ayudaToolStripMenuItem
             // 
             ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
-            ayudaToolStripMenuItem.Size = new Size(224, 26);
+            ayudaToolStripMenuItem.Size = new Size(204, 26);
             ayudaToolStripMenuItem.Text = "Ayuda";
             // 
-            // pictureBox4
+            // seguridadYProcesosToolStripMenuItem
             // 
-            pictureBox4.BackColor = SystemColors.GrayText;
-            pictureBox4.Location = new Point(257, 306);
-            pictureBox4.Name = "pictureBox4";
-            pictureBox4.Size = new Size(146, 95);
-            pictureBox4.TabIndex = 4;
-            pictureBox4.TabStop = false;
+            seguridadYProcesosToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { hacerBackupToolStripMenuItem, gestionUsuariosToolStripMenuItem1, gestionPerfilUsuarioToolStripMenuItem, configuracionIdiomaToolStripMenuItem, toolStripMenuItem2, hacerRestoreToolStripMenuItem, consultarBitacoraToolStripMenuItem, digitosVerificadoresToolStripMenuItem, asignacionDePatentesToolStripMenuItem, bloqueoDeOperacionesToolStripMenuItem, desbloqueoDeOperacionesToolStripMenuItem });
+            seguridadYProcesosToolStripMenuItem.Name = "seguridadYProcesosToolStripMenuItem";
+            seguridadYProcesosToolStripMenuItem.Size = new Size(164, 24);
+            seguridadYProcesosToolStripMenuItem.Text = "Seguridad y Procesos";
             // 
-            // pictureBox1
+            // hacerBackupToolStripMenuItem
             // 
-            pictureBox1.BackColor = SystemColors.GrayText;
-            pictureBox1.Location = new Point(796, 306);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(146, 95);
-            pictureBox1.TabIndex = 17;
-            pictureBox1.TabStop = false;
+            hacerBackupToolStripMenuItem.Name = "hacerBackupToolStripMenuItem";
+            hacerBackupToolStripMenuItem.Size = new Size(281, 26);
+            hacerBackupToolStripMenuItem.Text = "Hacer Backup";
             // 
-            // pictureBox2
+            // gestionUsuariosToolStripMenuItem1
             // 
-            pictureBox2.BackColor = SystemColors.GrayText;
-            pictureBox2.Location = new Point(620, 306);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(146, 95);
-            pictureBox2.TabIndex = 18;
-            pictureBox2.TabStop = false;
+            gestionUsuariosToolStripMenuItem1.Name = "gestionUsuariosToolStripMenuItem1";
+            gestionUsuariosToolStripMenuItem1.Size = new Size(281, 26);
+            gestionUsuariosToolStripMenuItem1.Text = "Gestion Usuarios";
+            gestionUsuariosToolStripMenuItem1.Click += gestionUsuariosToolStripMenuItem1_Click;
             // 
-            // pictureBox3
+            // gestionPerfilUsuarioToolStripMenuItem
             // 
-            pictureBox3.BackColor = SystemColors.GrayText;
-            pictureBox3.Location = new Point(436, 306);
-            pictureBox3.Name = "pictureBox3";
-            pictureBox3.Size = new Size(146, 95);
-            pictureBox3.TabIndex = 19;
-            pictureBox3.TabStop = false;
+            gestionPerfilUsuarioToolStripMenuItem.Name = "gestionPerfilUsuarioToolStripMenuItem";
+            gestionPerfilUsuarioToolStripMenuItem.Size = new Size(281, 26);
+            gestionPerfilUsuarioToolStripMenuItem.Text = "Gestion Perfil Usuario";
             // 
-            // pictureBox5
+            // configuracionIdiomaToolStripMenuItem
             // 
-            pictureBox5.BackColor = SystemColors.GrayText;
-            pictureBox5.Location = new Point(796, 182);
-            pictureBox5.Name = "pictureBox5";
-            pictureBox5.Size = new Size(146, 95);
-            pictureBox5.TabIndex = 20;
-            pictureBox5.TabStop = false;
+            configuracionIdiomaToolStripMenuItem.Name = "configuracionIdiomaToolStripMenuItem";
+            configuracionIdiomaToolStripMenuItem.Size = new Size(281, 26);
+            configuracionIdiomaToolStripMenuItem.Text = "Configuracion Idioma";
+            configuracionIdiomaToolStripMenuItem.Click += configuracionIdiomaToolStripMenuItem_Click;
             // 
-            // pictureBox6
+            // toolStripMenuItem2
             // 
-            pictureBox6.BackColor = SystemColors.GrayText;
-            pictureBox6.Location = new Point(620, 182);
-            pictureBox6.Name = "pictureBox6";
-            pictureBox6.Size = new Size(146, 95);
-            pictureBox6.TabIndex = 21;
-            pictureBox6.TabStop = false;
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(281, 26);
+            toolStripMenuItem2.Text = "Gestion Perfil Usuarios";
             // 
-            // pictureBox7
+            // hacerRestoreToolStripMenuItem
             // 
-            pictureBox7.BackColor = SystemColors.GrayText;
-            pictureBox7.Location = new Point(436, 182);
-            pictureBox7.Name = "pictureBox7";
-            pictureBox7.Size = new Size(146, 95);
-            pictureBox7.TabIndex = 22;
-            pictureBox7.TabStop = false;
+            hacerRestoreToolStripMenuItem.Name = "hacerRestoreToolStripMenuItem";
+            hacerRestoreToolStripMenuItem.Size = new Size(281, 26);
+            hacerRestoreToolStripMenuItem.Text = "Hacer Restore";
             // 
-            // pictureBox8
+            // consultarBitacoraToolStripMenuItem
             // 
-            pictureBox8.BackColor = SystemColors.GrayText;
-            pictureBox8.Location = new Point(257, 182);
-            pictureBox8.Name = "pictureBox8";
-            pictureBox8.Size = new Size(146, 95);
-            pictureBox8.TabIndex = 23;
-            pictureBox8.TabStop = false;
+            consultarBitacoraToolStripMenuItem.Name = "consultarBitacoraToolStripMenuItem";
+            consultarBitacoraToolStripMenuItem.Size = new Size(281, 26);
+            consultarBitacoraToolStripMenuItem.Text = "Consultar Bitacora";
+            consultarBitacoraToolStripMenuItem.Click += consultarBitacoraToolStripMenuItem_Click;
             // 
-            // label1
+            // digitosVerificadoresToolStripMenuItem
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(266, 194);
-            label1.Name = "label1";
-            label1.Size = new Size(109, 20);
-            label1.TabIndex = 24;
-            label1.Text = "Administracion";
+            digitosVerificadoresToolStripMenuItem.Name = "digitosVerificadoresToolStripMenuItem";
+            digitosVerificadoresToolStripMenuItem.Size = new Size(281, 26);
+            digitosVerificadoresToolStripMenuItem.Text = "Digitos Verificadores";
             // 
-            // label2
+            // asignacionDePatentesToolStripMenuItem
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(446, 194);
-            label2.Name = "label2";
-            label2.Size = new Size(70, 20);
-            label2.TabIndex = 25;
-            label2.Text = "Pacientes";
+            asignacionDePatentesToolStripMenuItem.Name = "asignacionDePatentesToolStripMenuItem";
+            asignacionDePatentesToolStripMenuItem.Size = new Size(281, 26);
+            asignacionDePatentesToolStripMenuItem.Text = "Asignacion de Patentes";
             // 
-            // label3
+            // bloqueoDeOperacionesToolStripMenuItem
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(633, 194);
-            label3.Name = "label3";
-            label3.Size = new Size(53, 20);
-            label3.TabIndex = 26;
-            label3.Text = "Turnos";
+            bloqueoDeOperacionesToolStripMenuItem.Name = "bloqueoDeOperacionesToolStripMenuItem";
+            bloqueoDeOperacionesToolStripMenuItem.Size = new Size(281, 26);
+            bloqueoDeOperacionesToolStripMenuItem.Text = "Bloqueo de Operaciones";
             // 
-            // label4
+            // desbloqueoDeOperacionesToolStripMenuItem
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(806, 194);
-            label4.Name = "label4";
-            label4.Size = new Size(121, 20);
-            label4.TabIndex = 27;
-            label4.Text = "Historias Clinicas";
+            desbloqueoDeOperacionesToolStripMenuItem.Name = "desbloqueoDeOperacionesToolStripMenuItem";
+            desbloqueoDeOperacionesToolStripMenuItem.Size = new Size(281, 26);
+            desbloqueoDeOperacionesToolStripMenuItem.Text = "Desbloqueo de Operaciones";
             // 
-            // label5
+            // pbVentas
             // 
-            label5.AutoSize = true;
-            label5.Location = new Point(266, 319);
-            label5.Name = "label5";
-            label5.Size = new Size(52, 20);
-            label5.TabIndex = 28;
-            label5.Text = "Ventas";
+            pbVentas.BackColor = SystemColors.GrayText;
+            pbVentas.Location = new Point(50, 185);
+            pbVentas.Name = "pbVentas";
+            pbVentas.Size = new Size(146, 95);
+            pbVentas.TabIndex = 4;
+            pbVentas.TabStop = false;
             // 
-            // label6
+            // pbProductosStock
             // 
-            label6.AutoSize = true;
-            label6.Location = new Point(446, 319);
-            label6.Name = "label6";
-            label6.Size = new Size(78, 20);
-            label6.TabIndex = 29;
-            label6.Text = "Cobranzas";
+            pbProductosStock.BackColor = SystemColors.GrayText;
+            pbProductosStock.Location = new Point(565, 185);
+            pbProductosStock.Name = "pbProductosStock";
+            pbProductosStock.Size = new Size(146, 95);
+            pbProductosStock.TabIndex = 17;
+            pbProductosStock.TabStop = false;
             // 
-            // label7
+            // pbReportes
             // 
-            label7.AutoSize = true;
-            label7.Location = new Point(633, 319);
-            label7.Name = "label7";
-            label7.Size = new Size(68, 20);
-            label7.TabIndex = 30;
-            label7.Text = "Reportes";
+            pbReportes.BackColor = SystemColors.GrayText;
+            pbReportes.Location = new Point(394, 185);
+            pbReportes.Name = "pbReportes";
+            pbReportes.Size = new Size(146, 95);
+            pbReportes.TabIndex = 18;
+            pbReportes.TabStop = false;
             // 
-            // label8
+            // pbCobranzas
             // 
-            label8.AutoSize = true;
-            label8.Location = new Point(806, 319);
-            label8.Name = "label8";
-            label8.Size = new Size(117, 20);
-            label8.TabIndex = 31;
-            label8.Text = "Productos/Stock";
+            pbCobranzas.BackColor = SystemColors.GrayText;
+            pbCobranzas.Location = new Point(221, 185);
+            pbCobranzas.Name = "pbCobranzas";
+            pbCobranzas.Size = new Size(146, 95);
+            pbCobranzas.TabIndex = 19;
+            pbCobranzas.TabStop = false;
             // 
-            // bitacoraToolStripMenuItem
+            // pbHC
             // 
-            bitacoraToolStripMenuItem.Name = "bitacoraToolStripMenuItem";
-            bitacoraToolStripMenuItem.Size = new Size(224, 26);
-            bitacoraToolStripMenuItem.Text = "Bitacora";
-            bitacoraToolStripMenuItem.Click += bitacoraToolStripMenuItem_Click;
+            pbHC.BackColor = SystemColors.GrayText;
+            pbHC.Location = new Point(565, 65);
+            pbHC.Name = "pbHC";
+            pbHC.Size = new Size(146, 95);
+            pbHC.TabIndex = 20;
+            pbHC.TabStop = false;
+            // 
+            // pbTurnos
+            // 
+            pbTurnos.BackColor = SystemColors.GrayText;
+            pbTurnos.Location = new Point(394, 65);
+            pbTurnos.Name = "pbTurnos";
+            pbTurnos.Size = new Size(146, 95);
+            pbTurnos.TabIndex = 21;
+            pbTurnos.TabStop = false;
+            // 
+            // pbPacientes
+            // 
+            pbPacientes.BackColor = SystemColors.GrayText;
+            pbPacientes.Location = new Point(221, 65);
+            pbPacientes.Name = "pbPacientes";
+            pbPacientes.Size = new Size(146, 95);
+            pbPacientes.TabIndex = 22;
+            pbPacientes.TabStop = false;
+            // 
+            // pbAdministracion
+            // 
+            pbAdministracion.BackColor = SystemColors.GrayText;
+            pbAdministracion.Location = new Point(50, 65);
+            pbAdministracion.Name = "pbAdministracion";
+            pbAdministracion.Size = new Size(146, 95);
+            pbAdministracion.TabIndex = 23;
+            pbAdministracion.TabStop = false;
+            // 
+            // btnSalir
+            // 
+            btnSalir.Location = new Point(1095, 793);
+            btnSalir.Name = "btnSalir";
+            btnSalir.Size = new Size(94, 29);
+            btnSalir.TabIndex = 32;
+            btnSalir.Text = "Salir";
+            btnSalir.UseVisualStyleBackColor = true;
+            btnSalir.Click += btnSalir_Click;
+            // 
+            // GestionBox
+            // 
+            GestionBox.Controls.Add(pbAdministracion);
+            GestionBox.Controls.Add(pbPacientes);
+            GestionBox.Controls.Add(pbHC);
+            GestionBox.Controls.Add(pbTurnos);
+            GestionBox.Controls.Add(pbVentas);
+            GestionBox.Controls.Add(pbProductosStock);
+            GestionBox.Controls.Add(pbReportes);
+            GestionBox.Controls.Add(pbCobranzas);
+            GestionBox.Location = new Point(339, 160);
+            GestionBox.Name = "GestionBox";
+            GestionBox.Size = new Size(769, 352);
+            GestionBox.TabIndex = 34;
+            GestionBox.TabStop = false;
+            GestionBox.Text = "Gestion";
+            // 
+            // btnSalida
+            // 
+            btnSalida.Location = new Point(1219, 625);
+            btnSalida.Name = "btnSalida";
+            btnSalida.Size = new Size(142, 59);
+            btnSalida.TabIndex = 35;
+            btnSalida.Text = "Salir";
+            btnSalida.UseVisualStyleBackColor = true;
+            btnSalida.Click += btnSalida_Click;
             // 
             // MenuPrincipal
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1076, 591);
-            Controls.Add(label8);
-            Controls.Add(label7);
-            Controls.Add(label6);
-            Controls.Add(label5);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(pictureBox8);
-            Controls.Add(pictureBox7);
-            Controls.Add(pictureBox6);
-            Controls.Add(pictureBox5);
-            Controls.Add(pictureBox3);
-            Controls.Add(pictureBox2);
-            Controls.Add(pictureBox1);
-            Controls.Add(pictureBox4);
+            ClientSize = new Size(1465, 712);
+            Controls.Add(btnSalida);
+            Controls.Add(GestionBox);
+            Controls.Add(btnSalir);
             Controls.Add(menuStrip1);
+            IsMdiContainer = true;
             MainMenuStrip = menuStrip1;
             Name = "MenuPrincipal";
             Text = "VetCare";
             Load += Form1_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox5).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox6).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox7).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox8).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbVentas).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbProductosStock).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbReportes).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbCobranzas).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbHC).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbTurnos).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbPacientes).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAdministracion).EndInit();
+            GestionBox.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -346,29 +352,32 @@
         private ToolStripMenuItem pacientesToolStripMenuItem;
         private ToolStripMenuItem turnosToolStripMenuItem;
         private ToolStripMenuItem toolStripMenuItem1;
-        private ToolStripMenuItem serviciosToolStripMenuItem;
         private ToolStripMenuItem ventasToolStripMenuItem;
         private ToolStripMenuItem reportesToolStripMenuItem;
         private ToolStripMenuItem configuracionToolStripMenuItem;
         private ToolStripMenuItem ayudaToolStripMenuItem;
-        private PictureBox pictureBox4;
-        private PictureBox pictureBox1;
-        private PictureBox pictureBox2;
-        private PictureBox pictureBox3;
-        private PictureBox pictureBox5;
-        private PictureBox pictureBox6;
-        private PictureBox pictureBox7;
-        private PictureBox pictureBox8;
-        private Label label1;
-        private Label label2;
-        private Label label3;
-        private Label label4;
-        private Label label5;
-        private Label label6;
-        private Label label7;
-        private Label label8;
-        private ToolStripMenuItem usuariosToolStripMenuItem;
-        private ToolStripMenuItem gestionDeUsuariosToolStripMenuItem;
-        private ToolStripMenuItem bitacoraToolStripMenuItem;
+        private PictureBox pbVentas;
+        private PictureBox pbProductosStock;
+        private PictureBox pbReportes;
+        private PictureBox pbCobranzas;
+        private PictureBox pbHC;
+        private PictureBox pbTurnos;
+        private PictureBox pbPacientes;
+        private PictureBox pbAdministracion;
+        private ToolStripMenuItem seguridadYProcesosToolStripMenuItem;
+        private Button btnSalir;
+        private ToolStripMenuItem hacerBackupToolStripMenuItem;
+        private ToolStripMenuItem gestionUsuariosToolStripMenuItem1;
+        private ToolStripMenuItem gestionPerfilUsuarioToolStripMenuItem;
+        private ToolStripMenuItem configuracionIdiomaToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripMenuItem hacerRestoreToolStripMenuItem;
+        private ToolStripMenuItem consultarBitacoraToolStripMenuItem;
+        private ToolStripMenuItem digitosVerificadoresToolStripMenuItem;
+        private ToolStripMenuItem asignacionDePatentesToolStripMenuItem;
+        private ToolStripMenuItem bloqueoDeOperacionesToolStripMenuItem;
+        private ToolStripMenuItem desbloqueoDeOperacionesToolStripMenuItem;
+        private GroupBox GestionBox;
+        private Button btnSalida;
     }
 }

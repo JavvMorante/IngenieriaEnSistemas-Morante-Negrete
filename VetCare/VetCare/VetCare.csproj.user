@@ -13,6 +13,9 @@
     <Compile Update="AltaFamilia.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="AsignacionDePatenes.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="AsignacionDePatentes.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -23,6 +26,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="AsignarPerfilaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="BloquearDesbloquearOperacionesaUsuario.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Bloquear_DesbloquearOperacionesaUsuario.cs">
@@ -50,6 +56,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="EstablecerCadena.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HacerBackUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HacerRestore.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ImportarBitacora.cs">

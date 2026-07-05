@@ -84,10 +84,48 @@ namespace VetCare
 
         private void borrarUsuarios_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            BLL_60MN.UsuarioBLL_60MN usu = new BLL_60MN.UsuarioBLL_60MN();
+
             //aca poner accion de borrar usuario y grabar en la bitacora
             if (e.ColumnIndex == dgvUsuarios.Columns["BorrarUsuario"].Index)
             {
-                //Do something with your button.
+                string usuid = dgvUsuarios.Rows[e.RowIndex].Cells["UsuarioID"].Value.ToString();
+
+                if ((MessageBox.Show("¿Esta seguro que desea Eliminar al usuario " + usu.Nombre + " de forma permanente?", "Eliminar Usuario",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes))
+                {
+                    try
+                    {
+                        string Eliminar = usu.verificarPatentesEscenciales(Convert.ToInt16(usuid));
+
+                        if (Eliminar == "True")
+                        {
+                            log.Criticidad = 2;
+                            string a = dgvUsuarios.Rows[e.RowIndex].Cells["Nombre"].Value.ToString();
+                            string b = dgvUsuarios.Rows[e.RowIndex].Cells["Apellido"].Value.ToString();
+                            log.Descripcion = a + " " + b;
+                            log.FechayHora = DateTime.Now;
+                            log.NombreOperacion = "Eliminar Usuario";
+
+                            log.IngresarDatoBitacora(cryp.Encriptar(log.NombreOperacion), cryp.Encriptar(log.Descripcion), log.Criticidad, usu.UsuarioID);
+
+                            string result = usu.EliminarUsuario(Convert.ToInt16(usuid));
+
+                            // Recargar DataGrid
+                            this.Load += new EventHandler(ABMUsuarios_Load);
+                            MessageBox.Show("Usuario eliminado correctamente");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Usuario con Patentes Unicas,no se puede eliminar!,Patentes: " + Eliminar, "Error al Borrado", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message.ToString());
+                    }
+                }
             }
         }
 
@@ -100,7 +138,7 @@ namespace VetCare
 
         private void btSalir_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Hide();
         }
 
         private void dgvUsuarios_CellClick(object sender, DataGridViewCellEventArgs e)

@@ -124,6 +124,8 @@ namespace VetCare
                     else
                     {
 
+                        if(!USU1.)
+
                         log.NombreOperacion = crypt.Encriptar("Login");
                         log.Descripcion = crypt.Encriptar("Login Exitoso: " + txtUsuario.Text + " ");
                         log.Criticidad = 5;

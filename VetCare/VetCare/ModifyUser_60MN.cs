@@ -41,9 +41,9 @@ namespace VetCare
             txtApellido.Text = usu.Apellido.ToString();
             txtUsuario.Text = usu._Usuario.ToString();
 
-            if (usu.Habilitado.ToString() == "true")
+            if (usu.Habilitado.ToString() == "True")
             {
-                chkHabilitado.Checked = true;
+                chkHabilitado.Checked = usu.Habilitado;
             }
             else
             {
@@ -63,65 +63,80 @@ namespace VetCare
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            int oresult = usu.verificarDuplicidad(int.Parse(txtDNI.Text), txtEmail.Text, txtUsuario.Text);
-
-            switch (oresult)
+            // 1. VALIDACIÓN: Verificar que ningún campo de texto esté vacío o tenga solo espacios
+            if (string.IsNullOrWhiteSpace(txtUsuario.Text) ||
+                string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                string.IsNullOrWhiteSpace(txtApellido.Text) ||
+                string.IsNullOrWhiteSpace(txtDNI.Text) ||
+                string.IsNullOrWhiteSpace(txtEmail.Text))
             {
-                case 1://dni repetido
-                    MessageBox.Show("el dni: " + txtDNI.Text + " ya existe en la base de datos,verifique los usuarios", "Duplicidad de datos", MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                MessageBox.Show("Todos los campos son obligatorios. Por favor, complete la información.",
+                                "Campos Vacíos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; // Corta la ejecución aquí para que no guarde
+            }
 
-                    break;
-                case 2://email repetido
-                    MessageBox.Show("el email: " + txtEmail.Text + " ya existe en la base de datos,verifique los usuarios", "Duplicidad de datos", MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-                    break;
-                case 3://email y dni repetido
-                    MessageBox.Show("el email: " + txtEmail.Text + " y el dni:" + txtDNI.Text + " ya existe en la base de datos,verifique los usuarios", "Duplicidad de datos", MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-                    break;
-                case 5://Usuario repetido
-                    MessageBox.Show("el Usuario: " + txtUsuario.Text + " !", "Duplicidad de datos", MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-                    break;
-                case 4: //modifica*/
-                    try
+            try
+            {
+                // 2. DETECTAR CAMBIO DE ESTADO (Habilitado / Deshabilitado)
+                // 'usu' mantiene los datos que trajiste originalmente de la BD en el Load.
+                bool estadoOriginal = usu.Habilitado;
+                bool estadoNuevo = chkHabilitado.Checked;
+
+                // Si el estado cambió, disparamos la pregunta correspondiente
+                if (estadoOriginal != estadoNuevo)
+                {
+                    string mensajePregunta = "";
+
+                    if (estadoOriginal == false && estadoNuevo == true)
                     {
-                        bool check;
-                        if (chkHabilitado.Checked)
-                        {
-                            check = true;
-                        }
-                        else
-                        {
-                            check = false;
-                        }
-                        string result = usu.ModificarDatosUsuario(txtUsuario.Text, txtApellido.Text, txtNombre.Text, txtEmail.Text,
-                                    Convert.ToInt64(txtDNI.Text), check, usu.UsuarioID);
-
-                        MessageBox.Show(result);
-
-                        log.Criticidad = 3;
-                        log.Descripcion = txtUsuario.Text + " " + txtApellido.Text + " " + txtNombre.Text + " " + txtEmail.Text + " "
-                        + txtDNI.Text + " " + check + " " + usu.UsuarioID;
-                        log.FechayHora = DateTime.Now;
-                        log.NombreOperacion = "Modificar Usuario";
-
-                        log.IngresarDatoBitacora(crypt.Encriptar(log.NombreOperacion), crypt.Encriptar(log.Descripcion), log.Criticidad, usu.UsuarioID);
-
-                        ABMUsuarios abmusu = new ABMUsuarios();
-                        abmusu.Load += new EventHandler(abmusu.ABMUsuarios_Load);
-
-                        this.Close();
+                        // Pasó de NO chequeado a SI chequeado
+                        mensajePregunta = $"¿Quiere dar de alta el usuario \"{txtUsuario.Text}\"?";
                     }
-                    catch (Exception)
+                    else if (estadoOriginal == true && estadoNuevo == false)
                     {
-
-                        throw;
+                        // Pasó de SI chequeado a NO chequeado
+                        mensajePregunta = $"¿Quiere dar de baja el usuario \"{txtUsuario.Text}\"?";
                     }
-                    break;
 
+                    // Mostramos el cuadro de confirmación
+                    DialogResult respuesta = MessageBox.Show(mensajePregunta, "Confirmar cambio de estado",
+                                                             MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
+                    if (respuesta == DialogResult.No)
+                    {
+                        return; // Si el usuario pone "No", cancelamos el guardado
+                    }
+                }
+
+                // 3. EJECUTAR EL UPDATE DINÁMICO
+                // Usamos el método que adaptamos antes pasándole los datos de los controles
+                string result = usu.ModificarDatosUsuario(
+                    usuarioid: usu.UsuarioID,
+                    _Usuario: txtUsuario.Text.Trim(),
+                    apellido: txtApellido.Text.Trim(),
+                    nombre: txtNombre.Text.Trim(),
+                    email: txtEmail.Text.Trim(),
+                    dni: Convert.ToInt64(txtDNI.Text.Trim()),
+                    habilitado: estadoNuevo
+                );
+
+                MessageBox.Show(result, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // 4. REGISTRO EN BITÁCORA
+                log.Criticidad = 3;
+                log.Descripcion = $"{txtUsuario.Text} {txtApellido.Text} {txtNombre.Text} {txtEmail.Text} {txtDNI.Text} {estadoNuevo} {usu.UsuarioID}";
+                log.FechayHora = DateTime.Now;
+                log.NombreOperacion = "Modificar Usuario";
+
+                log.IngresarDatoBitacora(crypt.Encriptar(log.NombreOperacion), crypt.Encriptar(log.Descripcion), log.Criticidad, usu.UsuarioID);
+
+                // 5. CERRAR Y VOLVER
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error al intentar modificar el usuario: " + ex.Message,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

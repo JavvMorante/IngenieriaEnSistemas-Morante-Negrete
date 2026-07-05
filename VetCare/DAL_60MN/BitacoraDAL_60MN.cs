@@ -40,27 +40,40 @@ namespace DAL_60MN
 
         }
 
-        public DataTable ConsultarBitacora(DateTime fechadesde, DateTime fechahasta, string sqlcriticidad, string sqlusuario)
+        public DataTable traerCriticidad()
+        {
+            DataTable dataCriticidad = new DataTable();
+            string sql = "select distinct Criticidad  from Bitacora";
+            dataCriticidad = con.Ejecutarreader(sql);
+
+
+            return dataCriticidad;
+
+        }
+
+        public DataTable ConsultarBitacora(string fechadesde, string fechahasta, string sqlcriticidad, string sqlusuario)
         {
             DataTable dt = new DataTable();
 
+          
+            string sql = "SELECT NombreOperacion, Descripcion, UsuarioID, Criticidad, FechayHora " +
+                         "FROM Bitacora " +
+                         $"WHERE FechayHora >= '{fechadesde}' AND FechayHora < '{fechahasta}' ";
 
-            string sql =
-        "select NombreOperacion, Descripcion, UsuarioID, Criticidad, FechayHora " +
-        "from Bitacora " +
-        "where fechayhora BETWEEN '" + fechadesde + "' AND '" + fechahasta + "' ";
-
-            if (!string.IsNullOrWhiteSpace(sqlcriticidad))
+            if (!string.IsNullOrWhiteSpace(sqlcriticidad) && !sqlcriticidad.ToUpper().Contains("SELECT"))
             {
-                sql += " and Criticidad IN(" + sqlcriticidad + ")";
+                sql += $" AND Criticidad = {sqlcriticidad}";
             }
 
-            sql += " AND UsuarioID IN(" + sqlusuario + ")";
+          
+            if (!string.IsNullOrWhiteSpace(sqlusuario) && !sqlusuario.ToUpper().Contains("SELECT"))
+            {
+                sql += $" AND UsuarioID IN ({sqlusuario})";
+            }
 
-            Debug.WriteLine(sql);
+
             dt = con.Ejecutarreader(sql);
             return dt;
-
         }
 
 

@@ -17,17 +17,10 @@ namespace BLL_60MN.Seguridad_MN60
         // public int Usuarioid { get; set = 0; }
         public int Usuarioid { get; set; }
 
-        public DataTable ConsultarBitacora(DateTime fechadesde, DateTime fechahasta, string sqlcriticidad, string sqlusuario)
+        public DataTable ConsultarBitacora(string fechadesde, string fechahasta, string sqlcriticidad, string sqlusuario)
         {
-            DataTable dt = new DataTable();
-
-            DAL_60MN.BitacoraDAL_60MN log = new DAL_60MN.BitacoraDAL_60MN();
-
-            dt = log.ConsultarBitacora(fechadesde, fechahasta, sqlcriticidad, sqlusuario);
-
-            return dt;
-
-
+            DAL_60MN.BitacoraDAL_60MN logDAL = new DAL_60MN.BitacoraDAL_60MN();
+            return logDAL.ConsultarBitacora(fechadesde, fechahasta, sqlcriticidad, sqlusuario);
         }
 
         public void Encriptar()
@@ -51,6 +44,16 @@ namespace BLL_60MN.Seguridad_MN60
         DAL_60MN.BitacoraDAL_60MN log = new DAL_60MN.BitacoraDAL_60MN();
             datausuario = log.traerUsuarios();
             return datausuario;
+
+
+        }
+
+        public DataTable traerCriticidad()
+        {
+            DataTable dataCriticidad = new DataTable();
+            DAL_60MN.BitacoraDAL_60MN log = new DAL_60MN.BitacoraDAL_60MN();
+            dataCriticidad = log.traerCriticidad();
+            return dataCriticidad;
 
 
         }

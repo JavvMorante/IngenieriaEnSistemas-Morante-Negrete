@@ -103,3 +103,7 @@ C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net8.0-windows\VetCare.pdb
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net8.0-windows\VetCare.genruntimeconfig.cache
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net8.0-windows\ref\VetCare.dll
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net8.0-windows\VetCare.AsignacionDePatenes.resources
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net8.0-windows\VetCare.BloquearDesbloquearOperacionesaUsuario.resources
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net8.0-windows\VetCare.HacerBackUp.resources
+C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net8.0-windows\VetCare.HacerRestore.resources
