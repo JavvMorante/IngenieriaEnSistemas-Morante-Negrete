@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Update="ABMFamilias.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ABMFamiliasUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ABMUsuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AltaFamilia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AsignacionDePatenes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AsignacionDePatentes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AsignarOperacionesAPerfil.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AsignarOperacionesaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AsignarPerfilaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="BloquearDesbloquearOperacionesaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Bloquear_DesbloquearOperacionesaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="CalcularDigitosVerificadores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="CambiarConexionBasedeDatos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ConfigurarIdioma.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ConsultarBitacora.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="DefaultForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="DesbloquearOperacionAUsuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="DigitosVerificadores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="EstablecerCadena.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HacerBackUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HacerRestore.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ImportarBitacora.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="LogOut.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MenuPrincipal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ModificacionFamilia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ModificarPerfilUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ModificarUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ModificarUsuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ModifyUser_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
