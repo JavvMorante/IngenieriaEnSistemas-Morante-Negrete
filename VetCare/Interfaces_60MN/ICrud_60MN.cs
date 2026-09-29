@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Interfaces_60MN
 {
+    /// <summary>Operaciones básicas de persistencia que implementan los mappers de la DAL.</summary>
     public interface ICrud_60MN<T> where T : IEntity_60MN
     {
-        void Save(T entity);
+        int Insertar(T entidad);
 
-        void Delete(T entity);
+        void Modificar(T entidad);
 
-        IList<T> GetAll();
+        IList<T> ListarTodos();
 
-        T GetById(long id);
-        T GetById(Guid id);
+        T? ObtenerPorId(int id);
     }
 }

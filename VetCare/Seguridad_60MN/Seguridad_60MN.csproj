@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Seguridad_60MN</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Se uso System.Data.SqlClient (igual que Conexion_60MN) para no mezclar clientes
+         de SQL en la solucion, pero ese paquete tiene un problema conocido de compatibilidad
+         con SDKs nuevos de .NET (aparece como "tipo reenviado a un ensamblado Version=0.0.0.0"
+         al compilar). Se uso en su lugar Microsoft.Data.SqlClient, el reemplazo oficial y
+         mantenido por Microsoft: misma API (SqlConnection/SqlCommand/SqlDataReader), solo
+         cambia el namespace. No genera conflicto con que DAL_60MN siga usando
+         System.Data.SqlClient: son proyectos (ensamblados) distintos. -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+
+    <!-- En .NET Framework clasico, ConfigurationManager viene incluido de fabrica.
+         En proyectos .NET 8 (SDK-style, como este) hay que agregarlo como paquete
+         aparte para poder leer <appSettings> del App.config. -->
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,35 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Interfaces_60MN
 {
-    public interface IUsuario_60MN
+    /// <summary>Datos mínimos del usuario que necesita el SessionManager para operar.</summary>
+    public interface IUsuario_60MN : IEntity_60MN
     {
-        long IdUsuario { get; set; }
-
-        long Dni { get; set; }
-
-        string Apellido { get; set; }
+        string NombreUsuario { get; set; }
 
         string Nombre { get; set; }
 
-        string Email { get; set; }
+        string Apellido { get; set; }
 
-        string Username { get; set; }
-
-        string PasswordHash { get; set; }
-
-        string Rol { get; set; }
-
-        int LoginCount { get; set; }
-
-        bool Locked { get; set; }
-
-        bool Deleted { get; set; }
-
+        /// <summary>
+        /// Permisos asignados directamente al usuario: sus familias (UsuarioFamilia)
+        /// y sus patentes individuales (UsuarioPatente), además de las de la familia.
+        /// </summary>
         IList<IPermiso_60MN> Permisos { get; }
     }
 }

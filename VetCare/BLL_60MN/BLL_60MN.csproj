@@ -15,6 +15,7 @@
     <ProjectReference Include="..\DAL_60MN\DAL_60MN.csproj" />
     <ProjectReference Include="..\Entidades_60MN\Entidades_60MN.csproj" />
     <ProjectReference Include="..\Interfaces_60MN\Interfaces_60MN.csproj" />
+    <ProjectReference Include="..\Seguridad_60MN\Seguridad_60MN.csproj" />
     <ProjectReference Include="..\Servicios_60MN\Servicios_60MN.csproj" />
   </ItemGroup>
 

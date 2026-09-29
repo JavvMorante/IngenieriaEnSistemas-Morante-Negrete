@@ -1,94 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Compile Update="ABMFamilias.cs">
+    <Compile Update="FrmMenuPrincipal_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ABMFamiliasUsuario.cs">
+    <Compile Update="Seguridad\FrmBitacoraCambios_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ABMUsuarios.cs">
+    <Compile Update="Seguridad\FrmBitacoraEventos_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="AltaFamilia.cs">
+    <Compile Update="Seguridad\FrmCambiarClave_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="AsignacionDePatenes.cs">
+    <Compile Update="Seguridad\FrmCambiarIdioma_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="AsignacionDePatentes.cs">
+    <Compile Update="Seguridad\FrmCompararVersiones_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="AsignarOperacionesAPerfil.cs">
+    <Compile Update="Seguridad\FrmFamiliasPatentes_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="AsignarOperacionesaUsuario.cs">
+    <Compile Update="Seguridad\FrmGestionUsuarios_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="AsignarPerfilaUsuario.cs">
+    <Compile Update="Seguridad\FrmIntegridad_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="BloquearDesbloquearOperacionesaUsuario.cs">
+    <Compile Update="Seguridad\FrmLogin_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Bloquear_DesbloquearOperacionesaUsuario.cs">
+    <Compile Update="Seguridad\FrmPermisosUsuario_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="CalcularDigitosVerificadores.cs">
+    <Compile Update="Seguridad\FrmUsuario_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="CambiarConexionBasedeDatos.cs">
+    <Compile Update="Stock\FrmMovimientoStock_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ConfigurarIdioma.cs">
+    <Compile Update="Stock\FrmProductos_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ConsultarBitacora.cs">
+    <Compile Update="Stock\FrmProducto_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="DefaultForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="DesbloquearOperacionAUsuarios.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="DigitosVerificadores.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="EstablecerCadena.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="HacerBackUp.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="HacerRestore.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ImportarBitacora.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="LogOut.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="MenuPrincipal.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Login.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ModificacionFamilia.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ModificarPerfilUsuario.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ModificarUsuario.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ModificarUsuarios.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ModifyUser_60MN.cs">
+    <Compile Update="Utilidades\FormBase_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

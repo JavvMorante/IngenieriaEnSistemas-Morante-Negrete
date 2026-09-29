@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Herramienta de consola (no forma parte de la solución VetCare.sln).
+       Genera BDScript/VetCareBD_60MN.sql y VetCare/UsuarioEmergencia_60MN.xml
+       con hashes, datos cifrados y dígitos verificadores calculados con las
+       claves configuradas en VetCare/App.config.
+       Uso (desde la carpeta de la solución):
+         dotnet run project Herramientas_60MN/GeneradorScriptBD_60MN
+       (anteponer dos guiones a "project"; no se escriben acá porque XML no los admite en comentarios) -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Seguridad_60MN\Seguridad_60MN.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Estructura.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

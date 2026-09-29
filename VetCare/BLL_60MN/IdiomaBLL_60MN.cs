@@ -1,39 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DAL_60MN;
+using Entidades_60MN;
+using Seguridad_60MN.Auditoria;
+using Servicios_60MN.Idioma;
+using Servicios_60MN.Sesion;
 
 namespace BLL_60MN
 {
+    /// <summary>
+    /// Multi-idioma: carga las traducciones del idioma elegido desde la base y
+    /// se las entrega al GestorIdioma_60MN (sujeto del Observer), que notifica
+    /// a los formularios abiertos. El idioma elegido queda como predeterminado
+    /// para el próximo inicio de sesión.
+    /// </summary>
     public class IdiomaBLL_60MN
     {
-        string ISeleccionado = "";
-        public IdiomaBLL_60MN() { }
-        public int IdiomaID { get; set; }
-        public string Descripcion { get; set; }
+        private readonly IdiomaDAL_60MN mapper = new IdiomaDAL_60MN();
 
-        public string CargarIdioma()
+        public List<Idioma_60MN> Listar() => mapper.Listar();
+
+        /// <summary>Idioma marcado como predeterminado (o el base si no hay ninguno marcado).</summary>
+        public Idioma_60MN? ObtenerPredeterminado()
         {
-            DAL_60MN.IdiomaDAL_60MN _idioma = new DAL_60MN.IdiomaDAL_60MN();
-            ISeleccionado = _idioma.CargarIdioma();
-
-
-
-            return ISeleccionado;
+            List<Idioma_60MN> idiomas = mapper.Listar();
+            return idiomas.FirstOrDefault(i => i.Predeterminado) ?? idiomas.FirstOrDefault(i => i.EsBase) ?? idiomas.FirstOrDefault();
         }
 
-        public string SetearIdioma(int idiomaID)
+        /// <summary>Aplica el idioma predeterminado al iniciar la aplicación.</summary>
+        public void AplicarPredeterminado()
         {
-            DAL_60MN.IdiomaDAL_60MN idioma1 = new DAL_60MN.IdiomaDAL_60MN();
+            Idioma_60MN? idioma = ObtenerPredeterminado();
+            if (idioma != null)
+                Aplicar(idioma);
+        }
 
-            this.Descripcion = idioma1.SetearIdioma(idiomaID);
+        /// <summary>Cambia el idioma en pantalla (todos los formularios abiertos se traducen).</summary>
+        public void Aplicar(Idioma_60MN idioma)
+        {
+            // El idioma base usa los textos originales del diseñador: no necesita traducciones.
+            Dictionary<string, string> traducciones = idioma.EsBase
+                ? new Dictionary<string, string>()
+                : mapper.ObtenerTraducciones(idioma.Id);
+            GestorIdioma_60MN.Instancia.CambiarIdioma(idioma, traducciones);
+        }
 
-
-            return this.Descripcion;
-
-
+        /// <summary>Aplica el idioma y lo guarda como predeterminado para el próximo inicio de sesión.</summary>
+        public void CambiarYGuardar(Idioma_60MN idioma)
+        {
+            string anterior = GestorIdioma_60MN.Instancia.IdiomaActual?.Nombre ?? "-";
+            Aplicar(idioma);
+            mapper.EstablecerPredeterminado(idioma.Id);
+            if (SessionManager_60MN.Instancia.EstaLogueado)
+                new BitacoraBLL_60MN().Registrar(EventoSistema_60MN.IdiomaCambiado, $"Cambio de idioma: {anterior} → {idioma.Nombre}.");
         }
     }
 }
-

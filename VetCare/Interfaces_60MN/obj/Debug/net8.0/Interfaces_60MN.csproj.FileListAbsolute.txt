@@ -11,3 +11,9 @@ C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\obj\Debug\net8.0\refint\Interfaces_60MN.dll
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\obj\Debug\net8.0\Interfaces_60MN.pdb
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\Interfaces_60MN\obj\Debug\net8.0\ref\Interfaces_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\o\Interfaces_60MN.deps.json
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\o\Interfaces_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\o\Interfaces_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\g\Interfaces_60MN.deps.json
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\g\Interfaces_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\g\Interfaces_60MN.pdb

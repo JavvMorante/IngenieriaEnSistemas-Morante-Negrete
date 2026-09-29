@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Interfaces_60MN
 {
+    /// <summary>Contrato común de las entidades persistidas: todas se identifican por un Id entero.</summary>
     public interface IEntity_60MN
     {
-
-        long IdUsuario { get; set; }
+        int Id { get; set; }
     }
 }

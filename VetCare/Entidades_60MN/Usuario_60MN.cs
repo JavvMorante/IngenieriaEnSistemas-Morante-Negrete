@@ -1,45 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Interfaces_60MN;
 
 namespace Entidades_60MN
 {
-    public class Usuario_60MN : Entity_60MN, IUsuario_60MN
+    /// <summary>Usuario del sistema. DNI y Email viajan en claro en memoria y se guardan cifrados con AES.</summary>
+    public class Usuario_60MN : IUsuario_60MN
     {
+        public int Id { get; set; }
 
-        private readonly IList<IPermiso_60MN> _permisos;
+        public string NombreUsuario { get; set; } = string.Empty;
 
-        public Usuario_60MN()
-        {
-            _permisos = new List<IPermiso_60MN>();
-        }
+        /// <summary>Hash SHA-256 con sal ("sal.hash" en Base64). Nunca la contraseña en claro.</summary>
+        public string ClaveHash { get; set; } = string.Empty;
 
-        public long IdUsuario { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
-        public long Dni { get; set; }
+        public string Apellido { get; set; } = string.Empty;
 
-        public string Apellido { get; set; }
+        public string Dni { get; set; } = string.Empty;
 
-        public string Nombre { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        public string Email { get; set; }
+        /// <summary>Familias (UsuarioFamilia) y patentes individuales (UsuarioPatente) del usuario.</summary>
+        public IList<IPermiso_60MN> Permisos { get; } = new List<IPermiso_60MN>();
 
-        public string Username { get; set; }
+        /// <summary>Nombres de las familias del usuario, para mostrar en grillas.</summary>
+        public string Familias { get; set; } = string.Empty;
 
-        public string PasswordHash { get; set; }
+        /// <summary>Cantidad de patentes asignadas en forma individual (además de las familias).</summary>
+        public int PatentesIndividuales { get; set; }
 
-        public string Rol { get; set; }
+        public bool Activo { get; set; } = true;
 
-        public int LoginCount { get; set; }
+        public bool Bloqueado { get; set; }
 
-        public bool Locked { get; set; }
+        public int IntentosFallidos { get; set; }
 
-        public bool Deleted { get; set; }
+        /// <summary>True hasta que el usuario cambia la contraseña inicial (CUS05 «extend» CUS07).</summary>
+        public bool PrimerIngreso { get; set; } = true;
 
-        public IList<IPermiso_60MN> Permisos => _permisos;
+        public bool EnSesion { get; set; }
+
+        public string NombreCompleto => $"{Apellido}, {Nombre}";
+
+        public string Estado => !Activo ? "Baja" : Bloqueado ? "Bloqueado" : "Activo";
     }
 }
