@@ -46,7 +46,9 @@ namespace VetCare
         }
 
         public static bool TieneAlguno(string codigosSeparadosPorBarra) =>
-            codigosSeparadosPorBarra.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            codigosSeparadosPorBarra.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(codigo => codigo.Trim())
+                                    .Where(codigo => codigo.Length > 0)
                                     .Any(SessionManager_60MN.Instancia.TienePermiso);
     }
 }

@@ -79,9 +79,9 @@ namespace VetCare
                 return;
             }
             CultureInfo ar = CultureInfo.GetCultureInfo("es-AR");
-            lblResumen.Text = $"{resultado.UnidadesEgresadas} unidad(es) egresada(s) · " +
-                              $"{resultado.UnidadesEntregadas} unidad(es) entregada(s) en atenciones · " +
-                              $"$ {resultado.ImporteEntregado.ToString("N2", ar)}";
+            lblResumen.Text = string.Format(
+                T("msg.ResumenReporteInteligente", "{0} unidad(es) egresada(s) · {1} unidad(es) entregada(s) en atenciones · $ {2}"),
+                resultado.UnidadesEgresadas, resultado.UnidadesEntregadas, resultado.ImporteEntregado.ToString("N2", ar));
         }
 
         /// <summary>Gráfico de demanda estacional: una barra apilada por mes.</summary>
@@ -144,7 +144,7 @@ namespace VetCare
             sb.AppendLine(new string('-', 96));
             foreach (DemandaMensual_60MN d in resultado.Demanda.OrderBy(x => x.ClavePeriodo).ThenBy(x => x.Categoria))
             {
-                string categoria = d.Categoria.Length > 45 ? d.Categoria[..45] : d.Categoria;
+                string categoria = d.Categoria.Length > 45 ? d.Categoria.Substring(0, 45) : d.Categoria;
                 sb.AppendLine($"{d.Periodo,-12}{categoria,-46}{d.Cantidad,10}");
             }
             sb.AppendLine(new string('-', 96));
@@ -157,8 +157,8 @@ namespace VetCare
             sb.AppendLine(new string('-', 96));
             foreach (ProductoEntregado_60MN p in resultado.TopProductos)
             {
-                string nombre = p.Nombre.Length > 31 ? p.Nombre[..31] : p.Nombre;
-                string categoria = p.Categoria.Length > 21 ? p.Categoria[..21] : p.Categoria;
+                string nombre = p.Nombre.Length > 31 ? p.Nombre.Substring(0, 31) : p.Nombre;
+                string categoria = p.Categoria.Length > 21 ? p.Categoria.Substring(0, 21) : p.Categoria;
                 sb.AppendLine($"{p.Codigo,-10}{nombre,-32}{categoria,-22}{p.Cantidad,7}{p.Atenciones,8}" +
                               $"{p.Importe.ToString("N2", ar),13}");
             }

@@ -32,16 +32,16 @@ namespace Seguridad_60MN.Criptografia
             const string todos = mayusculas + minusculas + digitos;
 
             char[] clave = new char[Math.Max(longitud, LongitudMinima)];
-            clave[0] = mayusculas[RandomNumberGenerator.GetInt32(mayusculas.Length)];
-            clave[1] = minusculas[RandomNumberGenerator.GetInt32(minusculas.Length)];
-            clave[2] = digitos[RandomNumberGenerator.GetInt32(digitos.Length)];
+            clave[0] = mayusculas[UtilCripto_60MN.EnteroAleatorio(mayusculas.Length)];
+            clave[1] = minusculas[UtilCripto_60MN.EnteroAleatorio(minusculas.Length)];
+            clave[2] = digitos[UtilCripto_60MN.EnteroAleatorio(digitos.Length)];
             for (int i = 3; i < clave.Length; i++)
-                clave[i] = todos[RandomNumberGenerator.GetInt32(todos.Length)];
+                clave[i] = todos[UtilCripto_60MN.EnteroAleatorio(todos.Length)];
 
             // Mezcla (Fisher-Yates) para que los tipos obligatorios no queden siempre al principio.
             for (int i = clave.Length - 1; i > 0; i--)
             {
-                int j = RandomNumberGenerator.GetInt32(i + 1);
+                int j = UtilCripto_60MN.EnteroAleatorio(i + 1);
                 (clave[i], clave[j]) = (clave[j], clave[i]);
             }
             return new string(clave);

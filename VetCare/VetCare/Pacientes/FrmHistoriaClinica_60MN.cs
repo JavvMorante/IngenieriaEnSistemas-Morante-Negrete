@@ -88,6 +88,15 @@ namespace VetCare
             if (propietario != null)
                 lblPropietario.Text = $"{T("msg.Propietario", "Propietario")}: {propietario.NombreCompleto} · {propietario.Documento} · {propietario.Telefono}";
             MostrarAlertaAlergias();
+
+            // Detalle de la atención seleccionada (o el aviso de que no hay atenciones), en el idioma actual.
+            if (!EsAlta)
+            {
+                if (dgvAtenciones.Rows.Count == 0)
+                    txtDetalle.Text = T("msg.SinAtenciones", "No hay atenciones registradas.");
+                else
+                    dgvAtenciones_SelectionChanged(this, EventArgs.Empty);
+            }
         }
 
         private void MostrarCabecera(Mascota_60MN m, Cliente_60MN propietario)
@@ -241,36 +250,34 @@ namespace VetCare
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{a.FechaHora:dd/MM/yyyy HH:mm} · {a.Profesional}\n");
-            sb.Append($"Peso {a.Peso:0.##} kg · Temp. {a.Temperatura:0.0} °C · FC {a.FrecuenciaCardiaca} lpm\n\n");
-            sb.Append($"Motivo: {a.Motivo}\n\nDiagnóstico: {a.Diagnostico}\n\nMedicación:\n");
+            sb.Append($"{T("msg.Peso", "Peso")} {a.Peso:0.##} kg · {T("msg.Temperatura", "Temp.")} {a.Temperatura:0.0} °C · " +
+                      $"{T("msg.FrecuenciaCardiaca", "FC")} {a.FrecuenciaCardiaca} lpm\n\n");
+            sb.Append($"{T("msg.Motivo", "Motivo")}: {a.Motivo}\n\n{T("msg.Diagnostico", "Diagnóstico")}: {a.Diagnostico}\n\n" +
+                      $"{T("msg.Medicacion", "Medicación")}:\n");
             if (a.Medicacion.Count == 0)
-                sb.Append("  (sin medicación)\n");
+                sb.Append($"  {T("msg.SinMedicacion", "(sin medicación)")}\n");
             foreach (ItemCarrito_60MN item in a.Medicacion)
-                sb.Append($"  {item.Cantidad} x {item.Producto} (lote {item.Lote})\n");
+                sb.Append($"  {item.Cantidad} x {item.Producto} ({T("msg.Lote", "lote")} {item.Lote})\n");
             return sb.ToString();
         }
 
         private void btnNuevaAtencion_Click(object sender, EventArgs e)
         {
             if (historia == null) return;
-            using FrmAtencion_60MN formulario = new FrmAtencion_60MN(historia);
-            formulario.ShowDialog(this);
-            Cargar();
+            // Al cerrar la atención se recarga la historia (nuevas atenciones, peso actualizado).
+            VentanasMdi_60MN.Abrir(this, () => new FrmAtencion_60MN(historia), $"atencion:{historia.Id}", Cargar);
         }
 
         private void btnVerInforme_Click(object sender, EventArgs e)
         {
             if (AtencionSeleccionada is not Atencion_60MN a) return;
-            using FrmInformeAtencion_60MN formulario = new FrmInformeAtencion_60MN(a.Id);
-            formulario.ShowDialog(this);
+            VentanasMdi_60MN.Abrir(this, () => new FrmInformeAtencion_60MN(a.Id), $"informe:{a.Id}");
         }
 
         private void btnMedicacion_Click(object sender, EventArgs e)
         {
             if (AtencionSeleccionada is not Atencion_60MN a) return;
-            using FrmCarrito_60MN formulario = new FrmCarrito_60MN(a.Id);
-            formulario.ShowDialog(this);
-            CargarAtenciones(a.Id);
+            VentanasMdi_60MN.Abrir(this, () => new FrmCarrito_60MN(a.Id), $"carrito:{a.Id}", () => CargarAtenciones(a.Id));
         }
 
         /// <summary>CUN06 6.1: impresión (o PDF) de la historia clínica completa.</summary>

@@ -26,7 +26,15 @@ namespace VetCare
         public FrmMenuPrincipal_60MN()
         {
             InitializeComponent();
+            // Legibilidad: el ítem señalado o abierto de la barra conserva el texto blanco sobre un fondo oscuro.
+            menuPrincipal.Renderer = new RenderizadorMenu_60MN();
+            foreach (ToolStripMenuItem opcion in OpcionesEnDesarrollo)
+                opcion.ForeColor = SystemColors.GrayText;
         }
+
+        /// <summary>Opciones fuera del alcance ("TD"): se muestran en gris para no confundirlas con las que funcionan.</summary>
+        private ToolStripMenuItem[] OpcionesEnDesarrollo =>
+            new[] { mnuProveedores, mnuFacturar, mnuDespachar, mnuGestionCompras, mnuReporte3, mnuAyudaEnLinea };
 
         private static string T(string clave, string porDefecto) => TraductorFormularios_60MN.T(clave, porDefecto);
 
@@ -53,6 +61,9 @@ namespace VetCare
             string codigoIdioma = GestorIdioma_60MN.Instancia.IdiomaActual?.Codigo ?? "es";
             CultureInfo cultura = codigoIdioma == "en" ? CultureInfo.GetCultureInfo("en-US") : CultureInfo.GetCultureInfo("es-AR");
             lblEstadoFecha.Text = DateTime.Now.ToString("dddd dd/MM/yyyy", cultura);
+
+            foreach (ToolStripMenuItem opcion in OpcionesEnDesarrollo)
+                opcion.ToolTipText = T("msg.EnDesarrollo", "Funcionalidad en desarrollo (TD).");
 
             if (sesion.EsEmergencia)
                 Text += $"  [{T("estado.Emergencia", "USUARIO DE EMERGENCIA")}]";
@@ -98,20 +109,7 @@ namespace VetCare
         }
 
         /// <summary>Abre un formulario como hijo MDI, o lo activa si ya estaba abierto.</summary>
-        private T Abrir<T>() where T : Form, new()
-        {
-            T? abierto = MdiChildren.OfType<T>().FirstOrDefault();
-            if (abierto != null)
-            {
-                if (abierto.WindowState == FormWindowState.Minimized)
-                    abierto.WindowState = FormWindowState.Normal;
-                abierto.Activate();
-                return abierto;
-            }
-            T formulario = new T { MdiParent = this };
-            formulario.Show();
-            return formulario;
-        }
+        private T Abrir<T>() where T : Form, new() => VentanasMdi_60MN.Abrir(this, () => new T());
 
         // ---------------- ADMIN ----------------
         private void mnuUsuarios_Click(object sender, EventArgs e) => Abrir<FrmGestionUsuarios_60MN>();

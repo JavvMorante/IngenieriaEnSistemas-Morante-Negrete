@@ -7,7 +7,7 @@ namespace VetCare
     /// <summary>
     /// Cambio de idioma desde el menú USUARIO. Al aceptar, el GestorIdioma_60MN
     /// notifica a todos los formularios abiertos (Observer) y el idioma queda
-    /// guardado como predeterminado para el próximo inicio de sesión.
+    /// guardado como el del usuario logueado (se le aplica en cada inicio de sesión).
     /// </summary>
     public partial class FrmCambiarIdioma_60MN : FormBase_60MN
     {
@@ -38,9 +38,9 @@ namespace VetCare
             if (cboIdioma.SelectedItem is not Idioma_60MN idioma) return;
             try
             {
-                idiomaBLL.CambiarYGuardar(idioma);
+                idiomaBLL.CambiarIdiomaUsuario(idioma);
                 Mensajes_60MN.Informar(TraductorFormularios_60MN.T("msg.IdiomaGuardado",
-                    "Idioma cambiado. Quedará como predeterminado en el próximo inicio de sesión."));
+                    "Idioma cambiado. Quedó guardado como su idioma y se aplicará cada vez que inicie sesión."));
                 DialogResult = DialogResult.OK;
                 Close();
             }

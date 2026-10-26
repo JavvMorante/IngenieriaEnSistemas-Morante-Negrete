@@ -25,6 +25,7 @@ namespace VetCare
             dgvProductos.AutoGenerateColumns = false;
             dgvCarrito.AutoGenerateColumns = false;
             dgvCarrito.DataSource = carrito;
+            TextoGuia_60MN.Asignar(txtBuscar, "Código o nombre");
         }
 
         private void FrmCarrito_60MN_Load(object sender, EventArgs e)

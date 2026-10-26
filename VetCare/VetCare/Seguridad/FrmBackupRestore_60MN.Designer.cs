@@ -122,7 +122,7 @@ namespace VetCare
             lblNotaCarpeta.Name = "lblNotaCarpeta";
             lblNotaCarpeta.Size = new Size(620, 60);
             lblNotaCarpeta.TabIndex = 4;
-            lblNotaCarpeta.Text = "El archivo lo escribe el servicio de SQL Server: la carpeta debe existir en el servidor y el servicio debe tener permiso de escritura. Se sugiere la carpeta de backups de la instancia.";
+            lblNotaCarpeta.Text = "Puede elegir cualquier carpeta donde usted tenga permiso de escritura (también un pendrive). SQL Server genera el backup en su propia carpeta y VetCare lo copia a la elegida, verificando que la copia sea idéntica.";
             //
             // btnRespaldar
             //
@@ -158,7 +158,7 @@ namespace VetCare
             lblRespaldos.Name = "lblRespaldos";
             lblRespaldos.Size = new Size(274, 20);
             lblRespaldos.TabIndex = 0;
-            lblRespaldos.Text = "Backups registrados por SQL Server";
+            lblRespaldos.Text = "Backups disponibles (o elija un archivo .bak de cualquier carpeta con Examinar...)";
             //
             // dgvRespaldos
             //
@@ -260,7 +260,7 @@ namespace VetCare
             lblAdvertencia.Name = "lblAdvertencia";
             lblAdvertencia.Size = new Size(620, 60);
             lblAdvertencia.TabIndex = 5;
-            lblAdvertencia.Text = "Restaurar reemplaza la base completa: se pierden los cambios posteriores al backup (incluida la bitácora) y al terminar se cierra la sesión.";
+            lblAdvertencia.Text = "Restaurar reemplaza la base completa: se pierden los cambios posteriores al backup (incluida la bitácora) y al terminar se cierra la sesión. Solo se aceptan backups de VetCareBD_60MN.";
             //
             // btnRestaurar
             //

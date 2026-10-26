@@ -94,7 +94,6 @@ namespace VetCare
             //
             txtBuscar.Location = new Point(110, 54);
             txtBuscar.Name = "txtBuscar";
-            txtBuscar.PlaceholderText = "Código o nombre";
             txtBuscar.Size = new Size(320, 27);
             txtBuscar.TabIndex = 3;
             txtBuscar.KeyDown += txtBuscar_KeyDown;

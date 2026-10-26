@@ -110,9 +110,16 @@ namespace BLL_60MN
             }
 
             // Carga de permisos (Composite): familias del usuario + patentes individuales.
-            CargarPermisos(usuario, ModeloPermisos_60MN.Cargar());
+            ModeloPermisos_60MN modelo = ModeloPermisos_60MN.Cargar();
+            CargarPermisos(usuario, modelo);
             List<InconsistenciaDV_60MN> inconsistencias = new IntegridadBLL_60MN().VerificarInterno();
-            bool integridadComprometida = inconsistencias.Count > 0;
+
+            // Un ciclo en FamiliaFamilia solo puede venir de una modificación por fuera del sistema:
+            // esas relaciones se descartaron al cargar y la base se trata como no íntegra.
+            if (modelo.RelacionesConCiclo.Count > 0)
+                bitacora.RegistrarSinSesion(usuario.Id, usuario.NombreUsuario, EventoSistema_60MN.RegistroAlterado,
+                    $"FamiliaFamilia contiene relaciones que forman un ciclo; se descartaron al cargar los permisos: {modelo.DescribirRelacionesConCiclo()}.");
+            bool integridadComprometida = inconsistencias.Count > 0 || modelo.RelacionesConCiclo.Count > 0;
             if (integridadComprometida && !usuario.Permisos.Any(p => p.TienePatente(CodigosPatente_60MN.Integridad)))
             {
                 bitacora.RegistrarSinSesion(usuario.Id, usuario.NombreUsuario, EventoSistema_60MN.AccesoDenegadoIntegridad,
@@ -504,8 +511,8 @@ namespace BLL_60MN
 
         public static bool EsEmailValido(string email)
         {
-            if (!MailAddress.TryCreate(email, out MailAddress? direccion)) return false;
-            return direccion.Address == email && direccion.Host.Contains('.');
+            // Misma regla que el mail del cliente (Validaciones_60MN); la GUI la usa para marcar el campo.
+            return Validaciones_60MN.EsEmailValido(email);
         }
 
         private static Usuario_60MN Cifrado(Usuario_60MN u) => new Usuario_60MN

@@ -27,11 +27,18 @@ namespace VetCare
             if (historia == null) return;
             lblPaciente.Text = $"{historia.Numero} · {historia.Mascota.Nombre} ({historia.Mascota.Especie}, {historia.Mascota.Raza}) · " +
                                $"{historia.Propietario.NombreCompleto}";
-            // CUN07 4.1: las alergias se destacan al registrar la atención.
-            lblAlergias.Text = historia.TieneAlergias ? $"⚠ ALERGIAS: {historia.Alergias}" : historia.Alergias;
             // Paso 3: profesional de la sesión activa.
             txtProfesional.Text = AtencionBLL_60MN.ProfesionalActual();
             nudPeso.Value = Math.Min(historia.PesoActual, nudPeso.Maximum);
+        }
+
+        /// <summary>CUN07 4.1: las alergias se destacan al registrar la atención (texto en el idioma actual).</summary>
+        protected override void AlCambiarIdioma()
+        {
+            if (historia == null) return;
+            lblAlergias.Text = historia.TieneAlergias
+                ? $"⚠ {TraductorFormularios_60MN.T("msg.Alergias", "ALERGIAS")}: {historia.Alergias}"
+                : historia.Alergias;
         }
 
         private void btnRegistrar_Click(object sender, EventArgs e)
@@ -79,15 +86,15 @@ namespace VetCare
         private void btnMedicacion_Click(object sender, EventArgs e)
         {
             if (registrada == null) return;
-            using FrmCarrito_60MN formulario = new FrmCarrito_60MN(registrada.Id);
-            formulario.ShowDialog(this);
+            int atencionId = registrada.Id;
+            VentanasMdi_60MN.Abrir(this, () => new FrmCarrito_60MN(atencionId), $"carrito:{atencionId}");
         }
 
         private void btnInforme_Click(object sender, EventArgs e)
         {
             if (registrada == null) return;
-            using FrmInformeAtencion_60MN formulario = new FrmInformeAtencion_60MN(registrada.Id);
-            formulario.ShowDialog(this);
+            int atencionId = registrada.Id;
+            VentanasMdi_60MN.Abrir(this, () => new FrmInformeAtencion_60MN(atencionId), $"informe:{atencionId}");
         }
     }
 }

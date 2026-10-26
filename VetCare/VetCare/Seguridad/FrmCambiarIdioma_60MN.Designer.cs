@@ -60,7 +60,7 @@ namespace VetCare
             lblNota.Name = "lblNota";
             lblNota.Size = new Size(316, 44);
             lblNota.TabIndex = 2;
-            lblNota.Text = "El idioma elegido quedará predeterminado para el próximo inicio de sesión.";
+            lblNota.Text = "El idioma elegido queda guardado como el suyo: se aplicará cada vez que inicie sesión.";
             //
             // btnAceptar
             //

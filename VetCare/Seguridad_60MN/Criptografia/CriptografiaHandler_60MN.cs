@@ -36,7 +36,7 @@ namespace Seguridad_60MN.Criptografia
         {
             if (textoPlano == null) throw new ArgumentNullException(nameof(textoPlano));
 
-            byte[] iv = RandomNumberGenerator.GetBytes(TamanioIVBytes);
+            byte[] iv = UtilCripto_60MN.BytesAleatorios(TamanioIVBytes);
             byte[] datos = Encoding.UTF8.GetBytes(textoPlano);
 
             using (Aes aes = Aes.Create())

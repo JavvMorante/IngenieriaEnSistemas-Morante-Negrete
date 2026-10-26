@@ -49,7 +49,7 @@ namespace Seguridad_60MN.Integridad
         {
             new TablaDV_60MN(Usuario, new[] { "UsuarioID" },
                 "UsuarioID", "Usuario", "Clave", "Nombre", "Apellido", "DNI", "Email",
-                "Activo", "Bloqueado", "IntentosFallidos", "PrimerIngreso", "EnSesion"),
+                "Activo", "Bloqueado", "IntentosFallidos", "PrimerIngreso", "EnSesion", "IdiomaID"),
             new TablaDV_60MN(Patente, new[] { "PatenteID" },
                 "PatenteID", "Nombre", "Codigo"),
             new TablaDV_60MN(Familia, new[] { "FamiliaID" },

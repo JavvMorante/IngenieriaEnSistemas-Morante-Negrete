@@ -58,8 +58,7 @@ namespace VetCare
             using FolderBrowserDialog dialogo = new FolderBrowserDialog
             {
                 Description = T("msg.ElegirCarpetaBackup", "Carpeta de destino del backup"),
-                UseDescriptionForTitle = true,
-                InitialDirectory = Directory.Exists(txtCarpeta.Text) ? txtCarpeta.Text : string.Empty
+                SelectedPath = Directory.Exists(txtCarpeta.Text) ? txtCarpeta.Text : string.Empty
             };
             if (dialogo.ShowDialog(this) == DialogResult.OK)
                 txtCarpeta.Text = dialogo.SelectedPath;
@@ -97,8 +96,11 @@ namespace VetCare
             using OpenFileDialog dialogo = new OpenFileDialog
             {
                 Filter = "Backup de SQL Server (*.bak)|*.bak|Todos los archivos (*.*)|*.*",
-                InitialDirectory = Directory.Exists(txtCarpeta.Text) ? txtCarpeta.Text : string.Empty,
-                CheckFileExists = false
+                // Cualquier carpeta: VetCare copia el archivo a la carpeta de SQL Server antes de restaurar.
+                InitialDirectory = Directory.Exists(txtCarpeta.Text)
+                    ? txtCarpeta.Text
+                    : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                CheckFileExists = true
             };
             if (dialogo.ShowDialog(this) == DialogResult.OK)
                 txtArchivo.Text = dialogo.FileName;

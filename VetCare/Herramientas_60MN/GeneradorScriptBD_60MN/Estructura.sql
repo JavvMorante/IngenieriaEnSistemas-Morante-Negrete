@@ -64,6 +64,9 @@ CREATE TABLE Usuario (
     IntentosFallidos  INT               NOT NULL CONSTRAINT DF_Usuario_Intentos DEFAULT (0),
     PrimerIngreso     BIT               NOT NULL CONSTRAINT DF_Usuario_PrimerIngreso DEFAULT (1),
     EnSesion          BIT               NOT NULL CONSTRAINT DF_Usuario_EnSesion DEFAULT (0),
+    -- Último idioma elegido por el usuario (se aplica al iniciar sesión). NULL = idioma base (español).
+    -- La clave foránea a Idioma se agrega después de crear esa tabla. Entra en el DVH.
+    IdiomaID          INT               NULL,
     DVH               CHAR(64)          NULL
 );
 GO
@@ -98,6 +101,37 @@ CREATE TABLE FamiliaFamilia (
     CONSTRAINT PK_FamiliaFamilia PRIMARY KEY (FamiliaPadreID, FamiliaHijaID),
     CONSTRAINT CK_FamiliaFamilia_Ciclo CHECK (FamiliaPadreID <> FamiliaHijaID)
 );
+GO
+
+/* El CHECK solo impide que una familia se contenga a sí misma (A → A). Este trigger
+   impide también los ciclos indirectos (A → B → A, A → B → C → A), aunque la fila se
+   inserte por SQL directo: desde cada relación nueva Padre → Hija recorre hacia abajo
+   las familias alcanzables desde la hija; si llega de nuevo al padre, hay un ciclo. */
+CREATE TRIGGER TR_FamiliaFamilia_SinCiclos
+ON FamiliaFamilia
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @hayCiclo BIT = 0;
+
+    WITH Alcanzables AS (
+        SELECT i.FamiliaPadreID AS Origen, i.FamiliaHijaID AS Actual, 1 AS Nivel
+        FROM inserted i
+        UNION ALL
+        SELECT a.Origen, ff.FamiliaHijaID, a.Nivel + 1
+        FROM Alcanzables a
+        JOIN FamiliaFamilia ff ON ff.FamiliaPadreID = a.Actual
+        WHERE a.Nivel < 50 AND a.Actual <> a.Origen
+    )
+    SELECT @hayCiclo = 1 FROM Alcanzables WHERE Actual = Origen;
+
+    IF @hayCiclo = 1
+    BEGIN
+        ROLLBACK TRANSACTION;
+        THROW 50001, N'La relación entre familias generaría un ciclo (una familia no puede contenerse a sí misma, ni directa ni indirectamente).', 1;
+    END
+END
 GO
 
 -- ON DELETE CASCADE hacia Usuario: si se borra un usuario directamente en la base,
@@ -403,15 +437,18 @@ GO
    - Clave de traducción: "Formulario.Control" (específica) o "Control"
      (genérica, compartida por todos los formularios). Para textos que
      arma el código se usan claves "msg.*" / "estado.*".
-   - Predeterminado = 1 marca el idioma con el que abre el próximo login.
+   - El idioma es una preferencia POR USUARIO (Usuario.IdiomaID): el Login abre
+     siempre en el idioma base y al ingresar se aplica el último idioma del usuario.
    --------------------------------------------------------------------- */
 CREATE TABLE Idioma (
     IdiomaID        INT          NOT NULL CONSTRAINT PK_Idioma PRIMARY KEY,
     Nombre          NVARCHAR(50) NOT NULL,
     Codigo          VARCHAR(5)   NOT NULL CONSTRAINT UX_Idioma_Codigo UNIQUE,
-    EsBase          BIT          NOT NULL,
-    Predeterminado  BIT          NOT NULL
+    EsBase          BIT          NOT NULL
 );
+GO
+
+ALTER TABLE Usuario ADD CONSTRAINT FK_Usuario_Idioma FOREIGN KEY (IdiomaID) REFERENCES Idioma (IdiomaID);
 GO
 
 CREATE TABLE Traduccion (
@@ -422,9 +459,9 @@ CREATE TABLE Traduccion (
 );
 GO
 
-INSERT INTO Idioma (IdiomaID, Nombre, Codigo, EsBase, Predeterminado) VALUES
-    (1, N'Español', 'es', 1, 1),
-    (2, N'English', 'en', 0, 0);
+INSERT INTO Idioma (IdiomaID, Nombre, Codigo, EsBase) VALUES
+    (1, N'Español', 'es', 1),
+    (2, N'English', 'en', 0);
 GO
 
 INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
@@ -444,7 +481,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'msg.ConfirmarLogout', N'Do you want to close the session and exit VetCare?'),
 (2, 'msg.ConfirmarSalir', N'Do you want to exit VetCare?'),
 (2, 'msg.VentanasAbiertas', N'There are {0} open window(s). Unsaved operations will be lost. Continue?'),
-(2, 'msg.IdiomaGuardado', N'Language changed. It will be the default language the next time you sign in.'),
+(2, 'msg.IdiomaGuardado', N'Language changed. It was saved as your language and will be applied every time you sign in.'),
 (2, 'estado.Usuario', N'User'), (2, 'estado.Familias', N'Families'), (2, 'estado.PatentesIndividuales', N'individual patent(s)'), (2, 'estado.Idioma', N'Language'),
 (2, 'estado.Integridad', N'Integrity inconsistencies detected'), (2, 'estado.Emergencia', N'EMERGENCY USER'),
 -- Menú principal
@@ -457,7 +494,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'mnuLogout', N'Logout'), (2, 'mnuCambiarIdioma', N'Change language'),
 (2, 'mnuVentas', N'SALES'), (2, 'mnuCarrito', N'Cart'), (2, 'mnuFacturar', N'Invoice'), (2, 'mnuDespachar', N'Dispatch'),
 (2, 'mnuCompras', N'PURCHASES'), (2, 'mnuGestionCompras', N'Purchases'),
-(2, 'mnuReportes', N'REPORTS'), (2, 'mnuReporte1', N'Stock report'), (2, 'mnuReporte2', N'Report 2'), (2, 'mnuReporte3', N'Report 3'),
+(2, 'mnuReportes', N'REPORTS'), (2, 'mnuReporte1', N'Stock report'), (2, 'mnuReporte2', N'Smart report'), (2, 'mnuReporte3', N'Report 3'),
 (2, 'mnuAyuda', N'HELP'), (2, 'mnuAyudaEnLinea', N'Online help (F1)'), (2, 'mnuAcercaDe', N'About VetCare'),
 -- Login
 (2, 'FrmLogin_60MN', N'VetCare - Sign in'), (2, 'FrmLogin_60MN.lblIdioma', N'Change language'),
@@ -465,7 +502,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'FrmLogin_60MN.btnAceptar', N'Enter'), (2, 'FrmLogin_60MN.btnCancelar', N'Exit'),
 -- Cambiar idioma
 (2, 'FrmCambiarIdioma_60MN', N'Change language'), (2, 'FrmCambiarIdioma_60MN.lblIdioma', N'Language'),
-(2, 'FrmCambiarIdioma_60MN.lblNota', N'The selected language will be the default the next time you sign in.'),
+(2, 'FrmCambiarIdioma_60MN.lblNota', N'The selected language is saved as yours: it will be applied every time you sign in.'),
 -- Cambiar contraseña
 (2, 'FrmCambiarClave_60MN', N'Change password'), (2, 'FrmCambiarClave_60MN.lblInfo', N'Enter your current password and the new password.'),
 (2, 'FrmCambiarClave_60MN.lblActual', N'Current password'), (2, 'FrmCambiarClave_60MN.lblNueva', N'New password'),
@@ -592,11 +629,11 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 -- Backup y restore (CUS12)
 (2, 'FrmBackupRestore_60MN', N'Backup / Restore'), (2, 'FrmBackupRestore_60MN.lblTitulo', N'Database backup and restore'),
 (2, 'grpRespaldo', N'Back up'), (2, 'lblCarpeta', N'Destination folder *'), (2, 'btnExaminarCarpeta', N'Browse...'),
-(2, 'lblNotaCarpeta', N'The file is written by the SQL Server service: the folder must exist on the server and the service needs write permission. The instance backup folder is suggested.'),
-(2, 'btnRespaldar', N'Back up database'), (2, 'grpRestaurar', N'Restore'), (2, 'lblRespaldos', N'Backups registered by SQL Server'),
+(2, 'lblNotaCarpeta', N'You can choose any folder where you have write permission (a USB drive too). SQL Server creates the backup in its own folder and VetCare copies it to the chosen one, verifying that the copy is identical.'),
+(2, 'btnRespaldar', N'Back up database'), (2, 'grpRestaurar', N'Restore'), (2, 'lblRespaldos', N'Available backups (or choose a .bak file from any folder with Browse...)'),
 (2, 'colArchivo', N'File'), (2, 'colTamanio', N'Size'), (2, 'colRuta', N'Path'), (2, 'lblArchivo', N'Backup file *'),
 (2, 'btnExaminarArchivo', N'Browse...'),
-(2, 'lblAdvertencia', N'Restoring replaces the whole database: changes made after the backup (including the event log) are lost and the session is closed at the end.'),
+(2, 'lblAdvertencia', N'Restoring replaces the whole database: changes made after the backup (including the event log) are lost and the session is closed at the end. Only VetCareBD_60MN backups are accepted.'),
 (2, 'FrmBackupRestore_60MN.btnRestaurar', N'Restore database'), (2, 'msg.ArchivoAGenerar', N'File to generate'),
 (2, 'msg.ElegirCarpetaBackup', N'Backup destination folder'),
 -- Bitácora de eventos: exportar / importar XML
@@ -606,5 +643,32 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'msg.XmlValido', N'Valid file: HMAC-SHA256 signatures are correct and the content was verified.'),
 (2, 'msg.XmlRechazado', N'Rejected file: it cannot be imported.'), (2, 'msg.XmlExportadoPor', N'Exported by'),
 (2, 'msg.XmlVersion', N'Version'), (2, 'msg.XmlCifrado', N'Encrypted descriptions'), (2, 'msg.Si', N'Yes'), (2, 'msg.No', N'No'),
-(2, 'msg.XmlEventos', N'Events'), (2, 'msg.XmlRango', N'Period'), (2, 'msg.XmlNuevos', N'New'), (2, 'msg.XmlDuplicados', N'Already present');
+(2, 'msg.XmlEventos', N'Events'), (2, 'msg.XmlRango', N'Period'), (2, 'msg.XmlNuevos', N'New'), (2, 'msg.XmlDuplicados', N'Already present'),
+-- Textos que arma el código (bitácora, historia clínica, login) y Reporte inteligente
+(2, 'msg.Criticidad1', N'1 - Very high'),
+(2, 'msg.Criticidad2', N'2 - High'),
+(2, 'msg.Criticidad3', N'3 - Medium'),
+(2, 'msg.Criticidad4', N'4 - Low'),
+(2, 'msg.Criticidad5', N'5 - Informational'),
+(2, 'msg.EventosEncontrados', N'{0} event(s)'),
+(2, 'msg.UsuarioDelEvento', N'Event user'),
+(2, 'msg.SinUsuarioAsociado', N'(no associated user record)'),
+(2, 'msg.Peso', N'Weight'),
+(2, 'msg.Temperatura', N'Temp.'),
+(2, 'msg.FrecuenciaCardiaca', N'HR'),
+(2, 'msg.Motivo', N'Reason'),
+(2, 'msg.Diagnostico', N'Diagnosis'),
+(2, 'msg.Medicacion', N'Medication'),
+(2, 'msg.SinMedicacion', N'(no medication)'),
+(2, 'msg.Lote', N'batch'),
+(2, 'msg.SesionYaIniciada', N'A session is already open.'),
+(2, 'msg.DebeCambiarClave', N'You must change your password to sign in.'),
+(2, 'FrmReporteInteligente_60MN', N'Smart report'),
+(2, 'FrmReporteInteligente_60MN.grpFiltros', N'Period'),
+(2, 'lblTop', N'Products in the ranking'),
+(2, 'msg.DemandaPorCategoria', N'Supply demand by month and category (units issued)'),
+(2, 'msg.TopProductosEntregados', N'Products most delivered in consultations'),
+(2, 'msg.SinMovimientos', N'No movements were found in the selected period.'),
+(2, 'msg.GenerarParaVer', N'Choose a period and press Generate.'),
+(2, 'msg.ResumenReporteInteligente', N'{0} unit(s) issued · {1} unit(s) delivered in consultations · $ {2}');
 GO

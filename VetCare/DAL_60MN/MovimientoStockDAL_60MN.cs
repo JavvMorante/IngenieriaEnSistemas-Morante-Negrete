@@ -55,7 +55,7 @@ SELECT MovimientoID, ProductoID, Tipo, Cantidad, StockAnterior, StockResultante,
                 {
                     Id = r.GetInt32(0),
                     ProductoId = r.GetInt32(1),
-                    Tipo = Enum.Parse<TipoMovimiento_60MN>(r.GetString(2), ignoreCase: true),
+                    Tipo = (TipoMovimiento_60MN)Enum.Parse(typeof(TipoMovimiento_60MN), r.GetString(2), ignoreCase: true),
                     Cantidad = r.GetInt32(3),
                     StockAnterior = r.GetInt32(4),
                     StockResultante = r.GetInt32(5),

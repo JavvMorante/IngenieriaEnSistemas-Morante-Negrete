@@ -9,6 +9,9 @@ namespace Interfaces_60MN
 
         string Apellido { get; set; }
 
+        /// <summary>Último idioma elegido por el usuario (null = idioma base). Se aplica al iniciar sesión.</summary>
+        int? IdiomaId { get; set; }
+
         /// <summary>
         /// Permisos asignados directamente al usuario: sus familias (UsuarioFamilia)
         /// y sus patentes individuales (UsuarioPatente), además de las de la familia.

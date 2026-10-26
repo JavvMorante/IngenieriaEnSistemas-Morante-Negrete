@@ -223,7 +223,11 @@ namespace Seguridad_60MN.Auditoria
                 using (FileStream flujo = new FileStream(temporal, FileMode.CreateNew, FileAccess.Write))
                 using (XmlWriter escritor = XmlWriter.Create(flujo, opciones))
                     new XmlSerializer(typeof(ArchivoBitacora_60MN)).Serialize(escritor, archivo);
-                File.Move(temporal, ruta, overwrite: true);
+                // Si el destino ya existe se reemplaza de forma atómica; si no, basta con renombrar.
+                if (File.Exists(ruta))
+                    File.Replace(temporal, ruta, null);
+                else
+                    File.Move(temporal, ruta);
             }
             finally
             {
@@ -267,7 +271,7 @@ namespace Seguridad_60MN.Auditoria
                 return resumen;
             }
 
-            resumen.HashSha256 = Convert.ToHexString(SHA256.HashData(contenido));
+            resumen.HashSha256 = UtilCripto_60MN.AHexadecimal(UtilCripto_60MN.Sha256(contenido));
             resumen.Xml = new UTF8Encoding(false).GetString(contenido).TrimStart('﻿');
 
             ArchivoBitacora_60MN archivo = Deserializar(contenido, resumen.Errores);
@@ -490,7 +494,7 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
 
         /// <summary>Comparación en tiempo constante (no revela cuántos caracteres coinciden).</summary>
         private static bool FirmasIguales(string a, string b) =>
-            CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(a.Trim().ToUpperInvariant()), Encoding.ASCII.GetBytes(b.ToUpperInvariant()));
+            UtilCripto_60MN.IgualesTiempoConstante(Encoding.ASCII.GetBytes(a.Trim().ToUpperInvariant()), Encoding.ASCII.GetBytes(b.ToUpperInvariant()));
 
         private static bool SePuedeDesencriptar(string valor)
         {

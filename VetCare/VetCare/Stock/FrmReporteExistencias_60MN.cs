@@ -126,7 +126,7 @@ namespace VetCare
             sb.AppendLine(new string('-', 96));
             foreach (Producto_60MN p in resultado)
             {
-                string nombre = p.Nombre.Length > 29 ? p.Nombre[..29] : p.Nombre;
+                string nombre = p.Nombre.Length > 29 ? p.Nombre.Substring(0, 29) : p.Nombre;
                 sb.AppendLine($"{p.Codigo,-10}{nombre,-30}{p.Lote,-10}{p.StockActual,7}{p.StockMinimo,6}  {p.FechaVencimiento,-10:dd/MM/yyyy}" +
                               $"{p.PrecioCosto.ToString("N2", ar),11}{p.Valorizacion.ToString("N2", ar),12}");
             }

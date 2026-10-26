@@ -12,7 +12,7 @@ namespace DAL_60MN
     {
         private const string SelectBase = @"
 SELECT u.UsuarioID, u.Usuario, u.Clave, u.Nombre, u.Apellido, u.DNI, u.Email,
-       u.Activo, u.Bloqueado, u.IntentosFallidos, u.PrimerIngreso, u.EnSesion
+       u.Activo, u.Bloqueado, u.IntentosFallidos, u.PrimerIngreso, u.EnSesion, u.IdiomaID
   FROM Usuario u";
 
         public List<Usuario_60MN> ListarTodos()
@@ -69,6 +69,13 @@ UPDATE Usuario
                 ("@primerIngreso", u.PrimerIngreso), ("@enSesion", u.EnSesion), ("@id", u.Id));
         }
 
+        /// <summary>Guarda el último idioma elegido por el usuario (null = idioma base).</summary>
+        public void ActualizarIdioma(int usuarioId, int? idiomaId)
+        {
+            Conexion_60MN.EjecutarNonQuery("UPDATE Usuario SET IdiomaID = @idioma WHERE UsuarioID = @id",
+                ("@idioma", idiomaId), ("@id", usuarioId));
+        }
+
         private static Usuario_60MN Mapear(SqlDataReader r) => new Usuario_60MN
         {
             Id = r.GetInt32(r.GetOrdinal("UsuarioID")),
@@ -82,7 +89,8 @@ UPDATE Usuario
             Bloqueado = r.GetBoolean(r.GetOrdinal("Bloqueado")),
             IntentosFallidos = r.GetInt32(r.GetOrdinal("IntentosFallidos")),
             PrimerIngreso = r.GetBoolean(r.GetOrdinal("PrimerIngreso")),
-            EnSesion = r.GetBoolean(r.GetOrdinal("EnSesion"))
+            EnSesion = r.GetBoolean(r.GetOrdinal("EnSesion")),
+            IdiomaId = r.EnteroONulo("IdiomaID")
         };
     }
 }

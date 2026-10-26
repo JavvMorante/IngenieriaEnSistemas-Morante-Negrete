@@ -144,7 +144,7 @@ foreach (var u in usuarios)
     string email = CriptografiaHandler_60MN.Encriptar(u.Email);
     // Orden de columnas = TablaDV_60MN.Usuario
     string dvh = dv.CalcularDVH(TablaDV_60MN.Usuario, u.Id, u.Usuario, hash, u.Nombre, u.Apellido, dni, email,
-        true, false, 0, false, false);
+        true, false, 0, false, false, (int?)null); // IdiomaID NULL: el usuario todavía no eligió idioma (español)
     dvhUsuario.Add(dvh);
     sql.AppendLine("INSERT INTO Usuario (UsuarioID, Usuario, Clave, Nombre, Apellido, DNI, Email, Activo, Bloqueado, IntentosFallidos, PrimerIngreso, EnSesion, DVH)");
     sql.AppendLine($"     VALUES ({u.Id}, {Txt(u.Usuario)}, {Txt(hash)}, {Txt(u.Nombre)}, {Txt(u.Apellido)}, {Txt(dni)}, {Txt(email)}, 1, 0, 0, 0, 0, '{dvh}');");

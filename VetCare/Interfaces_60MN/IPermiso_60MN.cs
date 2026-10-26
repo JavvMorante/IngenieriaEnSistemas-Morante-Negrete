@@ -15,6 +15,7 @@ namespace Interfaces_60MN
 
         void QuitarHijo(IPermiso_60MN permiso);
 
+        /// <summary>Hijos directos, de solo lectura (se modifican con AgregarHijo / QuitarHijo).</summary>
         IList<IPermiso_60MN> ObtenerHijos();
 
         /// <summary>Indica si este componente o alguno de sus descendientes otorga la patente con ese código.</summary>

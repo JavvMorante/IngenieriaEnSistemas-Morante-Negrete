@@ -1,6 +1,9 @@
 # VetCare – guía técnica de la implementación
 
 ## Puesta en marcha
+Plataforma: **.NET Framework 4.8** (WinForms, C# con `LangVersion latest`), proyectos con formato SDK. Se abre con
+Visual Studio 2022 o se compila con `dotnet build VetCare.sln`.
+
 1. Ejecutar `BDScript/VetCareBD_60MN.sql` en SQL Server (SSMS o `sqlcmd -S .\SQLEXPRESS01 -E -C -f 65001 -i BDScript\VetCareBD_60MN.sql`).
    **Borra y recrea** `VetCareBD_60MN`.
 2. Ajustar `conexionBD` en `VetCare/App.config` si la instancia es otra.
@@ -68,8 +71,12 @@ ADMIN > Backup o ADMIN > Restore abren `FrmBackupRestore_60MN`; cada sección se
   (que sea de esta base y completo) y `RESTORE VERIFYONLY` (8.1).
 - Al restaurar se verifican los DV de la base restaurada, se registra `RestoreRealizado` y se cierra la sesión.
   Se pierden los cambios posteriores al backup, incluida la bitácora (`RestoreIniciado` solo queda si la restauración falla).
-- El archivo lo escribe el **servicio de SQL Server**: se sugiere la carpeta de backups de la instancia; otra carpeta necesita
-  permiso de escritura para ese servicio. El historial de backups se lee de `msdb` (sobrevive a la restauración).
+- **Cualquier carpeta, en dos pasos.** El .bak lo escribe y lo lee el **servicio de SQL Server**, que solo tiene permiso
+  sobre su carpeta de backups. Por eso: al respaldar, SQL Server lo genera en su carpeta y VetCare lo copia a la carpeta
+  elegida (verificando la copia con SHA-256) y borra el intermedio; al restaurar, VetCare copia el archivo elegido a la
+  carpeta de SQL Server, lo valida, restaura y borra la copia. Requiere SQL Server en el mismo equipo y que el usuario de
+  Windows pueda escribir en la carpeta de backups de la instancia. Carpeta sugerida: `Documentos\Backups VetCare`.
+- El historial de backups se lee de `msdb` (sobrevive a la restauración) y muestra la carpeta final elegida.
 - Un backup anterior a cambios del esquema (por ejemplo, de antes de agregar las tablas de pacientes) deja la base con el
   esquema viejo: restaurar solo backups generados con esta versión.
 
@@ -123,13 +130,17 @@ USUARIO > Re-Login cierra la sesión y vuelve al Login; USUARIO > Logout cierra 
 | `GestorIdioma_60MN` | Servicios_60MN/Idioma | **Sujeto** (Singleton): idioma actual + diccionario; `Suscribir`, `Desuscribir`, `Notificar` |
 | `FormBase_60MN` | VetCare/Utilidades | **Observador concreto**: todos los formularios heredan de él; se suscribe al cargarse y se traduce |
 | `TraductorFormularios_60MN` | VetCare/Utilidades | Recorre controles, columnas y menús y aplica la traducción |
-| `IdiomaBLL_60MN` / `IdiomaDAL_60MN` | BLL / DAL | Leen `Idioma` y `Traduccion` y guardan el predeterminado |
+| `IdiomaBLL_60MN` / `IdiomaDAL_60MN` | BLL / DAL | Leen `Idioma` y `Traduccion`; guardan el idioma de cada usuario (`Usuario.IdiomaID`) |
 | Tablas `Idioma`, `Traduccion` | BD | Traducciones por clave (`Formulario.Control` o `Control`) |
 
 - El español es el idioma **base**: sus textos son los del diseñador, por eso solo el inglés tiene filas en `Traduccion`.
 - Para agregar un idioma: una fila en `Idioma` y sus filas en `Traduccion` (sin tocar el código).
-- El idioma se elige en el Login ("Cambio de idioma") o en USUARIO > Cambiar idioma; queda como `Predeterminado`
-  y es el que se aplica al abrir el sistema la próxima vez (`Program.cs` → `AplicarPredeterminado`).
+- **El idioma es por usuario** (`Usuario.IdiomaID`, protegido por el DVH): cada usuario tiene guardado su último idioma.
+  - El Login abre siempre en español (`Program.cs` → `AplicarBase`) y vuelve a español al cerrar la sesión.
+  - Al ingresar (`FrmLogin_60MN` → `IdiomaBLL_60MN.AplicarIdiomaAlIngresar`): si eligió un idioma en el combo del Login,
+    se guarda como el suyo; si no, se le aplica su último idioma. El usuario de emergencia usa siempre español.
+  - USUARIO > Cambiar idioma (`CambiarIdiomaUsuario`) guarda la elección contra el usuario y registra `IdiomaCambiado`.
+  - Base existente: aplicar `BDScript/Migracion_IdiomaPorUsuario_60MN.sql` y luego ADMIN > Dígitos verificadores > Recalcular.
 - Limitación: los mensajes de las reglas de negocio (excepciones de la BLL) y las etiquetas que arman datos en tiempo
   de ejecución siguen en español; los textos fijos de pantallas, menú, grillas y mensajes generales sí se traducen.
 

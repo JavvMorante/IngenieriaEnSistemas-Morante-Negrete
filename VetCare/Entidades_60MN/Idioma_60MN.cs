@@ -10,10 +10,8 @@ namespace Entidades_60MN
 
         public string Codigo { get; set; } = string.Empty;
 
+        /// <summary>Idioma base (español): sus textos son los del diseñador. Es el idioma del Login.</summary>
         public bool EsBase { get; set; }
-
-        /// <summary>Idioma con el que arranca la pantalla de login (el último elegido).</summary>
-        public bool Predeterminado { get; set; }
 
         public override string ToString() => Nombre;
     }

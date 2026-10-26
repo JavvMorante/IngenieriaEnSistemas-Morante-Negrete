@@ -92,17 +92,24 @@ namespace BLL_60MN
             if (actual.Observaciones != modificada.Observaciones) cambios.Add("observaciones");
 
             Mascota_60MN mascota = clientes.ObtenerMascota(actual.MascotaId)!;
+            string especie = Validaciones_60MN.Normalizar(datosPaciente?.Especie);
+            string raza = Validaciones_60MN.Normalizar(datosPaciente?.Raza);
             bool cambiaPaciente = datosPaciente != null &&
-                (datosPaciente.Especie.Trim() != mascota.Especie || datosPaciente.Raza.Trim() != mascota.Raza ||
+                (especie != mascota.Especie || raza != mascota.Raza ||
                  datosPaciente.FechaNacimiento.Date != mascota.FechaNacimiento.Date);
             if (cambiaPaciente)
             {
                 if (!SessionManager_60MN.Instancia.TienePermiso(CodigosPatente_60MN.Administrador))
                     throw new NegocioException_60MN("La especie, la raza y la fecha de nacimiento solo pueden modificarse con permiso de administrador.");
-                if (datosPaciente!.FechaNacimiento.Date > DateTime.Today)
-                    throw new NegocioException_60MN("La fecha de nacimiento no puede ser posterior a la fecha actual.");
-                if (datosPaciente.Especie.Trim().Length == 0 || datosPaciente.Raza.Trim().Length == 0)
-                    throw new NegocioException_60MN("Complete especie y raza.");
+                // Mismas reglas que el alta y la modificación de la mascota (CUN04): obligatorios, largos, caracteres y fechas.
+                ClienteBLL_60MN.ValidarMascota(new Mascota_60MN
+                {
+                    Nombre = mascota.Nombre,
+                    Sexo = mascota.Sexo,
+                    Especie = especie,
+                    Raza = raza,
+                    FechaNacimiento = datosPaciente!.FechaNacimiento.Date
+                });
                 cambios.Add("datos del paciente");
             }
             if (cambios.Count == 0)
@@ -112,9 +119,9 @@ namespace BLL_60MN
             dv.ActualizarFila(TablaDV_60MN.HistoriaClinica, modificada.Id);
             if (cambiaPaciente)
             {
-                mascota.Especie = datosPaciente!.Especie.Trim();
-                mascota.Raza = datosPaciente.Raza.Trim();
-                mascota.FechaNacimiento = datosPaciente.FechaNacimiento.Date;
+                mascota.Especie = especie;
+                mascota.Raza = raza;
+                mascota.FechaNacimiento = datosPaciente!.FechaNacimiento.Date;
                 clientes.ModificarMascota(mascota);
                 dv.ActualizarFila(TablaDV_60MN.Mascota, mascota.Id);
             }

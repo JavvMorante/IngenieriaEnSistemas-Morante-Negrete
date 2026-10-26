@@ -26,11 +26,21 @@ namespace DAL_60MN
         }
 
         /// <summary>
+        /// Relaciones FamiliaFamilia de la última carga que se descartaron porque formaban
+        /// un ciclo. Solo puede pasar si alguien modificó la tabla por fuera del sistema.
+        /// </summary>
+        public List<(int Padre, int Hija)> RelacionesConCiclo { get; } = new List<(int Padre, int Hija)>();
+
+        /// <summary>
         /// Carga todas las familias con sus hijos ya enlazados: patentes (FamiliaPatente)
         /// y subfamilias (FamiliaFamilia). Las familias comparten las mismas instancias de patentes.
+        /// Cada hijo se agrega con AgregarHijo, que rechaza los ciclos: una relación que
+        /// cerraría un ciclo se descarta (queda en RelacionesConCiclo) en lugar de dejar un
+        /// árbol que haría entrar en recursión infinita a TienePatente durante el login.
         /// </summary>
         public Dictionary<int, Familia_60MN> CargarFamilias(Dictionary<int, Patente_60MN> patentes)
         {
+            RelacionesConCiclo.Clear();
             Dictionary<int, Familia_60MN> familias = Conexion_60MN.EjecutarLista(
                     "SELECT FamiliaID, Nombre FROM Familia ORDER BY Nombre",
                     r => new Familia_60MN { Id = r.GetInt32(0), Nombre = r.GetString(1) })
@@ -38,11 +48,21 @@ namespace DAL_60MN
 
             foreach ((int familia, int patente) in LeerPares("SELECT FamiliaID, PatenteID FROM FamiliaPatente ORDER BY FamiliaID, PatenteID"))
                 if (familias.TryGetValue(familia, out Familia_60MN? f) && patentes.TryGetValue(patente, out Patente_60MN? p))
-                    f.ObtenerHijos().Add(p);
+                    f.AgregarHijo(p);
 
             foreach ((int padre, int hija) in LeerPares("SELECT FamiliaPadreID, FamiliaHijaID FROM FamiliaFamilia ORDER BY FamiliaPadreID, FamiliaHijaID"))
-                if (familias.TryGetValue(padre, out Familia_60MN? p) && familias.TryGetValue(hija, out Familia_60MN? h))
-                    p.ObtenerHijos().Add(h); // se agrega directo: el ciclo ya se valida al guardar
+            {
+                if (!familias.TryGetValue(padre, out Familia_60MN? p) || !familias.TryGetValue(hija, out Familia_60MN? h))
+                    continue;
+                try
+                {
+                    p.AgregarHijo(h);
+                }
+                catch (CicloFamiliasException_60MN)
+                {
+                    RelacionesConCiclo.Add((padre, hija));
+                }
+            }
 
             return familias;
         }

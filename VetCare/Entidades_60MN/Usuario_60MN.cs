@@ -40,6 +40,9 @@ namespace Entidades_60MN
 
         public bool EnSesion { get; set; }
 
+        /// <summary>Último idioma elegido por el usuario; se aplica al iniciar sesión. Null = idioma base (español).</summary>
+        public int? IdiomaId { get; set; }
+
         public string NombreCompleto => $"{Apellido}, {Nombre}";
 
         public string Estado => !Activo ? "Baja" : Bloqueado ? "Bloqueado" : "Activo";

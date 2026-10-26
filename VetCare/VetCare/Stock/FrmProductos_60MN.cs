@@ -15,6 +15,7 @@ namespace VetCare
         {
             InitializeComponent();
             dgvProductos.AutoGenerateColumns = false;
+            TextoGuia_60MN.Asignar(txtBuscar, "Código, nombre o lote");
         }
 
         private void FrmProductos_60MN_Load(object sender, EventArgs e)

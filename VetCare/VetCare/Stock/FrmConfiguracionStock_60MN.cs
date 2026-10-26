@@ -23,8 +23,8 @@ namespace VetCare
             try
             {
                 configuracion = configuracionBLL.Obtener();
-                nudMargen.Value = Math.Clamp(configuracion.MargenGeneral, nudMargen.Minimum, nudMargen.Maximum);
-                nudStockMinimo.Value = Math.Clamp(configuracion.StockMinimoSugerido, 0, (int)nudStockMinimo.Maximum);
+                nudMargen.Value = Math.Min(Math.Max(configuracion.MargenGeneral, nudMargen.Minimum), nudMargen.Maximum);
+                nudStockMinimo.Value = Math.Min(Math.Max(configuracion.StockMinimoSugerido, 0), (int)nudStockMinimo.Maximum);
                 dgvCategorias.DataSource = configuracion.Categorias;
             }
             catch (Exception ex)

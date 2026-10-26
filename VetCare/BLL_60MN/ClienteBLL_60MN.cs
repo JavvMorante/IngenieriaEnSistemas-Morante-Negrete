@@ -188,19 +188,28 @@ namespace BLL_60MN
             return cliente;
         }
 
+        // ---------------------------------------------------------------------
+        // Validaciones (los largos máximos son los de las columnas de Cliente y Mascota)
+        // ---------------------------------------------------------------------
+
+        /// <summary>Edad máxima admitida para una mascota (contempla especies longevas como tortugas y loros).</summary>
+        public const int EdadMaximaMascotaAnios = 100;
+
         private static void Normalizar(Cliente_60MN c)
         {
             c.TipoDocumento = (c.TipoDocumento ?? string.Empty).Trim().ToUpperInvariant();
-            c.NroDocumento = (c.NroDocumento ?? string.Empty).Trim();
-            c.Nombre = (c.Nombre ?? string.Empty).Trim();
-            c.Apellido = (c.Apellido ?? string.Empty).Trim();
-            c.Direccion = (c.Direccion ?? string.Empty).Trim();
-            c.Telefono = (c.Telefono ?? string.Empty).Trim();
-            c.Email = string.IsNullOrWhiteSpace(c.Email) ? null : c.Email.Trim();
+            // El documento se acepta con puntos o espacios ("30.111.222") y se guarda solo con sus caracteres.
+            c.NroDocumento = new string((c.NroDocumento ?? string.Empty).Where(ch => ch != '.' && !char.IsWhiteSpace(ch)).ToArray()).ToUpperInvariant();
+            c.Nombre = Validaciones_60MN.Normalizar(c.Nombre);
+            c.Apellido = Validaciones_60MN.Normalizar(c.Apellido);
+            c.Direccion = Validaciones_60MN.Normalizar(c.Direccion);
+            c.Telefono = Validaciones_60MN.Normalizar(c.Telefono);
+            c.Email = string.IsNullOrWhiteSpace(c.Email) ? null : c.Email!.Trim();
         }
 
         private static void ValidarCliente(Cliente_60MN c, bool esAlta)
         {
+            // CUN01 5.2 / CUN02 5.2: campos obligatorios.
             if (c.Nombre.Length == 0 || c.Apellido.Length == 0 || c.Direccion.Length == 0 || c.Telefono.Length == 0 ||
                 (esAlta && c.NroDocumento.Length == 0))
                 throw new NegocioException_60MN("Complete todos los campos obligatorios.");
@@ -210,27 +219,50 @@ namespace BLL_60MN
                     ? !c.NroDocumento.All(char.IsLetterOrDigit) || c.NroDocumento.Length < 6 || c.NroDocumento.Length > 15
                     : !c.NroDocumento.All(char.IsDigit) || c.NroDocumento.Length < 7 || c.NroDocumento.Length > 8)
                 throw new NegocioException_60MN("El número de documento no es válido (7 u 8 dígitos; pasaporte: 6 a 15 letras o números).");
-            if (c.Email != null && (!MailAddress.TryCreate(c.Email, out MailAddress? mail) || mail.Address != c.Email || !mail.Host.Contains('.')))
-                throw new NegocioException_60MN("El formato del mail es inválido.");
+
+            Validaciones_60MN.Largo(c.Nombre, 80, "El nombre");
+            Validaciones_60MN.Largo(c.Apellido, 80, "El apellido");
+            Validaciones_60MN.Largo(c.Direccion, 150, "La dirección");
+            Validaciones_60MN.Largo(c.Telefono, 30, "El teléfono");
+            Validaciones_60MN.Largo(c.Email, 150, "El mail");
+            Validaciones_60MN.NombrePropio(c.Nombre, "El nombre");
+            Validaciones_60MN.NombrePropio(c.Apellido, "El apellido");
+            Validaciones_60MN.Telefono(c.Telefono, "El teléfono");
+            if (c.Email != null && !Validaciones_60MN.EsEmailValido(c.Email))
+                throw new NegocioException_60MN("El formato del mail es inválido (ejemplo: nombre@dominio.com).");
         }
 
         private static void NormalizarMascota(Mascota_60MN m)
         {
-            m.Nombre = (m.Nombre ?? string.Empty).Trim();
-            m.Especie = (m.Especie ?? string.Empty).Trim();
-            m.Raza = (m.Raza ?? string.Empty).Trim();
+            m.Nombre = Validaciones_60MN.Normalizar(m.Nombre);
+            m.Especie = Validaciones_60MN.Normalizar(m.Especie);
+            m.Raza = Validaciones_60MN.Normalizar(m.Raza);
             m.Sexo = (m.Sexo ?? string.Empty).Trim().ToUpperInvariant();
         }
 
-        private static void ValidarMascota(Mascota_60MN m)
+        /// <summary>
+        /// Reglas de la mascota (CUN04). También las usa la historia clínica (CUN07) cuando
+        /// el administrador corrige especie, raza o fecha de nacimiento.
+        /// </summary>
+        internal static void ValidarMascota(Mascota_60MN m)
         {
             if (m.Nombre.Length == 0 || m.Especie.Length == 0 || m.Raza.Length == 0)
                 throw new NegocioException_60MN("Complete nombre, especie y raza de la mascota.");
             if (m.Sexo != "M" && m.Sexo != "H")
                 throw new NegocioException_60MN("Indique el sexo de la mascota.");
-            // CUN04 5.2: fecha de nacimiento futura.
+
+            Validaciones_60MN.Largo(m.Nombre, 60, "El nombre de la mascota");
+            Validaciones_60MN.Largo(m.Especie, 40, "La especie");
+            Validaciones_60MN.Largo(m.Raza, 60, "La raza");
+            Validaciones_60MN.TextoSimple(m.Nombre, "El nombre de la mascota");
+            Validaciones_60MN.NombrePropio(m.Especie, "La especie");
+            Validaciones_60MN.TextoSimple(m.Raza, "La raza");
+
+            // CUN04 5.2: fecha de nacimiento futura; y una fecha mínima razonable.
             if (m.FechaNacimiento.Date > DateTime.Today)
                 throw new NegocioException_60MN("La fecha de nacimiento no puede ser posterior a la fecha actual.");
+            if (m.FechaNacimiento.Date < DateTime.Today.AddYears(-EdadMaximaMascotaAnios))
+                throw new NegocioException_60MN($"La fecha de nacimiento no es válida: la mascota tendría más de {EdadMaximaMascotaAnios} años.");
         }
     }
 }

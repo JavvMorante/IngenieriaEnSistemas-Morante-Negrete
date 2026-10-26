@@ -293,9 +293,7 @@ namespace VetCare
             {
                 HistoriaClinica_60MN? hc = new HistoriaClinicaBLL_60MN().Consultar(mascota.Id);
                 if (hc == null) return;
-                using FrmAtencion_60MN formulario = new FrmAtencion_60MN(hc);
-                formulario.ShowDialog(this);
-                RefrescarFicha();
+                VentanasMdi_60MN.Abrir(this, () => new FrmAtencion_60MN(hc), $"atencion:{hc.Id}", RefrescarFicha);
             }
             catch (Exception ex)
             {
@@ -320,9 +318,7 @@ namespace VetCare
 
         private void AbrirHistoria(Mascota_60MN mascota)
         {
-            using FrmHistoriaClinica_60MN formulario = new FrmHistoriaClinica_60MN(mascota.Id);
-            formulario.ShowDialog(this);
-            RefrescarFicha();
+            VentanasMdi_60MN.Abrir(this, () => new FrmHistoriaClinica_60MN(mascota.Id), $"historia:{mascota.Id}", RefrescarFicha);
         }
     }
 }

@@ -16,6 +16,17 @@ namespace VetCare
     {
         private static bool EnDiseno => LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
+        /// <summary>
+        /// Fuente base de todas las pantallas. En .NET Framework la fuente por defecto es
+        /// Microsoft Sans Serif 8.25; las pantallas se diseñaron con Segoe UI 9 y escalan
+        /// según la fuente (AutoScaleMode.Font), así que se fija acá para que todas
+        /// conserven el tamaño y el aspecto con que fueron diseñadas.
+        /// </summary>
+        public FormBase_60MN()
+        {
+            Font = new Font("Segoe UI", 9F);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             if (!DesignMode && !EnDiseno)

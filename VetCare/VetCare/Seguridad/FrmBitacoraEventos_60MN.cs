@@ -23,13 +23,10 @@ namespace VetCare
         private void FrmBitacoraEventos_60MN_Load(object sender, EventArgs e)
         {
             Mensajes_60MN.AplicarPermisos(this);
-            cboCriticidad.Items.Add(OpcionCombo_60MN.Todos);
-            string[] descripciones = { "", "1 - Muy alta", "2 - Alta", "3 - Media", "4 - Baja", "5 - Informativa" };
-            for (int nivel = 1; nivel <= 5; nivel++)
-                cboCriticidad.Items.Add(new OpcionCombo_60MN(descripciones[nivel], nivel));
+            CargarCriticidades();
 
             cboModulo.Items.Add(OpcionCombo_60MN.Todos);
-            foreach (ModuloSistema_60MN modulo in Enum.GetValues<ModuloSistema_60MN>())
+            foreach (ModuloSistema_60MN modulo in Enum.GetValues(typeof(ModuloSistema_60MN)).Cast<ModuloSistema_60MN>())
                 cboModulo.Items.Add(new OpcionCombo_60MN(modulo.ToString(), modulo));
 
             cboUsuario.Items.Add(OpcionCombo_60MN.Todos);
@@ -48,12 +45,65 @@ namespace VetCare
             Buscar();
         }
 
+        // Cantidad de eventos de la última búsqueda (para re-traducir "N evento(s)").
+        private int? cantidadEventos;
+
+        // True mientras se re-traducen los combos: evita que el cambio de Módulo recargue los eventos.
+        private bool traduciendo;
+
+        private static string T(string clave, string porDefecto) => TraductorFormularios_60MN.T(clave, porDefecto);
+
+        /// <summary>Criticidades de 1 (muy alta) a 5 (informativa), con su descripción en el idioma actual.</summary>
+        private void CargarCriticidades()
+        {
+            int seleccion = Math.Max(cboCriticidad.SelectedIndex, 0);
+            cboCriticidad.Items.Clear();
+            cboCriticidad.Items.Add(OpcionCombo_60MN.Todos);
+            string[] descripciones =
+            {
+                T("msg.Criticidad1", "1 - Muy alta"), T("msg.Criticidad2", "2 - Alta"), T("msg.Criticidad3", "3 - Media"),
+                T("msg.Criticidad4", "4 - Baja"), T("msg.Criticidad5", "5 - Informativa")
+            };
+            for (int nivel = 1; nivel <= 5; nivel++)
+                cboCriticidad.Items.Add(new OpcionCombo_60MN(descripciones[nivel - 1], nivel));
+            cboCriticidad.SelectedIndex = seleccion;
+        }
+
+        /// <summary>Textos que arma el código: criticidades, "(Todos)" de cada filtro, contador y usuario del evento.</summary>
+        protected override void AlCambiarIdioma()
+        {
+            traduciendo = true;
+            try
+            {
+                CargarCriticidades();
+                foreach (ComboBox combo in new[] { cboModulo, cboEvento, cboUsuario })
+                {
+                    if (combo.Items.Count == 0 || !(combo.Items[0] is OpcionCombo_60MN primero) || primero.Valor != null) continue;
+                    int seleccion = combo.SelectedIndex;
+                    combo.Items[0] = OpcionCombo_60MN.Todos;
+                    combo.SelectedIndex = seleccion;
+                }
+            }
+            finally
+            {
+                traduciendo = false;
+            }
+            MostrarCantidad();
+            dgvEventos_SelectionChanged(this, EventArgs.Empty);
+        }
+
+        private void MostrarCantidad() =>
+            lblResultados.Text = cantidadEventos.HasValue
+                ? string.Format(T("msg.EventosEncontrados", "{0} evento(s)"), cantidadEventos.Value)
+                : string.Empty;
+
         private void cboModulo_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (traduciendo) return;
             ModuloSistema_60MN? modulo = OpcionCombo_60MN.ValorDe<ModuloSistema_60MN>(cboModulo);
             IEnumerable<EventoSistema_60MN> eventos = modulo.HasValue
                 ? CatalogoEventos_60MN.EventosDe(modulo.Value)
-                : Enum.GetValues<EventoSistema_60MN>();
+                : Enum.GetValues(typeof(EventoSistema_60MN)).Cast<EventoSistema_60MN>();
 
             cboEvento.Items.Clear();
             cboEvento.Items.Add(OpcionCombo_60MN.Todos);
@@ -89,7 +139,8 @@ namespace VetCare
                 List<RegistroBitacora_60MN> eventos = bitacoraBLL.Consultar(filtro);
                 ultimoFiltro = filtro;
                 dgvEventos.DataSource = eventos;
-                lblResultados.Text = $"{eventos.Count} evento(s)";
+                cantidadEventos = eventos.Count;
+                MostrarCantidad();
                 // 4.1: sin resultados.
                 if (eventos.Count == 0)
                     Mensajes_60MN.Informar("No se encontraron eventos.");
@@ -124,9 +175,10 @@ namespace VetCare
                 return;
             }
             Usuario_60MN? usuario = evento.UsuarioId.HasValue ? usuarios.FirstOrDefault(u => u.Id == evento.UsuarioId.Value) : null;
+            string titulo = T("msg.UsuarioDelEvento", "Usuario del evento");
             lblDetalleUsuario.Text = usuario != null
-                ? $"Usuario del evento: {usuario.Nombre} {usuario.Apellido} ({usuario.NombreUsuario})"
-                : $"Usuario del evento: {evento.Usuario} (sin registro de usuario asociado)";
+                ? $"{titulo}: {usuario.Nombre} {usuario.Apellido} ({usuario.NombreUsuario})"
+                : $"{titulo}: {evento.Usuario} {T("msg.SinUsuarioAsociado", "(sin registro de usuario asociado)")}";
         }
 
         // ------------------------- Exportar / importar XML -------------------------
@@ -155,7 +207,7 @@ namespace VetCare
                 ResumenArchivoBitacora_60MN resumen = bitacoraBLL.Exportar(ultimoFiltro, dialogo.FileName);
                 Cursor = Cursors.Default;
                 if (Mensajes_60MN.Confirmar($"Se exportaron {resumen.Cantidad} evento(s) a {resumen.NombreArchivo}.\n\n¿Desea ver el XML generado?"))
-                    MostrarXml(resumen, modoImportacion: false);
+                    VerXml(resumen);
             }
             catch (Exception ex)
             {
@@ -171,7 +223,7 @@ namespace VetCare
             if (ruta == null) return;
             try
             {
-                MostrarXml(bitacoraBLL.AnalizarArchivo(ruta), modoImportacion: false);
+                VerXml(bitacoraBLL.AnalizarArchivo(ruta));
             }
             catch (Exception ex)
             {
@@ -197,7 +249,7 @@ namespace VetCare
                 else if (resumen.Nuevos == 0)
                     Mensajes_60MN.Informar("Todos los eventos del archivo ya están en la bitácora: no hay nada para importar.");
 
-                if (MostrarXml(resumen, modoImportacion: true) != DialogResult.OK)
+                if (ConfirmarImportacion(resumen) != DialogResult.OK)
                     return;
 
                 Cursor = Cursors.WaitCursor;
@@ -220,9 +272,17 @@ namespace VetCare
             return dialogo.ShowDialog(this) == DialogResult.OK ? dialogo.FileName : null;
         }
 
-        private DialogResult MostrarXml(ResumenArchivoBitacora_60MN resumen, bool modoImportacion)
+        /// <summary>Solo consulta: el visor se abre como ventana del menú principal (una por archivo).</summary>
+        private void VerXml(ResumenArchivoBitacora_60MN resumen) =>
+            VentanasMdi_60MN.Abrir(this, () => new FrmVisorXmlBitacora_60MN(resumen, modoImportacion: false), $"xml:{resumen.HashSha256}");
+
+        /// <summary>
+        /// Vista previa de la importación: es un paso de confirmación (Importar / Cerrar) y la
+        /// importación depende de esa respuesta, por eso es modal.
+        /// </summary>
+        private DialogResult ConfirmarImportacion(ResumenArchivoBitacora_60MN resumen)
         {
-            using FrmVisorXmlBitacora_60MN visor = new FrmVisorXmlBitacora_60MN(resumen, modoImportacion);
+            using FrmVisorXmlBitacora_60MN visor = new FrmVisorXmlBitacora_60MN(resumen, modoImportacion: true);
             return visor.ShowDialog(this);
         }
 

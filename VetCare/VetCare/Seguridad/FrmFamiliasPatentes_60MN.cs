@@ -26,6 +26,20 @@ namespace VetCare
 
         private static string T(string clave, string porDefecto) => TraductorFormularios_60MN.T(clave, porDefecto);
 
+        // Usuarios activos de la familia mostrada (null = familia nueva), para re-traducir el texto sin volver a consultar.
+        private int? usuariosFamilia;
+        private bool hayFamiliaEnPantalla;
+
+        protected override void AlCambiarIdioma() => MostrarUsuariosFamilia();
+
+        private void MostrarUsuariosFamilia()
+        {
+            if (!hayFamiliaEnPantalla) return;
+            lblUsuariosFamilia.Text = usuariosFamilia.HasValue
+                ? string.Format(T("msg.UsuariosConFamilia", "Usuarios activos con esta familia: {0}"), usuariosFamilia.Value)
+                : T("msg.FamiliaNueva", "Familia nueva");
+        }
+
         private void FrmFamiliasPatentes_60MN_Load(object sender, EventArgs e)
         {
             CargarDatos(null);
@@ -89,8 +103,9 @@ namespace VetCare
             foreach (Familia_60MN otra in familias.Where(f => f.Id != familia.Id && !f.ContieneFamilia(familia.Id)))
                 clbSubfamilias.Items.Add(otra, familiasDirectas.Contains(otra.Id));
 
-            int usuarios = permisoBLL.ContarUsuarios(familia.Id);
-            lblUsuariosFamilia.Text = string.Format(T("msg.UsuariosConFamilia", "Usuarios activos con esta familia: {0}"), usuarios);
+            usuariosFamilia = permisoBLL.ContarUsuarios(familia.Id);
+            hayFamiliaEnPantalla = true;
+            MostrarUsuariosFamilia();
             btnEliminarFamilia.Enabled = true;
             cargando = false;
             ActualizarArbol();
@@ -107,7 +122,9 @@ namespace VetCare
             clbSubfamilias.Items.Clear();
             foreach (Familia_60MN familia in familias)
                 clbSubfamilias.Items.Add(familia, false);
-            lblUsuariosFamilia.Text = T("msg.FamiliaNueva", "Familia nueva");
+            usuariosFamilia = null;
+            hayFamiliaEnPantalla = true;
+            MostrarUsuariosFamilia();
             btnEliminarFamilia.Enabled = false;
             cargando = false;
             ActualizarArbol();

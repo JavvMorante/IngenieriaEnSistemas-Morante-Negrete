@@ -82,7 +82,6 @@ namespace VetCare
             //
             txtBuscar.Location = new Point(72, 53);
             txtBuscar.Name = "txtBuscar";
-            txtBuscar.PlaceholderText = "Código, nombre o lote";
             txtBuscar.Size = new Size(260, 27);
             txtBuscar.TabIndex = 2;
             //

@@ -49,7 +49,7 @@ namespace Seguridad_60MN.Criptografia
                 byte[] hashEsperado = Convert.FromBase64String(partes[1]);
                 byte[] hashIngresado = CalcularHash(password, sal);
 
-                return CryptographicOperations.FixedTimeEquals(hashEsperado, hashIngresado);
+                return UtilCripto_60MN.IgualesTiempoConstante(hashEsperado, hashIngresado);
             }
             catch (FormatException)
             {

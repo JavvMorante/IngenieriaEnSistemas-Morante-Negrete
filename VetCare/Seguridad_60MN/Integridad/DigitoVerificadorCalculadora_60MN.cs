@@ -53,7 +53,7 @@ namespace Seguridad_60MN.Integridad
         private string Firmar(string contenido)
         {
             using (HMACSHA256 hmac = new HMACSHA256(clave))
-                return Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(contenido)));
+                return Criptografia.UtilCripto_60MN.AHexadecimal(hmac.ComputeHash(Encoding.UTF8.GetBytes(contenido)));
         }
 
         /// <summary>

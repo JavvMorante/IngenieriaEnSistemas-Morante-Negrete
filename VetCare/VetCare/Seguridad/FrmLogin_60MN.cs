@@ -12,12 +12,15 @@ namespace VetCare
         private readonly IdiomaBLL_60MN idiomaBLL = new IdiomaBLL_60MN();
         private bool cargandoIdiomas;
 
+        // True si el usuario eligió un idioma en el combo antes de ingresar: esa elección se guarda como su idioma.
+        private bool idiomaElegidoEnLogin;
+
         public FrmLogin_60MN()
         {
             InitializeComponent();
         }
 
-        /// <summary>Carga los idiomas y selecciona el predeterminado (el último elegido).</summary>
+        /// <summary>Carga los idiomas y selecciona el actual (el Login abre siempre en el idioma base, español).</summary>
         private void FrmLogin_60MN_Load(object sender, EventArgs e)
         {
             try
@@ -42,6 +45,7 @@ namespace VetCare
         private void cboIdioma_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cargandoIdiomas || cboIdioma.SelectedItem is not Idioma_60MN idioma) return;
+            idiomaElegidoEnLogin = true;
             try
             {
                 idiomaBLL.Aplicar(idioma);
@@ -52,18 +56,19 @@ namespace VetCare
             }
         }
 
-        /// <summary>Al ingresar, el idioma elegido queda como predeterminado para el próximo inicio de sesión.</summary>
-        private void GuardarIdiomaElegido()
+        /// <summary>
+        /// Al ingresar: si eligió un idioma en el combo, se guarda como SU idioma; si no, se
+        /// le aplica su último idioma guardado. Todas las pantallas se traducen solas (Observer).
+        /// </summary>
+        private void AplicarIdiomaDelUsuario()
         {
-            if (cboIdioma.SelectedItem is not Idioma_60MN idioma) return;
             try
             {
-                if (idiomaBLL.ObtenerPredeterminado()?.Id != idioma.Id)
-                    idiomaBLL.CambiarYGuardar(idioma);
+                idiomaBLL.AplicarIdiomaAlIngresar(idiomaElegidoEnLogin ? cboIdioma.SelectedItem as Idioma_60MN : null);
             }
             catch (Exception)
             {
-                // No impedir el ingreso por no poder guardar la preferencia de idioma.
+                // No impedir el ingreso por no poder aplicar o guardar la preferencia de idioma.
             }
         }
 
@@ -75,7 +80,7 @@ namespace VetCare
             // 1.1: no se permite el acceso si ya hay una sesión iniciada.
             if (SessionManager_60MN.Instancia.EstaLogueado)
             {
-                lblMensaje.Text = "Ya existe una sesión iniciada.";
+                lblMensaje.Text = TraductorFormularios_60MN.T("msg.SesionYaIniciada", "Ya existe una sesión iniciada.");
                 return;
             }
 
@@ -98,7 +103,7 @@ namespace VetCare
                     if (cambio.ShowDialog(this) != DialogResult.OK)
                     {
                         usuarioBLL.Logout();
-                        lblMensaje.Text = "Debe cambiar la contraseña para poder ingresar.";
+                        lblMensaje.Text = TraductorFormularios_60MN.T("msg.DebeCambiarClave", "Debe cambiar la contraseña para poder ingresar.");
                         txtClave.Clear();
                         return;
                     }
@@ -112,7 +117,7 @@ namespace VetCare
                     Mensajes_60MN.Advertir("Se detectaron inconsistencias en los dígitos verificadores de la base de datos.\n\n" +
                                            "Revíselas desde ADMIN > Dígitos verificadores.");
 
-                GuardarIdiomaElegido();
+                AplicarIdiomaDelUsuario();
                 DialogResult = DialogResult.OK;
                 Close();
             }

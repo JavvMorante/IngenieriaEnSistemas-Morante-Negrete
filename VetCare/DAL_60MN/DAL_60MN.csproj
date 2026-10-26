@@ -1,15 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <!-- .NET Framework 4.8 (requisito de la cátedra). LangVersion latest: se mantiene la sintaxis
+         moderna de C# (nullable, switch expressions, using sin llaves), que el compilador
+         traduce a código compatible con el runtime 4.8. -->
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Mismo cliente SQL que Seguridad_60MN (Microsoft.Data.SqlClient es el reemplazo mantenido de System.Data.SqlClient). -->
+    <!-- Mismo cliente SQL que Seguridad_60MN (Microsoft.Data.SqlClient soporta .NET Framework 4.6.2+). -->
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
+    <!-- ConfigurationManager (lectura de App.config) viene en el framework. -->
+    <Reference Include="System.Configuration" />
   </ItemGroup>
 
   <ItemGroup>
