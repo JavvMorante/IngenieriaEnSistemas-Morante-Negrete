@@ -67,6 +67,17 @@ namespace VetCare
         }
 
         /// <summary>
+        /// Opciones deshabilitadas por ahora, sin importar los permisos del usuario:
+        /// el proceso de negocio Gestión de Stock (CUN11 a CUN15) y la Bitácora de cambios.
+        /// Para reactivarlas, quitarlas de esta lista y descomentar sus manejadores Click.
+        /// </summary>
+        private static readonly HashSet<string> OpcionesDeshabilitadas = new HashSet<string>
+        {
+            nameof(mnuProductos), nameof(mnuMovimientosStock), nameof(mnuConfiguracionStock),
+            nameof(mnuReporte1), nameof(mnuBitacoraCambios)
+        };
+
+        /// <summary>
         /// Muestra cada ítem solo si el usuario tiene alguna de las patentes de
         /// su Tag (ítems sin Tag, como los de USUARIO, están siempre disponibles).
         /// </summary>
@@ -77,7 +88,8 @@ namespace VetCare
                 bool algunoVisible = false;
                 foreach (ToolStripMenuItem item in menu.DropDownItems.OfType<ToolStripMenuItem>())
                 {
-                    bool visible = !(item.Tag is string codigos && codigos.Length > 0) || Mensajes_60MN.TieneAlguno(codigos);
+                    bool visible = !OpcionesDeshabilitadas.Contains(item.Name) &&
+                                   (!(item.Tag is string codigos && codigos.Length > 0) || Mensajes_60MN.TieneAlguno(codigos));
                     item.Visible = visible;
                     algunoVisible |= visible;
                 }
@@ -110,12 +122,33 @@ namespace VetCare
 
         private void mnuDigitosVerificadores_Click(object sender, EventArgs e) => Abrir<FrmIntegridad_60MN>();
 
+        /// <summary>
+        /// CUS12: se abre como diálogo porque, si se restaura la base, la sesión se
+        /// cierra y se vuelve al Login (que verifica la integridad de la base restaurada).
+        /// </summary>
+        private void mnuBackupRestore_Click(object sender, EventArgs e)
+        {
+            using FrmBackupRestore_60MN formulario = new FrmBackupRestore_60MN();
+            formulario.ShowDialog(this);
+            if (!formulario.BaseRestaurada)
+                return;
+            salidaConfirmada = true;
+            SesionCerrada = true;
+            Close();
+        }
+
         // ---------------- MAESTROS ----------------
-        private void mnuProductos_Click(object sender, EventArgs e) => Abrir<FrmProductos_60MN>();
+        private void mnuClientes_Click(object sender, EventArgs e) => Abrir<FrmClientes_60MN>();
 
-        private void mnuMovimientosStock_Click(object sender, EventArgs e) => Abrir<FrmMovimientoStock_60MN>();
+        // DESHABILITADO POR AHORA (Gestión de Stock y Bitácora de cambios): los ítems están ocultos
+        // (ver OpcionesDeshabilitadas) y sus formularios no se compilan (ver VetCare.csproj).
+        private void mnuProductos_Click(object sender, EventArgs e) { /* Abrir<FrmProductos_60MN>(); */ }
 
-        private void mnuBitacoraCambios_Click(object sender, EventArgs e) => Abrir<FrmBitacoraCambios_60MN>();
+        private void mnuMovimientosStock_Click(object sender, EventArgs e) { /* Abrir<FrmMovimientoStock_60MN>(); */ }
+
+        private void mnuConfiguracionStock_Click(object sender, EventArgs e) { /* Abrir<FrmConfiguracionStock_60MN>(); */ }
+
+        private void mnuBitacoraCambios_Click(object sender, EventArgs e) { /* Abrir<FrmBitacoraCambios_60MN>(); */ }
 
         // ---------------- USUARIO ----------------
 
@@ -168,6 +201,13 @@ namespace VetCare
         }
 
         // ---------------- VENTAS / COMPRAS / REPORTES / AYUDA ----------------
+        private void mnuCarrito_Click(object sender, EventArgs e) => Abrir<FrmCarrito_60MN>();
+
+        // DESHABILITADO POR AHORA (CUN15 Reporte de existencias, Gestión de Stock).
+        private void mnuReporte1_Click(object sender, EventArgs e) { /* Abrir<FrmReporteExistencias_60MN>(); */ }
+
+        /// <summary>Reporte inteligente: demanda estacional de insumos y productos más entregados.</summary>
+        private void mnuReporte2_Click(object sender, EventArgs e) => Abrir<FrmReporteInteligente_60MN>();
 
         /// <summary>Opciones del menú todavía no desarrolladas ("TD").</summary>
         private void mnuPendiente_Click(object sender, EventArgs e)

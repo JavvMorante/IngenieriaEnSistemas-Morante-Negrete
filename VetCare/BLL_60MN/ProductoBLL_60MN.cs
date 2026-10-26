@@ -46,6 +46,9 @@ namespace BLL_60MN
         public int ContarAlertasActivas() => alertas.ContarAlertasActivas();
 
         /// <summary>Margen aplicable: el particular de la categoría o, si no tiene, el margen general (CUN11 paso 5).</summary>
+        /// <summary>Stock mínimo que se propone al registrar un producto (parametrizado en CUN13).</summary>
+        public int ObtenerStockMinimoSugerido() => catalogo.ObtenerStockMinimoSugerido();
+
         public decimal ObtenerMargen(int categoriaId)
         {
             Categoria_60MN? categoria = catalogo.ListarCategorias().FirstOrDefault(c => c.Id == categoriaId);

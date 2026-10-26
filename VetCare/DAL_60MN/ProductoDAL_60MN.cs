@@ -75,6 +75,42 @@ UPDATE Productos
                 ("@activo", activo), ("@usuario", usuarioId), ("@id", id));
         }
 
+        /// <summary>CUN13 paso 6: nuevo precio de venta por recálculo del margen (el trigger lo registra como MODIFICACION).</summary>
+        public void ActualizarPrecioVenta(int id, decimal precioVenta, int usuarioId)
+        {
+            Conexion_60MN.EjecutarNonQuery(
+                "UPDATE Productos SET PrecioVenta = @precio, UsuarioModificacion = @usuario WHERE ProductoID = @id",
+                ("@precio", precioVenta), ("@usuario", usuarioId), ("@id", id));
+        }
+
+        /// <summary>CUN13 paso 4: aplica el umbral de stock mínimo sugerido a un producto.</summary>
+        public void ActualizarStockMinimo(int id, int stockMinimo, int usuarioId)
+        {
+            Conexion_60MN.EjecutarNonQuery(
+                "UPDATE Productos SET StockMinimo = @minimo, UsuarioModificacion = @usuario WHERE ProductoID = @id",
+                ("@minimo", stockMinimo), ("@usuario", usuarioId), ("@id", id));
+        }
+
+        /// <summary>
+        /// CUN15: inventario activo con filtros por categoría, proveedor, rango de
+        /// vencimiento y tipo de reporte (generales, bajo el mínimo o próximos a vencer).
+        /// </summary>
+        public List<Producto_60MN> ReporteExistencias(bool soloBajoMinimo, int? categoriaId, int? proveedorId,
+                                                      DateTime? venceDesde, DateTime? venceHasta)
+        {
+            string sql = SelectBase + @"
+ WHERE p.Activo = 1
+   AND (@bajoMinimo = 0 OR p.StockActual <= p.StockMinimo)
+   AND (@categoria IS NULL OR p.CategoriaID = @categoria)
+   AND (@proveedor IS NULL OR p.ProveedorID = @proveedor)
+   AND (@desde IS NULL OR p.FechaVencimiento >= @desde)
+   AND (@hasta IS NULL OR p.FechaVencimiento <= @hasta)
+ ORDER BY p.FechaVencimiento, p.Nombre";
+            return Conexion_60MN.EjecutarLista(sql, Mapear,
+                ("@bajoMinimo", soloBajoMinimo), ("@categoria", categoriaId), ("@proveedor", proveedorId),
+                ("@desde", venceDesde?.Date), ("@hasta", venceHasta?.Date));
+        }
+
         private static Producto_60MN Mapear(SqlDataReader r) => new Producto_60MN
         {
             Id = r.GetInt32(0),

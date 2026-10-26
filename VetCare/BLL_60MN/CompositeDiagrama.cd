@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Servicios_60MN.Composite.Componente_60MN">
+    <Position X="9.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Servicios_60MN.Composite.Familia_60MN">
+    <Position X="5.25" Y="2" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Servicios_60MN.Composite.Patente_60MN">
+    <Position X="10.25" Y="2" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="Interfaces_60MN.IPermiso_60MN">
+    <Position X="7.5" Y="1" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Interfaces_60MN.IEntity_60MN">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

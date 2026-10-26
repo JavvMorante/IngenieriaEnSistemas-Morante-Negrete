@@ -50,6 +50,9 @@ namespace VetCare
             {
                 dtpVencimiento.MinDate = DateTime.Today;
                 dtpVencimiento.Value = DateTime.Today.AddYears(1);
+                // CUN13: el stock mínimo sugerido de la configuración es el valor inicial.
+                try { nudStockMinimo.Value = Math.Min(productoBLL.ObtenerStockMinimoSugerido(), (int)nudStockMinimo.Maximum); }
+                catch (Exception ex) { Mensajes_60MN.MostrarError(ex); }
                 return;
             }
 

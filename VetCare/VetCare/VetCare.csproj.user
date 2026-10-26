@@ -4,6 +4,33 @@
     <Compile Update="FrmMenuPrincipal_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Pacientes\FrmAtencion_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pacientes\FrmCarrito_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pacientes\FrmClientes_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pacientes\FrmCliente_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pacientes\FrmHistoriaClinica_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pacientes\FrmInformeAtencion_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pacientes\FrmMascotas_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Reportes\FrmReporteInteligente_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Seguridad\FrmBackupRestore_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Seguridad\FrmBitacoraCambios_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -37,6 +64,12 @@
     <Compile Update="Seguridad\FrmUsuario_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Seguridad\FrmVisorXmlBitacora_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Stock\FrmConfiguracionStock_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Stock\FrmMovimientoStock_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -46,8 +79,14 @@
     <Compile Update="Stock\FrmProducto_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Stock\FrmReporteExistencias_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Utilidades\FormBase_60MN.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Utilidades\PanelGrafico_60MN.cs">
+      <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
 </Project>

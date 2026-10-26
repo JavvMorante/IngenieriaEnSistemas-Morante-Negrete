@@ -12,7 +12,9 @@ namespace Seguridad_60MN.Auditoria
         Roles,
         Bitacora,
         Integridad,
-        Stock
+        Stock,
+        Pacientes,
+        Backup
     }
 
     /// <summary>Eventos tipificados que registra el caso de uso transversal Registrar Evento.</summary>
@@ -22,8 +24,15 @@ namespace Seguridad_60MN.Auditoria
         UsuarioCreado, UsuarioModificado, UsuarioBaja, UsuarioReactivado, UsuarioDesbloqueado, ClaveCambiada, ClaveBlanqueada, IdiomaCambiado,
         RolCreado, RolModificado, RolEliminado, PermisosUsuarioModificados,
         BitacoraEventosConsultada, BitacoraCambiosConsultada,
+        BitacoraExportada, BitacoraImportada, BitacoraImportacionRechazada,
         IntegridadVerificada, IntegridadFallida, DigitosRecalculados,
-        ProductoCreado, ProductoModificado, ProductoBaja, ProductoVersionRestaurada, MovimientoStock, AlertaReposicion
+        ProductoCreado, ProductoModificado, ProductoBaja, ProductoVersionRestaurada, MovimientoStock, AlertaReposicion,
+        ConfiguracionStockModificada, ReporteExistenciasGenerado, ReporteInteligenteGenerado,
+        ClienteRegistrado, ClienteModificado, ClienteBaja, ClienteReactivado, ClientesConsultados,
+        MascotaRegistrada, MascotaModificada, MascotaBaja,
+        HistoriaClinicaCreada, HistoriaClinicaConsultada, HistoriaClinicaModificada,
+        AtencionRegistrada, MedicacionEntregada, InformeAtencionEmitido,
+        BackupRealizado, RestoreIniciado, RestoreRealizado
     }
 
     public sealed class DefinicionEvento_60MN
@@ -78,6 +87,11 @@ namespace Seguridad_60MN.Auditoria
                 EventoSistema_60MN.PermisosUsuarioModificados);
 
             Agregar(ModuloSistema_60MN.Bitacora, 5, EventoSistema_60MN.BitacoraEventosConsultada, EventoSistema_60MN.BitacoraCambiosConsultada);
+            // Exportar e importar la bitácora (XML). Importar es más crítico: agrega registros de afuera a la
+            // tabla de auditoría; un archivo rechazado (firma inválida, alterado, etc.) es el caso más grave.
+            Agregar(ModuloSistema_60MN.Bitacora, 1, EventoSistema_60MN.BitacoraImportacionRechazada);
+            Agregar(ModuloSistema_60MN.Bitacora, 2, EventoSistema_60MN.BitacoraImportada);
+            Agregar(ModuloSistema_60MN.Bitacora, 4, EventoSistema_60MN.BitacoraExportada);
 
             Agregar(ModuloSistema_60MN.Integridad, 1, EventoSistema_60MN.IntegridadFallida, EventoSistema_60MN.DigitosRecalculados);
             Agregar(ModuloSistema_60MN.Integridad, 4, EventoSistema_60MN.IntegridadVerificada);
@@ -86,6 +100,20 @@ namespace Seguridad_60MN.Auditoria
                 EventoSistema_60MN.AlertaReposicion);
             Agregar(ModuloSistema_60MN.Stock, 4, EventoSistema_60MN.ProductoCreado, EventoSistema_60MN.ProductoModificado,
                 EventoSistema_60MN.MovimientoStock);
+            Agregar(ModuloSistema_60MN.Stock, 3, EventoSistema_60MN.ConfiguracionStockModificada);
+            Agregar(ModuloSistema_60MN.Stock, 5, EventoSistema_60MN.ReporteExistenciasGenerado,
+                EventoSistema_60MN.ReporteInteligenteGenerado);
+
+            Agregar(ModuloSistema_60MN.Pacientes, 3, EventoSistema_60MN.ClienteBaja, EventoSistema_60MN.MascotaBaja,
+                EventoSistema_60MN.HistoriaClinicaModificada);
+            Agregar(ModuloSistema_60MN.Pacientes, 4, EventoSistema_60MN.ClienteRegistrado, EventoSistema_60MN.ClienteModificado,
+                EventoSistema_60MN.ClienteReactivado, EventoSistema_60MN.MascotaRegistrada, EventoSistema_60MN.MascotaModificada,
+                EventoSistema_60MN.HistoriaClinicaCreada, EventoSistema_60MN.HistoriaClinicaConsultada,
+                EventoSistema_60MN.AtencionRegistrada, EventoSistema_60MN.MedicacionEntregada, EventoSistema_60MN.InformeAtencionEmitido);
+            Agregar(ModuloSistema_60MN.Pacientes, 5, EventoSistema_60MN.ClientesConsultados);
+
+            Agregar(ModuloSistema_60MN.Backup, 1, EventoSistema_60MN.RestoreIniciado, EventoSistema_60MN.RestoreRealizado);
+            Agregar(ModuloSistema_60MN.Backup, 2, EventoSistema_60MN.BackupRealizado);
 
             foreach (EventoSistema_60MN evento in Enum.GetValues(typeof(EventoSistema_60MN)))
                 if (!resultado.ContainsKey(evento))

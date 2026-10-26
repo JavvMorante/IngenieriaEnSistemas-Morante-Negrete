@@ -58,7 +58,7 @@ namespace VetCare
             lblDescripcion.Name = "lblDescripcion";
             lblDescripcion.Size = new Size(860, 44);
             lblDescripcion.TabIndex = 1;
-            lblDescripcion.Text = "Verifica los dígitos verificadores horizontales (DVH, uno por fila) y verticales (DVV, uno por tabla) de Usuario, Familia, Patente, sus tablas de relación, Bitacora, Productos y MovimientoStock.";
+            lblDescripcion.Text = "Verifica los dígitos verificadores horizontales (DVH, uno por fila) y verticales (DVV, uno por tabla) de Usuario, Familia, Patente, sus tablas de relación, Bitacora, Productos, MovimientoStock, Cliente, Mascota, HistoriaClinica, Atencion y AtencionDetalle.";
             //
             // lblEstado
             //

@@ -11,7 +11,9 @@
 
    Usuarios iniciales:
      admin     / Admin1234      (familia Administrador)
-     operario  / Operario1234   (familia Operario de stock + patente individual Reportes)
+     operario  / Operario1234   (familia Operario de stock + patente individual Configurar margen)
+     vendedor  / Vendedor1234   (familia Vendedor: CUN01 a CUN04 y CUN09)
+     veterinario / Veterinario1234 (familia Veterinario: CUN03, CUN05 a CUN10)
    Usuario de emergencia (archivo UsuarioEmergencia_60MN.xml, no está en la base):
      emergencia / Emergencia1234
    ===================================================================== */
@@ -229,6 +231,99 @@ CREATE TABLE AlertaReposicion (
 GO
 
 /* ---------------------------------------------------------------------
+   GESTIÓN DE PACIENTES (RFN1: CUN01 a CUN10)
+   --------------------------------------------------------------------- */
+
+-- CUN01 / CUN02 / CUN03. Baja lógica (Activo = 0): se conservan mascotas e historias clínicas.
+CREATE TABLE Cliente (
+    ClienteID      INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Cliente PRIMARY KEY,
+    TipoDocumento  VARCHAR(5)        NOT NULL,
+    NroDocumento   VARCHAR(15)       NOT NULL,
+    Nombre         VARCHAR(80)       NOT NULL,
+    Apellido       VARCHAR(80)       NOT NULL,
+    Direccion      VARCHAR(150)      NOT NULL,
+    Telefono       VARCHAR(30)       NOT NULL,
+    Email          VARCHAR(150)      NULL,
+    Activo         BIT               NOT NULL CONSTRAINT DF_Cliente_Activo DEFAULT (1),
+    DVH            CHAR(64)          NULL,
+    CONSTRAINT UX_Cliente_Documento UNIQUE (TipoDocumento, NroDocumento)
+);
+GO
+
+-- CUN04. Un cliente tiene una o varias mascotas (uno a varios).
+CREATE TABLE Mascota (
+    MascotaID        INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Mascota PRIMARY KEY,
+    ClienteID        INT               NOT NULL CONSTRAINT FK_Mascota_Cliente REFERENCES Cliente (ClienteID),
+    Nombre           VARCHAR(60)       NOT NULL,
+    Especie          VARCHAR(40)       NOT NULL,
+    Raza             VARCHAR(60)       NOT NULL,
+    Sexo             CHAR(1)           NOT NULL CONSTRAINT CK_Mascota_Sexo CHECK (Sexo IN ('M', 'H')),
+    FechaNacimiento  DATE              NOT NULL,
+    Activo           BIT               NOT NULL CONSTRAINT DF_Mascota_Activo DEFAULT (1),
+    DVH              CHAR(64)          NULL
+);
+CREATE INDEX IX_Mascota_Cliente ON Mascota (ClienteID);
+GO
+
+-- CUN05 / CUN06 / CUN07. Una historia clínica por mascota; el número se genera a partir del Id.
+CREATE TABLE HistoriaClinica (
+    HistoriaClinicaID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_HistoriaClinica PRIMARY KEY,
+    Numero             AS ('HC-' + RIGHT('00000' + CAST(HistoriaClinicaID AS VARCHAR(10)), 5)) PERSISTED,
+    MascotaID          INT               NOT NULL CONSTRAINT FK_HistoriaClinica_Mascota REFERENCES Mascota (MascotaID)
+                                                  CONSTRAINT UX_HistoriaClinica_Mascota UNIQUE,
+    FechaApertura      DATETIME2(0)      NOT NULL,
+    PesoActual         DECIMAL(6,2)      NOT NULL,
+    Alergias           VARCHAR(400)      NOT NULL,
+    Observaciones      VARCHAR(1000)     NULL,
+    UsuarioID          INT               NULL,
+    DVH                CHAR(64)          NULL
+);
+GO
+
+-- CUN07 (paso 6): valores anteriores de la historia clínica con su fecha, para el seguimiento evolutivo.
+CREATE TABLE HistoriaClinica_H (
+    HistoriaClinicaHID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_HistoriaClinica_H PRIMARY KEY,
+    HistoriaClinicaID   INT               NOT NULL CONSTRAINT FK_HistoriaClinica_H_HC REFERENCES HistoriaClinica (HistoriaClinicaID),
+    PesoActual          DECIMAL(6,2)      NOT NULL,
+    Alergias            VARCHAR(400)      NOT NULL,
+    Observaciones       VARCHAR(1000)     NULL,
+    FechaHora           DATETIME2(0)      NOT NULL,
+    UsuarioID           INT               NULL,
+    Origen              VARCHAR(20)       NOT NULL  -- MODIFICACION (CUN07) o ATENCION (CUN08 actualiza el peso)
+);
+GO
+
+-- CUN08 Registrar Atención. InformesEmitidos cuenta las emisiones del informe (CUN10, reimpresión 1.1).
+CREATE TABLE Atencion (
+    AtencionID          INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Atencion PRIMARY KEY,
+    HistoriaClinicaID   INT               NOT NULL CONSTRAINT FK_Atencion_HC REFERENCES HistoriaClinica (HistoriaClinicaID),
+    FechaHora           DATETIME2(0)      NOT NULL,
+    UsuarioID           INT               NULL,
+    Profesional         VARCHAR(120)      NOT NULL,
+    Peso                DECIMAL(6,2)      NOT NULL,
+    Temperatura         DECIMAL(4,1)      NOT NULL,
+    FrecuenciaCardiaca  INT               NOT NULL,
+    Motivo              VARCHAR(300)      NOT NULL,
+    Diagnostico         VARCHAR(1000)     NOT NULL,
+    InformesEmitidos    INT               NOT NULL CONSTRAINT DF_Atencion_Informes DEFAULT (0),
+    DVH                 CHAR(64)          NULL
+);
+CREATE INDEX IX_Atencion_HC ON Atencion (HistoriaClinicaID, FechaHora);
+GO
+
+-- CUN09 Registrar Medicación en Carrito: cada ítem entregado genera un egreso de stock (CUN14).
+CREATE TABLE AtencionDetalle (
+    AtencionDetalleID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_AtencionDetalle PRIMARY KEY,
+    AtencionID         INT               NOT NULL CONSTRAINT FK_AtencionDetalle_Atencion REFERENCES Atencion (AtencionID),
+    ProductoID         INT               NOT NULL CONSTRAINT FK_AtencionDetalle_Producto REFERENCES Productos (ProductoID),
+    Cantidad           INT               NOT NULL CONSTRAINT CK_AtencionDetalle_Cantidad CHECK (Cantidad > 0),
+    PrecioUnitario     DECIMAL(12,2)     NOT NULL,
+    MovimientoID       INT               NOT NULL CONSTRAINT FK_AtencionDetalle_Movimiento REFERENCES MovimientoStock (MovimientoID),
+    DVH                CHAR(64)          NULL
+);
+GO
+
+/* ---------------------------------------------------------------------
    TRIGGER DE LA BITÁCORA DE CAMBIOS (T06B)
    Ante cada alta, modificación o eliminación en Productos:
      - pone Act = 0 en las versiones anteriores del producto en Productos_C
@@ -296,6 +391,11 @@ BEGIN
 END
 GO
 
+-- DESHABILITADO POR AHORA: la Bitácora de cambios no registra versiones de productos.
+-- Para reactivarla: ENABLE TRIGGER TR_Productos_BitacoraCambios ON Productos;
+DISABLE TRIGGER TR_Productos_BitacoraCambios ON Productos;
+GO
+
 /* ---------------------------------------------------------------------
    MULTI-IDIOMA (patrón Observer en la GUI)
    - El español es el idioma BASE: sus textos son los del diseñador de
@@ -352,12 +452,12 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'mnuAdmin', N'ADMIN'), (2, 'mnuUsuarios', N'Users'), (2, 'mnuPerfiles', N'Profiles'), (2, 'mnuBackup', N'Backup'),
 (2, 'mnuRestore', N'Restore'), (2, 'mnuBitacoraEventos', N'Event log'), (2, 'mnuDigitosVerificadores', N'Check digits'),
 (2, 'mnuMaestros', N'MASTER DATA'), (2, 'mnuProductos', N'Products'), (2, 'mnuMovimientosStock', N'Stock movements'),
-(2, 'mnuClientes', N'Customers'), (2, 'mnuProveedores', N'Suppliers'), (2, 'mnuBitacoraCambios', N'Change log'),
+(2, 'mnuClientes', N'Customers and patients'), (2, 'mnuProveedores', N'Suppliers'), (2, 'mnuBitacoraCambios', N'Change log'),
 (2, 'mnuUsuario', N'USER'), (2, 'mnuReLogin', N'Re-Login'), (2, 'mnuCambiarClave', N'Change password'),
 (2, 'mnuLogout', N'Logout'), (2, 'mnuCambiarIdioma', N'Change language'),
 (2, 'mnuVentas', N'SALES'), (2, 'mnuCarrito', N'Cart'), (2, 'mnuFacturar', N'Invoice'), (2, 'mnuDespachar', N'Dispatch'),
 (2, 'mnuCompras', N'PURCHASES'), (2, 'mnuGestionCompras', N'Purchases'),
-(2, 'mnuReportes', N'REPORTS'), (2, 'mnuReporte1', N'Report 1'), (2, 'mnuReporte2', N'Report 2'), (2, 'mnuReporte3', N'Report 3'),
+(2, 'mnuReportes', N'REPORTS'), (2, 'mnuReporte1', N'Stock report'), (2, 'mnuReporte2', N'Report 2'), (2, 'mnuReporte3', N'Report 3'),
 (2, 'mnuAyuda', N'HELP'), (2, 'mnuAyudaEnLinea', N'Online help (F1)'), (2, 'mnuAcercaDe', N'About VetCare'),
 -- Login
 (2, 'FrmLogin_60MN', N'VetCare - Sign in'), (2, 'FrmLogin_60MN.lblIdioma', N'Change language'),
@@ -407,7 +507,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'colVersionB', N'Later version'), (2, 'lblReferencia', N'Highlighted fields changed between versions.'),
 -- Integridad
 (2, 'FrmIntegridad_60MN', N'Data integrity'), (2, 'FrmIntegridad_60MN.lblTitulo', N'Data integrity'),
-(2, 'lblDescripcion', N'Checks the horizontal (DVH, one per row) and vertical (DVV, one per table) check digits of Usuario, Familia, Patente, their relation tables, Bitacora, Productos and MovimientoStock.'),
+(2, 'lblDescripcion', N'Checks the horizontal (DVH, one per row) and vertical (DVV, one per table) check digits of Usuario, Familia, Patente, their relation tables, Bitacora, Productos, MovimientoStock, Cliente, Mascota, HistoriaClinica, Atencion and AtencionDetalle.'),
 (2, 'colTabla', N'Table'), (2, 'colTipo', N'Type'), (2, 'colRegistro', N'Record (key)'), (2, 'colDetalle', N'Detail'),
 (2, 'btnVerificar', N'Verify'), (2, 'btnRecalcular', N'Recalculate digits'),
 -- Productos
@@ -428,5 +528,83 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'grpAjuste', N'Adjustment'), (2, 'rdoSumar', N'Add (inventory difference)'), (2, 'rdoRestar', N'Subtract (breakage, loss...)'),
 (2, 'chkVencimiento', N'Expiration adjustment: write off the whole batch (stock to 0)'),
 (2, 'lblCantidad', N'Quantity *'), (2, 'lblMotivo', N'Reason *'), (2, 'lblHistorial', N'Latest movements of the product'),
-(2, 'colCantidad', N'Quantity'), (2, 'colAnterior', N'Previous stock'), (2, 'colResultante', N'Resulting stock'), (2, 'colMotivo', N'Reason');
+(2, 'colCantidad', N'Quantity'), (2, 'colAnterior', N'Previous stock'), (2, 'colResultante', N'Resulting stock'), (2, 'colMotivo', N'Reason'),
+-- Menú: Gestión de Pacientes y Stock
+(2, 'mnuConfiguracionStock', N'Stock settings'), 
+-- Clientes y mascotas (CUN01 a CUN04)
+(2, 'FrmClientes_60MN', N'Customers and pets'), (2, 'FrmClientes_60MN.lblTitulo', N'Customers and pets'),
+(2, 'lblCriterio', N'Search by'), (2, 'chkIncluirBajas', N'Include deactivated'), (2, 'colDocumento', N'Document'),
+(2, 'colTelefono', N'Phone'), (2, 'grpFicha', N'Customer record'), (2, 'btnNuevoCliente', N'New customer'),
+(2, 'btnModificarCliente', N'Modify'), (2, 'btnBajaCliente', N'Deactivate'), (2, 'btnReactivarCliente', N'Reactivate'),
+(2, 'lblMascotas', N'Customer pets'), (2, 'colMascota', N'Name'), (2, 'colEspecie', N'Species'), (2, 'colRaza', N'Breed'),
+(2, 'colSexo', N'Sex'), (2, 'colNacimiento', N'Birth date'), (2, 'colHistoria', N'Medical record'), (2, 'colEstadoMascota', N'Status'),
+(2, 'btnAnadirMascota', N'Add pet'), (2, 'btnModificarMascota', N'Modify'), (2, 'btnBajaMascota', N'Deactivate'),
+(2, 'btnHistoriaClinica', N'Medical record'), (2, 'btnNuevaAtencion', N'New consultation'),
+(2, 'msg.CriterioDocumento', N'Document'), (2, 'msg.CriterioApellido', N'Last name'), (2, 'msg.CriterioMascota', N'Pet name'),
+(2, 'msg.SeleccioneCliente', N'Search and select a customer to see their record.'), (2, 'msg.Direccion', N'Address'),
+(2, 'msg.Telefono', N'Phone'), (2, 'msg.ClienteDeBaja', N'DEACTIVATED CUSTOMER: it can be reactivated.'),
+(2, 'FrmCliente_60MN', N'Customer'), (2, 'FrmCliente_60MN.TituloAlta', N'Register customer'), (2, 'FrmCliente_60MN.TituloModificacion', N'Modify customer'),
+(2, 'lblTipoDocumento', N'Document type *'), (2, 'lblNroDocumento', N'Document number *'), (2, 'FrmCliente_60MN.lblNombre', N'Name *'),
+(2, 'lblApellido', N'Last name *'), (2, 'lblDireccion', N'Address *'), (2, 'lblTelefono', N'Phone *'), (2, 'lblEmail', N'Email'),
+(2, 'grpMascotas', N'Pets to register'), (2, 'btnAgregarMascota', N'Add pet'), (2, 'btnQuitarMascota', N'Remove'),
+(2, 'FrmCliente_60MN.lblNota', N'If the customer does not bring a pet, they can be registered now and the pet added later from their record.'),
+(2, 'FrmMascotas_60MN', N'Pet'), (2, 'FrmMascotas_60MN.TituloAlta', N'Add pet'), (2, 'FrmMascotas_60MN.TituloModificacion', N'Modify pet'),
+(2, 'FrmMascotas_60MN.lblNombre', N'Name *'), (2, 'FrmMascotas_60MN.lblEspecie', N'Species *'), (2, 'FrmMascotas_60MN.lblRaza', N'Breed *'),
+(2, 'lblSexo', N'Sex *'), (2, 'rdoMacho', N'Male'), (2, 'rdoHembra', N'Female'), (2, 'FrmMascotas_60MN.lblNacimiento', N'Birth date *'),
+-- Historia clínica (CUN05 a CUN07)
+(2, 'FrmHistoriaClinica_60MN', N'Medical record'), (2, 'FrmHistoriaClinica_60MN.TituloAlta', N'Open medical record'),
+(2, 'FrmHistoriaClinica_60MN.btnAbrir', N'Open medical record'), (2, 'FrmHistoriaClinica_60MN.btnGuardar', N'Save'),
+(2, 'grpPaciente', N'Patient'), (2, 'lblEspecie', N'Species'), (2, 'lblRaza', N'Breed'), (2, 'lblNacimiento', N'Birth date'),
+(2, 'grpDatos', N'Clinical data'), (2, 'FrmHistoriaClinica_60MN.lblPeso', N'Current weight (kg) *'), (2, 'chkSinAlergias', N'No known allergies'),
+(2, 'lblAlergias', N'Allergies *'), (2, 'lblObservaciones', N'Remarks'), (2, 'btnCancelarEdicion', N'Cancel'),
+(2, 'FrmHistoriaClinica_60MN.btnImprimir', N'Print record'), (2, 'tpAtenciones', N'Consultations'),
+(2, 'colProfesional', N'Professional'), (2, 'colPeso', N'Weight (kg)'), (2, 'btnVerInforme', N'View / print report'),
+(2, 'btnMedicacion', N'Add medication'), (2, 'tpEvolucion', N'History (previous values)'), (2, 'colFechaEvolucion', N'Date and time'),
+(2, 'colOrigen', N'Origin'), (2, 'colPesoEvolucion', N'Weight (kg)'), (2, 'colAlergiasEvolucion', N'Allergies'),
+(2, 'colObservacionesEvolucion', N'Remarks'), (2, 'colUsuarioEvolucion', N'User'),
+(2, 'msg.HistoriaNueva', N'New medical record'), (2, 'msg.Abierta', N'opened on'), (2, 'msg.Alergias', N'ALLERGIES'),
+(2, 'msg.Propietario', N'Owner'), (2, 'msg.SinAtenciones', N'No consultations registered.'),
+-- Atención, carrito e informe (CUN08 a CUN10)
+(2, 'FrmAtencion_60MN', N'Register consultation'), (2, 'lblProfesional', N'Professional'), (2, 'grpSignos', N'Vital signs'),
+(2, 'lblPeso', N'Weight (kg)'), (2, 'lblTemperatura', N'Temperature (°C)'), (2, 'lblFrecuencia', N'Heart rate (bpm)'),
+(2, 'FrmAtencion_60MN.lblMotivo', N'Reason for consultation *'), (2, 'lblDiagnostico', N'Diagnosis and instructions *'),
+(2, 'btnRegistrar', N'Register consultation'), (2, 'btnInforme', N'Issue report'),
+(2, 'FrmCarrito_60MN', N'Medication cart'), (2, 'lblAtencion', N'Consultation'), (2, 'FrmCarrito_60MN.lblBuscar', N'Product'),
+(2, 'colPrecio', N'Price'), (2, 'colVence', N'Expiration'), (2, 'FrmCarrito_60MN.lblCantidad', N'Quantity'),
+(2, 'btnAgregar', N'Add to cart'), (2, 'lblCarrito', N'Cart'), (2, 'colProductoCarrito', N'Product'), (2, 'colLoteCarrito', N'Batch'),
+(2, 'colCantidadCarrito', N'Quantity'), (2, 'colPrecioCarrito', N'Unit price'), (2, 'colSubtotal', N'Subtotal'),
+(2, 'btnQuitar', N'Remove item'), (2, 'btnConfirmar', N'Confirm delivery'),
+(2, 'FrmInformeAtencion_60MN', N'Consultation report'), (2, 'btnImprimir', N'Print / PDF'),
+(2, 'FrmInformeAtencion_60MN.btnGuardar', N'Save as text'),
+-- Configuración de stock (CUN13)
+(2, 'FrmConfiguracionStock_60MN', N'Stock settings'), (2, 'grpGeneral', N'General parameters'), (2, 'lblMargen', N'Profit margin (%)'),
+(2, 'FrmConfiguracionStock_60MN.lblStockMinimo', N'Suggested minimum stock (units)'), (2, 'lblCategorias', N'Margin by category (%)'),
+(2, 'colMargenCategoria', N'Margin (%)'), (2, 'FrmConfiguracionStock_60MN.lblAyuda', N'Empty = the category uses the general margin.'),
+(2, 'chkRecalcular', N'Recalculate the sale price of active products'),
+(2, 'chkAplicarMinimo', N'Apply the suggested minimum stock to active products'), (2, 'FrmConfiguracionStock_60MN.btnGuardar', N'Save'),
+-- Reporte de existencias (CUN15)
+(2, 'FrmReporteExistencias_60MN', N'Stock report'), (2, 'grpFiltros', N'Criteria'), (2, 'lblTipo', N'Type'),
+(2, 'FrmReporteExistencias_60MN.lblProveedor', N'Supplier'), (2, 'FrmReporteExistencias_60MN.chkVencimiento', N'Expiration from'),
+(2, 'btnGenerar', N'Generate'), (2, 'colMinimo', N'Minimum'), (2, 'colValorizacion', N'Valuation'), (2, 'btnExportar', N'Export CSV'),
+(2, 'msg.ExistenciasGenerales', N'General stock'), (2, 'msg.BajoStockMinimo', N'Below minimum stock'),
+(2, 'msg.ProximosAVencer', N'About to expire'), (2, 'msg.SinResultados', N'No products match the criteria.'),
+(2, 'msg.Total', N'Total'),
+-- Backup y restore (CUS12)
+(2, 'FrmBackupRestore_60MN', N'Backup / Restore'), (2, 'FrmBackupRestore_60MN.lblTitulo', N'Database backup and restore'),
+(2, 'grpRespaldo', N'Back up'), (2, 'lblCarpeta', N'Destination folder *'), (2, 'btnExaminarCarpeta', N'Browse...'),
+(2, 'lblNotaCarpeta', N'The file is written by the SQL Server service: the folder must exist on the server and the service needs write permission. The instance backup folder is suggested.'),
+(2, 'btnRespaldar', N'Back up database'), (2, 'grpRestaurar', N'Restore'), (2, 'lblRespaldos', N'Backups registered by SQL Server'),
+(2, 'colArchivo', N'File'), (2, 'colTamanio', N'Size'), (2, 'colRuta', N'Path'), (2, 'lblArchivo', N'Backup file *'),
+(2, 'btnExaminarArchivo', N'Browse...'),
+(2, 'lblAdvertencia', N'Restoring replaces the whole database: changes made after the backup (including the event log) are lost and the session is closed at the end.'),
+(2, 'FrmBackupRestore_60MN.btnRestaurar', N'Restore database'), (2, 'msg.ArchivoAGenerar', N'File to generate'),
+(2, 'msg.ElegirCarpetaBackup', N'Backup destination folder'),
+-- Bitácora de eventos: exportar / importar XML
+(2, 'btnExportarXml', N'Export XML...'), (2, 'btnImportarXml', N'Import XML...'), (2, 'btnVerXml', N'View XML...'),
+(2, 'FrmVisorXmlBitacora_60MN', N'Event log in XML'), (2, 'tpXml', N'XML'), (2, 'tpEventos', N'File events'),
+(2, 'FrmVisorXmlBitacora_60MN.btnImportar', N'Import events'),
+(2, 'msg.XmlValido', N'Valid file: HMAC-SHA256 signatures are correct and the content was verified.'),
+(2, 'msg.XmlRechazado', N'Rejected file: it cannot be imported.'), (2, 'msg.XmlExportadoPor', N'Exported by'),
+(2, 'msg.XmlVersion', N'Version'), (2, 'msg.XmlCifrado', N'Encrypted descriptions'), (2, 'msg.Si', N'Yes'), (2, 'msg.No', N'No'),
+(2, 'msg.XmlEventos', N'Events'), (2, 'msg.XmlRango', N'Period'), (2, 'msg.XmlNuevos', N'New'), (2, 'msg.XmlDuplicados', N'Already present');
 GO

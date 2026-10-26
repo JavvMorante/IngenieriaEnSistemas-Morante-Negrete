@@ -45,9 +45,14 @@ namespace Seguridad_60MN.Integridad
         {
             TablaDV_60MN definicion = TablaDV_60MN.Obtener(tabla);
 
+            // Si una misma operación insertó varias filas (por ejemplo un cliente con dos
+            // mascotas), al actualizar la primera las demás todavía no tienen DVH y el
+            // DVV guardado las incluye vacías: ese estado intermedio también es legítimo.
             List<string> dvhPrevios = mapper.LeerDVHs(definicion);
-            bool estabaConsistente = mapper.LeerDVV(definicion.Nombre) ==
-                                     calculadora.CalcularDVV(definicion.Nombre, dvhPrevios.Where(d => d != null));
+            string dvvGuardado = mapper.LeerDVV(definicion.Nombre);
+            bool estabaConsistente =
+                dvvGuardado == calculadora.CalcularDVV(definicion.Nombre, dvhPrevios.Where(d => d != null)) ||
+                dvvGuardado == calculadora.CalcularDVV(definicion.Nombre, dvhPrevios);
 
             FilaDV_60MN fila = mapper.LeerFila(definicion, clave);
             if (fila != null)

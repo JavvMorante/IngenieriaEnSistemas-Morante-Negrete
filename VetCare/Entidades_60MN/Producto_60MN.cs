@@ -38,6 +38,14 @@ namespace Entidades_60MN
 
         public string Estado => Activo ? "Activo" : "Baja";
 
+        /// <summary>Días que faltan para que venza (negativo = vencido).</summary>
+        public int DiasParaVencer => (FechaVencimiento.Date - DateTime.Today).Days;
+
+        public bool Vencido => DiasParaVencer < 0;
+
+        /// <summary>Stock actual valorizado a precio de costo (CUN15).</summary>
+        public decimal Valorizacion => StockActual * PrecioCosto;
+
         public override string ToString() => $"{Codigo} - {Nombre} (Lote {Lote})";
     }
 }

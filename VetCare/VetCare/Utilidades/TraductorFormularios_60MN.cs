@@ -12,7 +12,7 @@ namespace VetCare
     /// vez para poder volver a él al cambiar de idioma.
     ///
     /// Se traducen: título del formulario, Label, Button, CheckBox, RadioButton,
-    /// GroupBox, encabezados de DataGridView e ítems de MenuStrip. No se tocan
+    /// GroupBox, TabPage, encabezados de DataGridView e ítems de MenuStrip. No se tocan
     /// TextBox/ComboBox (contienen datos) ni textos vacíos (los completa el código).
     /// </summary>
     internal static class TraductorFormularios_60MN
@@ -31,7 +31,7 @@ namespace VetCare
             {
                 switch (control)
                 {
-                    case Label or ButtonBase or GroupBox:
+                    case Label or ButtonBase or GroupBox or TabPage:
                         control.Text = TextoPara(control, control.Text, formulario, control.Name);
                         break;
                     case DataGridView grilla:

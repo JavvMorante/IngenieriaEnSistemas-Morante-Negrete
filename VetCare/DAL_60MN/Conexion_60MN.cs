@@ -12,12 +12,36 @@ namespace DAL_60MN
     {
         internal static SqlConnection Abrir()
         {
+            SqlConnection conexion = new SqlConnection(Cadena());
+            conexion.Open();
+            return conexion;
+        }
+
+        /// <summary>Nombre de la base configurada (Initial Catalog), usado por backup y restore.</summary>
+        internal static string NombreBaseDatos => new SqlConnectionStringBuilder(Cadena()).InitialCatalog;
+
+        /// <summary>
+        /// Conexión a la base master del mismo servidor: RESTORE no puede ejecutarse
+        /// desde una conexión a la base que se está reemplazando.
+        /// </summary>
+        internal static SqlConnection AbrirMaster()
+        {
+            SqlConnectionStringBuilder constructor = new SqlConnectionStringBuilder(Cadena())
+            {
+                InitialCatalog = "master",
+                Pooling = false
+            };
+            SqlConnection conexion = new SqlConnection(constructor.ConnectionString);
+            conexion.Open();
+            return conexion;
+        }
+
+        private static string Cadena()
+        {
             string? cadena = ConfigurationManager.AppSettings["conexionBD"];
             if (string.IsNullOrWhiteSpace(cadena))
                 throw new InvalidOperationException("Falta la cadena de conexión 'conexionBD' en App.config.");
-            SqlConnection conexion = new SqlConnection(cadena);
-            conexion.Open();
-            return conexion;
+            return cadena;
         }
 
         internal static int EjecutarNonQuery(string sql, params (string Nombre, object? Valor)[] parametros)

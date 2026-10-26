@@ -10,6 +10,9 @@ namespace VetCare
         private readonly BitacoraBLL_60MN bitacoraBLL = new BitacoraBLL_60MN();
         private List<Usuario_60MN> usuarios = new List<Usuario_60MN>();
 
+        // Filtros de la última búsqueda: Exportar XML exporta exactamente lo que se ve en la grilla.
+        private FiltroBitacora_60MN? ultimoFiltro;
+
         public FrmBitacoraEventos_60MN()
         {
             InitializeComponent();
@@ -19,6 +22,7 @@ namespace VetCare
         /// <summary>Paso 2: tipifica módulos, eventos y criticidades en listas desplegables.</summary>
         private void FrmBitacoraEventos_60MN_Load(object sender, EventArgs e)
         {
+            Mensajes_60MN.AplicarPermisos(this);
             cboCriticidad.Items.Add(OpcionCombo_60MN.Todos);
             string[] descripciones = { "", "1 - Muy alta", "2 - Alta", "3 - Media", "4 - Baja", "5 - Informativa" };
             for (int nivel = 1; nivel <= 5; nivel++)
@@ -83,6 +87,7 @@ namespace VetCare
             {
                 Cursor = Cursors.WaitCursor;
                 List<RegistroBitacora_60MN> eventos = bitacoraBLL.Consultar(filtro);
+                ultimoFiltro = filtro;
                 dgvEventos.DataSource = eventos;
                 lblResultados.Text = $"{eventos.Count} evento(s)";
                 // 4.1: sin resultados.
@@ -122,6 +127,103 @@ namespace VetCare
             lblDetalleUsuario.Text = usuario != null
                 ? $"Usuario del evento: {usuario.Nombre} {usuario.Apellido} ({usuario.NombreUsuario})"
                 : $"Usuario del evento: {evento.Usuario} (sin registro de usuario asociado)";
+        }
+
+        // ------------------------- Exportar / importar XML -------------------------
+
+        private const string FiltroArchivosXml = "Bitácora VetCare (*.xml)|*.xml";
+
+        /// <summary>Exporta a XML los eventos de la última búsqueda (descripción cifrada, archivo firmado).</summary>
+        private void btnExportarXml_Click(object sender, EventArgs e)
+        {
+            if (ultimoFiltro == null || dgvEventos.Rows.Count == 0)
+            {
+                Mensajes_60MN.Advertir("Busque primero los eventos a exportar: se exporta lo que muestra la grilla.");
+                return;
+            }
+            using SaveFileDialog dialogo = new SaveFileDialog
+            {
+                Filter = FiltroArchivosXml,
+                DefaultExt = "xml",
+                FileName = $"Bitacora_VetCare_{DateTime.Now:yyyyMMdd_HHmmss}.xml"
+            };
+            if (dialogo.ShowDialog(this) != DialogResult.OK) return;
+
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                ResumenArchivoBitacora_60MN resumen = bitacoraBLL.Exportar(ultimoFiltro, dialogo.FileName);
+                Cursor = Cursors.Default;
+                if (Mensajes_60MN.Confirmar($"Se exportaron {resumen.Cantidad} evento(s) a {resumen.NombreArchivo}.\n\n¿Desea ver el XML generado?"))
+                    MostrarXml(resumen, modoImportacion: false);
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                Mensajes_60MN.MostrarError(ex);
+            }
+        }
+
+        /// <summary>Abre un XML de bitácora solo para verlo y comprobar sus firmas (no importa nada).</summary>
+        private void btnVerXml_Click(object sender, EventArgs e)
+        {
+            string? ruta = ElegirArchivo();
+            if (ruta == null) return;
+            try
+            {
+                MostrarXml(bitacoraBLL.AnalizarArchivo(ruta), modoImportacion: false);
+            }
+            catch (Exception ex)
+            {
+                Mensajes_60MN.MostrarError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Importar: vista previa con la validación completa y, si el usuario confirma,
+        /// la BLL vuelve a leer y validar el archivo antes de insertar.
+        /// </summary>
+        private void btnImportarXml_Click(object sender, EventArgs e)
+        {
+            string? ruta = ElegirArchivo();
+            if (ruta == null) return;
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                ResumenArchivoBitacora_60MN resumen = bitacoraBLL.AnalizarArchivo(ruta);
+                Cursor = Cursors.Default;
+                if (!resumen.Valido)
+                    bitacoraBLL.RegistrarRechazo(resumen);
+                else if (resumen.Nuevos == 0)
+                    Mensajes_60MN.Informar("Todos los eventos del archivo ya están en la bitácora: no hay nada para importar.");
+
+                if (MostrarXml(resumen, modoImportacion: true) != DialogResult.OK)
+                    return;
+
+                Cursor = Cursors.WaitCursor;
+                ResultadoImportacionBitacora_60MN resultado = bitacoraBLL.Importar(resumen.Ruta, resumen.HashSha256);
+                Cursor = Cursors.Default;
+                Mensajes_60MN.Informar($"Importación finalizada: {resultado.Importados} evento(s) agregado(s), " +
+                                       $"{resultado.Duplicados} ya existente(s) omitido(s).");
+                Buscar();
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                Mensajes_60MN.MostrarError(ex);
+            }
+        }
+
+        private string? ElegirArchivo()
+        {
+            using OpenFileDialog dialogo = new OpenFileDialog { Filter = FiltroArchivosXml, CheckFileExists = true };
+            return dialogo.ShowDialog(this) == DialogResult.OK ? dialogo.FileName : null;
+        }
+
+        private DialogResult MostrarXml(ResumenArchivoBitacora_60MN resumen, bool modoImportacion)
+        {
+            using FrmVisorXmlBitacora_60MN visor = new FrmVisorXmlBitacora_60MN(resumen, modoImportacion);
+            return visor.ShowDialog(this);
         }
 
         private void dgvEventos_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)

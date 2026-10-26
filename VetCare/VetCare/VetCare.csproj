@@ -19,6 +19,20 @@
     <ProjectReference Include="..\Servicios_60MN\Servicios_60MN.csproj" />
   </ItemGroup>
 
+  <!--
+    DESHABILITADO POR AHORA: proceso de negocio Gestión de Stock (CUN11 a CUN15) y Bitácora de cambios.
+    Los archivos siguen en el proyecto (se ven en el Explorador de soluciones) pero no se compilan.
+    Para reactivarlos: borrar este ItemGroup y descomentar las líneas marcadas en FrmMenuPrincipal_60MN.cs.
+  -->
+  <ItemGroup>
+    <Compile Remove="Stock\**" />
+    <EmbeddedResource Remove="Stock\**" />
+    <None Include="Stock\**" />
+    <Compile Remove="Seguridad\FrmBitacoraCambios_60MN*.cs;Seguridad\FrmCompararVersiones_60MN*.cs" />
+    <EmbeddedResource Remove="Seguridad\FrmBitacoraCambios_60MN.resx;Seguridad\FrmCompararVersiones_60MN.resx" />
+    <None Include="Seguridad\FrmBitacoraCambios_60MN*.*;Seguridad\FrmCompararVersiones_60MN*.*" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- Usuario de emergencia (fuera de la base de datos). Se genera con Herramientas_60MN/GeneradorScriptBD_60MN. -->
     <None Update="UsuarioEmergencia_60MN.xml">

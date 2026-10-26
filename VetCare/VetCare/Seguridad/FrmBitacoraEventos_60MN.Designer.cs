@@ -45,6 +45,9 @@ namespace VetCare
             cboUsuario = new ComboBox();
             btnBuscar = new Button();
             btnLimpiar = new Button();
+            btnExportarXml = new Button();
+            btnImportarXml = new Button();
+            btnVerXml = new Button();
             dgvEventos = new DataGridView();
             colFecha = new DataGridViewTextBoxColumn();
             colUsuario = new DataGridViewTextBoxColumn();
@@ -198,6 +201,39 @@ namespace VetCare
             btnLimpiar.UseVisualStyleBackColor = true;
             btnLimpiar.Click += btnLimpiar_Click;
             //
+            // btnExportarXml
+            //
+            btnExportarXml.Location = new Point(926, 50);
+            btnExportarXml.Name = "btnExportarXml";
+            btnExportarXml.Size = new Size(162, 34);
+            btnExportarXml.TabIndex = 15;
+            btnExportarXml.Tag = "SEG_BITACORA_EXPORT";
+            btnExportarXml.Text = "Exportar XML...";
+            btnExportarXml.UseVisualStyleBackColor = true;
+            btnExportarXml.Click += btnExportarXml_Click;
+            //
+            // btnImportarXml
+            //
+            btnImportarXml.Location = new Point(926, 90);
+            btnImportarXml.Name = "btnImportarXml";
+            btnImportarXml.Size = new Size(162, 34);
+            btnImportarXml.TabIndex = 16;
+            btnImportarXml.Tag = "SEG_BITACORA_IMPORT";
+            btnImportarXml.Text = "Importar XML...";
+            btnImportarXml.UseVisualStyleBackColor = true;
+            btnImportarXml.Click += btnImportarXml_Click;
+            //
+            // btnVerXml
+            //
+            btnVerXml.Location = new Point(926, 10);
+            btnVerXml.Name = "btnVerXml";
+            btnVerXml.Size = new Size(162, 34);
+            btnVerXml.TabIndex = 17;
+            btnVerXml.Tag = "SEG_BITACORA_EXPORT|SEG_BITACORA_IMPORT";
+            btnVerXml.Text = "Ver XML...";
+            btnVerXml.UseVisualStyleBackColor = true;
+            btnVerXml.Click += btnVerXml_Click;
+            //
             // dgvEventos
             //
             dgvEventos.AllowUserToAddRows = false;
@@ -306,6 +342,9 @@ namespace VetCare
             Controls.Add(lblResultados);
             Controls.Add(lblDetalleUsuario);
             Controls.Add(dgvEventos);
+            Controls.Add(btnVerXml);
+            Controls.Add(btnImportarXml);
+            Controls.Add(btnExportarXml);
             Controls.Add(btnLimpiar);
             Controls.Add(btnBuscar);
             Controls.Add(cboUsuario);
@@ -347,6 +386,9 @@ namespace VetCare
         private ComboBox cboUsuario;
         private Button btnBuscar;
         private Button btnLimpiar;
+        private Button btnExportarXml;
+        private Button btnImportarXml;
+        private Button btnVerXml;
         private DataGridView dgvEventos;
         private DataGridViewTextBoxColumn colFecha;
         private DataGridViewTextBoxColumn colUsuario;

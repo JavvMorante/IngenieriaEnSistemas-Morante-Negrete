@@ -7,7 +7,7 @@ namespace Servicios_60MN.Sesion
     /// la BLL (para registrar eventos con el usuario activo) y la GUI (para
     /// habilitar el menú según las patentes del rol).
     /// </summary>
-    public sealed class SessionManager_60MN
+    public sealed class SessionManager_60MN // clase sellada no puede ser heredada
     {
         private static SessionManager_60MN? instancia;
         private static readonly object candado = new object();

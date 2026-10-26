@@ -24,5 +24,14 @@ namespace BLL_60MN
             if (!Sesion.TienePermiso(codigoPatente))
                 throw new NegocioException_60MN("No tiene permiso para realizar esta operación.");
         }
+
+        /// <summary>Como RequierePermiso, pero alcanza con tener una de las patentes indicadas.</summary>
+        internal static void RequiereAlgunPermiso(params string[] codigosPatente)
+        {
+            if (!Sesion.EstaLogueado)
+                throw new NegocioException_60MN("No hay una sesión iniciada.");
+            if (!codigosPatente.Any(Sesion.TienePermiso))
+                throw new NegocioException_60MN("No tiene permiso para realizar esta operación.");
+        }
     }
 }

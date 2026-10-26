@@ -86,7 +86,16 @@ namespace Seguridad_60MN.Auditoria
             }
         }
 
-        public List<RegistroBitacora_60MN> Consultar(FiltroBitacora_60MN filtro)
+        /// <summary>Consulta de CUS09: la descripción se devuelve desencriptada.</summary>
+        public List<RegistroBitacora_60MN> Consultar(FiltroBitacora_60MN filtro) => Leer(filtro, desencriptar: true, ascendente: false);
+
+        /// <summary>
+        /// Misma consulta pero con la descripción tal como está guardada (cifrada con AES).
+        /// La usa la exportación a XML, que nunca debe sacar la descripción en texto plano.
+        /// </summary>
+        internal List<RegistroBitacora_60MN> ConsultarCifrado(FiltroBitacora_60MN filtro) => Leer(filtro, desencriptar: false, ascendente: true);
+
+        private static List<RegistroBitacora_60MN> Leer(FiltroBitacora_60MN filtro, bool desencriptar, bool ascendente)
         {
             StringBuilder sql = new StringBuilder(
                 "SELECT BitacoraID, FechaHora, UsuarioID, Usuario, Modulo, Evento, Criticidad, Descripcion FROM Bitacora WHERE 1 = 1");
@@ -104,7 +113,7 @@ namespace Seguridad_60MN.Auditoria
             if (filtro.Evento.HasValue) Filtrar("Evento = @evento", "@evento", filtro.Evento.Value.ToString());
             if (filtro.Criticidad.HasValue) Filtrar("Criticidad = @criticidad", "@criticidad", filtro.Criticidad.Value);
             if (filtro.UsuarioId.HasValue) Filtrar("UsuarioID = @usuarioId", "@usuarioId", filtro.UsuarioId.Value);
-            sql.Append(" ORDER BY FechaHora DESC, BitacoraID DESC");
+            sql.Append(ascendente ? " ORDER BY FechaHora, BitacoraID" : " ORDER BY FechaHora DESC, BitacoraID DESC");
 
             List<RegistroBitacora_60MN> resultado = new List<RegistroBitacora_60MN>();
             using (SqlConnection con = ConexionSeguridad_60MN.Abrir())
@@ -122,13 +131,13 @@ namespace Seguridad_60MN.Auditoria
                             Modulo = lector.GetString(4),
                             Evento = lector.GetString(5),
                             Criticidad = lector.GetInt32(6),
-                            Descripcion = DesencriptarSeguro(lector.GetString(7))
+                            Descripcion = desencriptar ? DesencriptarSeguro(lector.GetString(7)) : lector.GetString(7)
                         });
             }
             return resultado;
         }
 
-        private static string DesencriptarSeguro(string valor)
+        internal static string DesencriptarSeguro(string valor)
         {
             try
             {

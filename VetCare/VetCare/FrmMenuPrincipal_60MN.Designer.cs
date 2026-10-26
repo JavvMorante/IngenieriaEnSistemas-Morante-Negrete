@@ -40,6 +40,7 @@ namespace VetCare
             mnuProductos = new ToolStripMenuItem();
             mnuMovimientosStock = new ToolStripMenuItem();
             mnuClientes = new ToolStripMenuItem();
+            mnuConfiguracionStock = new ToolStripMenuItem();
             mnuProveedores = new ToolStripMenuItem();
             mnuBitacoraCambios = new ToolStripMenuItem();
             mnuUsuario = new ToolStripMenuItem();
@@ -118,7 +119,7 @@ namespace VetCare
             mnuBackup.Size = new Size(260, 28);
             mnuBackup.Tag = "SEG_BACKUP";
             mnuBackup.Text = "Backup";
-            mnuBackup.Click += mnuPendiente_Click;
+            mnuBackup.Click += mnuBackupRestore_Click;
             //
             // mnuRestore
             //
@@ -127,7 +128,7 @@ namespace VetCare
             mnuRestore.Size = new Size(260, 28);
             mnuRestore.Tag = "SEG_RESTORE";
             mnuRestore.Text = "Restore";
-            mnuRestore.Click += mnuPendiente_Click;
+            mnuRestore.Click += mnuBackupRestore_Click;
             //
             // mnuBitacoraEventos
             //
@@ -149,7 +150,7 @@ namespace VetCare
             //
             // mnuMaestros
             //
-            mnuMaestros.DropDownItems.AddRange(new ToolStripItem[] { mnuProductos, mnuMovimientosStock, mnuClientes, mnuProveedores, mnuBitacoraCambios });
+            mnuMaestros.DropDownItems.AddRange(new ToolStripItem[] { mnuClientes, mnuProductos, mnuMovimientosStock, mnuConfiguracionStock, mnuProveedores, mnuBitacoraCambios });
             mnuMaestros.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             mnuMaestros.ForeColor = Color.White;
             mnuMaestros.Name = "mnuMaestros";
@@ -180,9 +181,18 @@ namespace VetCare
             mnuClientes.Font = new Font("Segoe UI", 10F);
             mnuClientes.Name = "mnuClientes";
             mnuClientes.Size = new Size(260, 28);
-            mnuClientes.Tag = "MAE_CLIENTES";
-            mnuClientes.Text = "Clientes";
-            mnuClientes.Click += mnuPendiente_Click;
+            mnuClientes.Tag = "PAC_CLIENTE_CONSULTA|PAC_CLIENTE_ALTA";
+            mnuClientes.Text = "Clientes y pacientes";
+            mnuClientes.Click += mnuClientes_Click;
+            //
+            // mnuConfiguracionStock
+            //
+            mnuConfiguracionStock.Font = new Font("Segoe UI", 10F);
+            mnuConfiguracionStock.Name = "mnuConfiguracionStock";
+            mnuConfiguracionStock.Size = new Size(260, 28);
+            mnuConfiguracionStock.Tag = "STK_CONFIG";
+            mnuConfiguracionStock.Text = "Configuración de stock";
+            mnuConfiguracionStock.Click += mnuConfiguracionStock_Click;
             //
             // mnuProveedores
             //
@@ -261,7 +271,7 @@ namespace VetCare
             mnuCarrito.Size = new Size(260, 28);
             mnuCarrito.Tag = "VEN_CARRITO";
             mnuCarrito.Text = "Carrito";
-            mnuCarrito.Click += mnuPendiente_Click;
+            mnuCarrito.Click += mnuCarrito_Click;
             //
             // mnuFacturar
             //
@@ -315,9 +325,9 @@ namespace VetCare
             mnuReporte1.Font = new Font("Segoe UI", 10F);
             mnuReporte1.Name = "mnuReporte1";
             mnuReporte1.Size = new Size(260, 28);
-            mnuReporte1.Tag = "REP_REPORTES";
-            mnuReporte1.Text = "Reporte 1";
-            mnuReporte1.Click += mnuPendiente_Click;
+            mnuReporte1.Tag = "STK_REPORTE";
+            mnuReporte1.Text = "Reporte de existencias";
+            mnuReporte1.Click += mnuReporte1_Click;
             //
             // mnuReporte2
             //
@@ -325,8 +335,8 @@ namespace VetCare
             mnuReporte2.Name = "mnuReporte2";
             mnuReporte2.Size = new Size(260, 28);
             mnuReporte2.Tag = "REP_REPORTES";
-            mnuReporte2.Text = "Reporte 2";
-            mnuReporte2.Click += mnuPendiente_Click;
+            mnuReporte2.Text = "Reporte inteligente";
+            mnuReporte2.Click += mnuReporte2_Click;
             //
             // mnuReporte3
             //
@@ -446,6 +456,7 @@ namespace VetCare
         private ToolStripMenuItem mnuProductos;
         private ToolStripMenuItem mnuMovimientosStock;
         private ToolStripMenuItem mnuClientes;
+        private ToolStripMenuItem mnuConfiguracionStock;
         private ToolStripMenuItem mnuProveedores;
         private ToolStripMenuItem mnuBitacoraCambios;
         private ToolStripMenuItem mnuUsuario;
