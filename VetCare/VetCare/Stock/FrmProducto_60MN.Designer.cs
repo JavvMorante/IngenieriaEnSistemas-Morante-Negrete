@@ -93,7 +93,7 @@ namespace VetCare
             // txtNombre
             //
             txtNombre.Location = new Point(190, 61);
-            txtNombre.MaxLength = 120;
+            txtNombre.MaxLength = 80;
             txtNombre.Name = "txtNombre";
             txtNombre.Size = new Size(300, 27);
             txtNombre.TabIndex = 3;
@@ -258,7 +258,7 @@ namespace VetCare
             // txtLote
             //
             txtLote.Location = new Point(190, 407);
-            txtLote.MaxLength = 40;
+            txtLote.MaxLength = 20;
             txtLote.Name = "txtLote";
             txtLote.Size = new Size(150, 27);
             txtLote.TabIndex = 21;

@@ -39,7 +39,9 @@ namespace Seguridad_60MN.Integridad
         public const string Mascota = "Mascota";
         public const string HistoriaClinica = "HistoriaClinica";
         public const string Atencion = "Atencion";
-        public const string AtencionDetalle = "AtencionDetalle";
+        public const string Proveedor = "Proveedor";
+        public const string VentaEncabezado = "VentaEncabezado";
+        public const string VentaDetalle = "VentaDetalle";
 
         /// <summary>Tablas del modelo de permisos Usuario - Familia - Patente.</summary>
         public static readonly string[] TablasDePermisos =
@@ -78,9 +80,13 @@ namespace Seguridad_60MN.Integridad
                 "HistoriaClinicaID", "Numero", "MascotaID", "FechaApertura", "PesoActual", "Alergias", "Observaciones"),
             new TablaDV_60MN(Atencion, new[] { "AtencionID" },
                 "AtencionID", "HistoriaClinicaID", "FechaHora", "UsuarioID", "Profesional", "Peso", "Temperatura",
-                "FrecuenciaCardiaca", "Motivo", "Diagnostico", "InformesEmitidos"),
-            new TablaDV_60MN(AtencionDetalle, new[] { "AtencionDetalleID" },
-                "AtencionDetalleID", "AtencionID", "ProductoID", "Cantidad", "PrecioUnitario", "MovimientoID"),
+                "FrecuenciaCardiaca", "Motivo", "Diagnostico", "InformesEmitidos", "Indicaciones"),
+            new TablaDV_60MN(Proveedor, new[] { "ProveedorID" },
+                "ProveedorID", "RazonSocial", "CUIT", "Telefono", "Email", "Direccion", "Contacto", "Activo"),
+            new TablaDV_60MN(VentaEncabezado, new[] { "VentaID" },
+                "VentaID", "ClienteID", "AtencionID", "FechaHora", "UsuarioID", "Total"),
+            new TablaDV_60MN(VentaDetalle, new[] { "VentaDetalleID" },
+                "VentaDetalleID", "VentaID", "ProductoID", "Cantidad", "PrecioUnitario", "Subtotal", "MovimientoID"),
         };
 
         public static TablaDV_60MN Obtener(string nombre)

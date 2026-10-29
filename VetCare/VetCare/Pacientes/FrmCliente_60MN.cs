@@ -21,18 +21,78 @@ namespace VetCare
             InitializeComponent();
             original = cliente;
             this.documentoSugerido = documentoSugerido;
+
+            // Filtro de teclado: evita tipear caracteres que la BLL rechazaría. Lo pegado
+            // con Ctrl+V no pasa por acá, por eso cada campo se valida igual al salir de él.
+            txtNroDocumento.KeyPress += (s, e) => Filtrar(e, c => char.IsDigit(c) ||
+                (ReglaActual.AdmiteLetras && c >= 'A' && c <= 'Z') || (ReglaActual.AdmiteGuiones && c == '-'));
+            txtNroDocumento.CharacterCasing = CharacterCasing.Upper;
+            ayudaDocumento = new ToolTip(components);
+            cboTipoDocumento.SelectedIndexChanged += (s, e) => AplicarReglaDocumento();
+            txtTelefono.KeyPress += (s, e) => Filtrar(e, char.IsDigit);
+            txtNombre.KeyPress += (s, e) => Filtrar(e, EsDeNombre);
+            txtApellido.KeyPress += (s, e) => Filtrar(e, EsDeNombre);
+            txtDireccion.KeyPress += (s, e) => Filtrar(e, c => char.IsLetterOrDigit(c) || c == ' ' || ".,-/°º#'".IndexOf(c) >= 0);
+            txtEmail.KeyPress += (s, e) => Filtrar(e, c => !char.IsWhiteSpace(c));
+            foreach (Control campo in Campos.Values)
+                campo.Leave += (s, e) => MarcarCampo((Control)s);
         }
 
         private bool EsAlta => original == null;
+
+        private readonly ToolTip ayudaDocumento;
+
+        private ReglaDocumento_60MN ReglaActual => ClienteBLL_60MN.ReglaDocumento(cboTipoDocumento.SelectedItem as string ?? "DNI");
+
+        /// <summary>Cada tipo de documento tiene su formato (DNI, CUIL, pasaporte...): ajusta el largo, la ayuda y revalida el número.</summary>
+        private void AplicarReglaDocumento()
+        {
+            ReglaDocumento_60MN regla = ReglaActual;
+            txtNroDocumento.MaxLength = regla.LargoTipeo;
+            string ayuda = $"{regla.Tipo}: {regla.Ayuda}";
+            ayudaDocumento.SetToolTip(txtNroDocumento, ayuda);
+            ayudaDocumento.SetToolTip(cboTipoDocumento, ayuda);
+            if (txtNroDocumento.Text.Length > 0 && !txtNroDocumento.ReadOnly)
+                MarcarCampo(txtNroDocumento);
+        }
+
+        /// <summary>Control de la pantalla para cada dato del cliente (nombre de la propiedad, como en los errores de la BLL).</summary>
+        private Dictionary<string, Control> Campos => new Dictionary<string, Control>
+        {
+            [nameof(Cliente_60MN.TipoDocumento)] = cboTipoDocumento,
+            [nameof(Cliente_60MN.NroDocumento)] = txtNroDocumento,
+            [nameof(Cliente_60MN.Nombre)] = txtNombre,
+            [nameof(Cliente_60MN.Apellido)] = txtApellido,
+            [nameof(Cliente_60MN.Direccion)] = txtDireccion,
+            [nameof(Cliente_60MN.Telefono)] = txtTelefono,
+            [nameof(Cliente_60MN.Email)] = txtEmail
+        };
+
+        private static bool EsDeNombre(char c) => char.IsLetter(c) || c == ' ' || c == '\'' || c == '-' || c == '.';
+
+        private static void Filtrar(KeyPressEventArgs e, Func<char, bool> permitido)
+        {
+            if (!char.IsControl(e.KeyChar) && !permitido(e.KeyChar))
+            {
+                e.Handled = true;
+                System.Media.SystemSounds.Beep.Play();
+            }
+        }
 
         private void FrmCliente_60MN_Load(object sender, EventArgs e)
         {
             cboTipoDocumento.Items.AddRange(ClienteBLL_60MN.TiposDocumento);
             cboTipoDocumento.SelectedIndex = 0;
+            txtNombre.MaxLength = ClienteBLL_60MN.LargoNombre;
+            txtApellido.MaxLength = ClienteBLL_60MN.LargoApellido;
+            txtDireccion.MaxLength = ClienteBLL_60MN.LargoDireccion;
+            txtTelefono.MaxLength = ClienteBLL_60MN.LargoTelefono;
+            txtEmail.MaxLength = ClienteBLL_60MN.LargoEmail;
 
             if (EsAlta)
             {
-                txtNroDocumento.Text = documentoSugerido.All(char.IsDigit) ? documentoSugerido : string.Empty;
+                txtNroDocumento.Text = documentoSugerido.All(char.IsDigit) && documentoSugerido.Length <= ReglaActual.LargoTipeo
+                    ? documentoSugerido : string.Empty;
                 return;
             }
 
@@ -84,20 +144,22 @@ namespace VetCare
             lstMascotas.Items.RemoveAt(indice);
         }
 
+        private Cliente_60MN DatosIngresados() => new Cliente_60MN
+        {
+            Id = original?.Id ?? 0,
+            TipoDocumento = cboTipoDocumento.SelectedItem as string ?? "DNI",
+            NroDocumento = txtNroDocumento.Text,
+            Nombre = txtNombre.Text,
+            Apellido = txtApellido.Text,
+            Direccion = txtDireccion.Text,
+            Telefono = txtTelefono.Text,
+            Email = txtEmail.Text
+        };
+
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            if (!ValidarCampos()) return;
-            Cliente_60MN cliente = new Cliente_60MN
-            {
-                Id = original?.Id ?? 0,
-                TipoDocumento = cboTipoDocumento.SelectedItem as string ?? "DNI",
-                NroDocumento = txtNroDocumento.Text,
-                Nombre = txtNombre.Text,
-                Apellido = txtApellido.Text,
-                Direccion = txtDireccion.Text,
-                Telefono = txtTelefono.Text,
-                Email = txtEmail.Text
-            };
+            Cliente_60MN cliente = DatosIngresados();
+            if (!MostrarErrores(clienteBLL.ValidarDatos(cliente, EsAlta))) return;
 
             try
             {
@@ -125,28 +187,42 @@ namespace VetCare
                     Close();
                 }
             }
+            catch (DatosClienteInvalidosException_60MN ex)
+            {
+                MostrarErrores(ex.Errores);
+            }
             catch (Exception ex)
             {
                 Mensajes_60MN.MostrarError(ex);
             }
         }
 
-        /// <summary>CUN01 5.2 / CUN02 5.2: marca en rojo los campos obligatorios vacíos.</summary>
-        private bool ValidarCampos()
+        /// <summary>
+        /// CUN01 5.2 / CUN02 5.2: pone en cada campo el error que informó la BLL (qué está
+        /// mal y por qué) y lleva el foco al primero. Devuelve true si no hay errores.
+        /// </summary>
+        private bool MostrarErrores(IReadOnlyDictionary<string, string> errores)
         {
             errorProvider.Clear();
-            bool valido = true;
-            foreach (TextBox campo in new[] { txtNroDocumento, txtNombre, txtApellido, txtDireccion, txtTelefono })
+            Control? primero = null;
+            foreach (KeyValuePair<string, Control> campo in Campos)
             {
-                campo.BackColor = SystemColors.Window;
-                if (!campo.ReadOnly && string.IsNullOrWhiteSpace(campo.Text))
-                {
-                    campo.BackColor = Color.MistyRose;
-                    errorProvider.SetError(campo, "Campo obligatorio.");
-                    valido = false;
-                }
+                if (!errores.TryGetValue(campo.Key, out string? motivo)) continue;
+                errorProvider.SetError(campo.Value, motivo);
+                primero ??= campo.Value;
             }
-            return valido;
+            primero?.Focus();
+            return errores.Count == 0;
+        }
+
+        /// <summary>Al salir de un campo se valida solo ese campo; si quedó vacío se avisa recién al aceptar.</summary>
+        private void MarcarCampo(Control campo)
+        {
+            string clave = Campos.First(c => c.Value == campo).Key;
+            string? motivo = null;
+            if (campo.Text.Trim().Length > 0)
+                clienteBLL.ValidarDatos(DatosIngresados(), EsAlta).TryGetValue(clave, out motivo);
+            errorProvider.SetError(campo, motivo ?? string.Empty);
         }
     }
 }

@@ -43,7 +43,7 @@ var patentes = new List<(int Id, string Nombre, string Codigo)>
     (8, "Verificar integridad (dígitos verificadores)", "SEG_INTEGRIDAD"),
     (9, "Respaldar base de datos (Backup)", "SEG_BACKUP"),
     (10, "Restaurar base de datos (Restore)", "SEG_RESTORE"),
-    // Gestión de Pacientes (CUN01 a CUN10)
+    // PN1 Gestión de Pacientes (CUN01 a CUN06; CUN07 usa REP_REPORTES)
     (11, "Registrar cliente", "PAC_CLIENTE_ALTA"),
     (12, "Modificar cliente", "PAC_CLIENTE_MODIF"),
     (13, "Consultar cliente", "PAC_CLIENTE_CONSULTA"),
@@ -54,18 +54,16 @@ var patentes = new List<(int Id, string Nombre, string Codigo)>
     (18, "Registrar atención", "ATN_REGISTRAR"),
     (19, "Registrar medicación en carrito", "VEN_CARRITO"),
     (20, "Emitir informe de atención", "ATN_INFORME"),
-    // Gestión de Stock (CUN11 a CUN15)
+    // PN2 Gestión de Stock (CUN08 a CUN10 y CUN12)
     (21, "Registrar producto", "STK_PROD_ALTA"),
     (22, "Modificar producto", "STK_PROD_MODIF"),
     (23, "Configurar margen y alerta de stock mínimo", "STK_CONFIG"),
     (24, "Registrar movimiento de stock", "STK_MOVIMIENTO"),
     (25, "Generar reporte de existencias", "STK_REPORTE"),
-    // Opciones del menú fuera del alcance de esta versión ("TD")
-    (26, "Proveedores", "MAE_PROVEEDORES"),
-    (27, "Facturar", "VEN_FACTURAR"),
-    (28, "Despachar", "VEN_DESPACHAR"),
-    (29, "Compras", "COM_COMPRAS"),
-    (30, "Reportes 2 y 3", "REP_REPORTES"),
+    // CUN11 Gestionar Proveedores y reportes (CUN07 atenciones, CUN13 inteligente).
+    // El sistema no factura: las patentes 27 a 29 (facturar, despachar, compras) se quitaron.
+    (26, "Gestionar proveedores", "MAE_PROVEEDORES"),
+    (30, "Reportes de atenciones e inteligente", "REP_REPORTES"),
     // Bitácora de eventos: exportar e importar en XML (patentes separadas: importar es más delicado)
     (31, "Exportar bitácora de eventos (XML)", "SEG_BITACORA_EXPORT"),
     (32, "Importar bitácora de eventos (XML)", "SEG_BITACORA_IMPORT"),
@@ -82,14 +80,14 @@ var familias = new List<(int Id, string Nombre)>
 };
 var familiaPatente = new List<(int A, int B)>
 {
-    // Administrador (Gerente): perfiles, backup/restore, CUN13 y opciones fuera de alcance
-    (1, 4), (1, 9), (1, 10), (1, 23), (1, 26), (1, 27), (1, 28), (1, 29), (1, 30),
+    // Administrador (Gerente): perfiles, backup/restore, CUN10, proveedores y reportes
+    (1, 4), (1, 9), (1, 10), (1, 23), (1, 26), (1, 30),
     (1, 32),                                        // Administrador: importar bitácora (XML)
     (2, 1), (2, 2), (2, 3), (2, 5),                 // Gestión de Usuarios
     (3, 6), (3, 7), (3, 8), (3, 31),                // Auditoría (incluye exportar bitácora a XML)
-    (4, 21), (4, 22), (4, 24), (4, 25),             // Operario de stock: CUN11, CUN12, CUN14, CUN15
-    (5, 11), (5, 12), (5, 13), (5, 14), (5, 19),    // Vendedor: CUN01 a CUN04 y CUN09
-    (6, 13), (6, 15), (6, 16), (6, 17), (6, 18), (6, 19), (6, 20), // Veterinario: CUN03, CUN05 a CUN10
+    (4, 21), (4, 22), (4, 24), (4, 25), (4, 26),    // Operario de stock: CUN08, CUN09, CUN11 y CUN12
+    (5, 11), (5, 12), (5, 13), (5, 14), (5, 19),    // Vendedor: CUN01, CUN02 y CUN05 (carrito y ventas registradas)
+    (6, 13), (6, 15), (6, 16), (6, 17), (6, 18), (6, 19), (6, 20), (6, 30), // Veterinario: consulta de clientes, CUN03 a CUN07 y CUN13
 };
 var familiaFamilia = new List<(int A, int B)>
 {
@@ -181,10 +179,22 @@ foreach (var c in categorias)
     sql.AppendLine($"INSERT INTO Categoria (CategoriaID, Nombre, Margen) VALUES ({c.Id}, {Txt(c.Nombre)}, {(c.Margen.HasValue ? Dec(c.Margen.Value) : "NULL")});");
 sql.AppendLine("SET IDENTITY_INSERT Categoria OFF;");
 sql.AppendLine();
+// CUN11: CUIT de 11 dígitos con dígito verificador válido; teléfono solo con dígitos, como el del cliente.
+var proveedores = new[]
+{
+    (Id: 1, Razon: "Droguería Veterinaria del Sur S.A.", Cuit: "30712345671", Telefono: "1142445500", Email: (string?)"ventas@drogueriadelsur.com.ar", Direccion: "Av. Hipólito Yrigoyen 10250, Lomas de Zamora", Contacto: (string?)"Marcela Ríos"),
+    (Id: 2, Razon: "Distribuidora Pet Health S.R.L.", Cuit: "30709876542", Telefono: "1148763300", Email: (string?)"pedidos@pethealth.com.ar", Direccion: "Av. Belgrano 1840, CABA", Contacto: (string?)null),
+    (Id: 3, Razon: "Laboratorios BioVet S.A.", Cuit: "30698765433", Telefono: "2214556677", Email: (string?)null, Direccion: "Calle 48 1120, La Plata", Contacto: (string?)"Jorge Salinas"),
+};
+List<string> dvhProveedor = new List<string>();
 sql.AppendLine("SET IDENTITY_INSERT Proveedor ON;");
-sql.AppendLine("INSERT INTO Proveedor (ProveedorID, RazonSocial, CUIT) VALUES (1, N'Droguería Veterinaria del Sur S.A.', '30-71234567-1');");
-sql.AppendLine("INSERT INTO Proveedor (ProveedorID, RazonSocial, CUIT) VALUES (2, N'Distribuidora Pet Health S.R.L.', '30-70987654-3');");
-sql.AppendLine("INSERT INTO Proveedor (ProveedorID, RazonSocial, CUIT) VALUES (3, N'Laboratorios BioVet S.A.', '30-69876543-9');");
+foreach (var p in proveedores)
+{
+    string dvh = dv.CalcularDVH(TablaDV_60MN.Proveedor, p.Id, p.Razon, p.Cuit, p.Telefono, p.Email!, p.Direccion, p.Contacto!, true);
+    dvhProveedor.Add(dvh);
+    sql.AppendLine("INSERT INTO Proveedor (ProveedorID, RazonSocial, CUIT, Telefono, Email, Direccion, Contacto, Activo, DVH)");
+    sql.AppendLine($"     VALUES ({p.Id}, {Txt(p.Razon)}, '{p.Cuit}', '{p.Telefono}', {Txt(p.Email)}, {Txt(p.Direccion)}, {Txt(p.Contacto)}, 1, '{dvh}');");
+}
 sql.AppendLine("SET IDENTITY_INSERT Proveedor OFF;");
 sql.AppendLine();
 const decimal margenGeneral = 30m;
@@ -287,7 +297,9 @@ var dvvs = new List<(string Tabla, string Dvv)>
     (TablaDV_60MN.Mascota, dv.CalcularDVV(TablaDV_60MN.Mascota, dvhMascota)),
     (TablaDV_60MN.HistoriaClinica, dv.CalcularDVV(TablaDV_60MN.HistoriaClinica, new[] { dvhHc })),
     (TablaDV_60MN.Atencion, dv.CalcularDVV(TablaDV_60MN.Atencion, Array.Empty<string>())),
-    (TablaDV_60MN.AtencionDetalle, dv.CalcularDVV(TablaDV_60MN.AtencionDetalle, Array.Empty<string>())),
+    (TablaDV_60MN.Proveedor, dv.CalcularDVV(TablaDV_60MN.Proveedor, dvhProveedor)),
+    (TablaDV_60MN.VentaEncabezado, dv.CalcularDVV(TablaDV_60MN.VentaEncabezado, Array.Empty<string>())),
+    (TablaDV_60MN.VentaDetalle, dv.CalcularDVV(TablaDV_60MN.VentaDetalle, Array.Empty<string>())),
 };
 foreach (var (tabla, dvv) in dvvs)
     sql.AppendLine($"INSERT INTO DVV (Tabla, DVV) VALUES ('{tabla}', '{dvv}');");

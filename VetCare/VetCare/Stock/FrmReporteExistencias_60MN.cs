@@ -33,7 +33,7 @@ namespace VetCare
                 cboCategoria.SelectedIndex = 0;
 
                 cboProveedor.Items.Add(OpcionCombo_60MN.Todos);
-                foreach (Proveedor_60MN p in productoBLL.ListarProveedores())
+                foreach (Proveedor_60MN p in productoBLL.ListarTodosLosProveedores())
                     cboProveedor.Items.Add(new OpcionCombo_60MN(p.ToString(), p.Id));
                 cboProveedor.SelectedIndex = 0;
             }

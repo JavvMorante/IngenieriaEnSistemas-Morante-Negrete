@@ -7,8 +7,8 @@ using Servicios_60MN.Sesion;
 namespace VetCare
 {
     /// <summary>
-    /// Menú principal horizontal (ADMIN, MAESTROS, USUARIO, VENTAS, COMPRAS,
-    /// REPORTES, AYUDA). Los ítems están definidos en la vista de diseño y cada
+    /// Menú principal horizontal (ADMIN, MAESTROS, PACIENTES, VENTAS, STOCK,
+    /// REPORTES, USUARIO, AYUDA). Los ítems están definidos en la vista de diseño y cada
     /// uno lleva en la propiedad Tag el código de la patente que lo habilita:
     /// se muestran solo los que otorga la familia/patentes del usuario, y un
     /// menú sin opciones visibles se oculta completo.
@@ -32,9 +32,11 @@ namespace VetCare
                 opcion.ForeColor = SystemColors.GrayText;
         }
 
-        /// <summary>Opciones fuera del alcance ("TD"): se muestran en gris para no confundirlas con las que funcionan.</summary>
-        private ToolStripMenuItem[] OpcionesEnDesarrollo =>
-            new[] { mnuProveedores, mnuFacturar, mnuDespachar, mnuGestionCompras, mnuReporte3, mnuAyudaEnLinea };
+        /// <summary>
+        /// Opciones fuera del alcance ("TD"): se muestran en gris para no confundirlas con las que
+        /// funcionan, y su Click va a mnuPendiente_Click. Con V2.4 no queda ninguna.
+        /// </summary>
+        private ToolStripMenuItem[] OpcionesEnDesarrollo => Array.Empty<ToolStripMenuItem>();
 
         private static string T(string clave, string porDefecto) => TraductorFormularios_60MN.T(clave, porDefecto);
 
@@ -78,15 +80,10 @@ namespace VetCare
         }
 
         /// <summary>
-        /// Opciones deshabilitadas por ahora, sin importar los permisos del usuario:
-        /// el proceso de negocio Gestión de Stock (CUN11 a CUN15) y la Bitácora de cambios.
-        /// Para reactivarlas, quitarlas de esta lista y descomentar sus manejadores Click.
+        /// Opciones deshabilitadas por ahora, sin importar los permisos del usuario.
+        /// Para ocultar una, agregar aquí el nombre de su ítem de menú.
         /// </summary>
-        private static readonly HashSet<string> OpcionesDeshabilitadas = new HashSet<string>
-        {
-            nameof(mnuProductos), nameof(mnuMovimientosStock), nameof(mnuConfiguracionStock),
-            nameof(mnuReporte1), nameof(mnuBitacoraCambios)
-        };
+        private static readonly HashSet<string> OpcionesDeshabilitadas = new HashSet<string>();
 
         /// <summary>
         /// Muestra cada ítem solo si el usuario tiene alguna de las patentes de
@@ -135,18 +132,51 @@ namespace VetCare
             Close();
         }
 
+        /// <summary>CUS10 Consultar Bitácora de Cambios (historial de Productos_C).</summary>
+        private void mnuBitacoraCambios_Click(object sender, EventArgs e) => Abrir<FrmBitacoraCambios_60MN>();
+
+        /// <summary>CUN10 Configurar Margen y Alerta de Stock Mínimo.</summary>
+        private void mnuConfiguracionStock_Click(object sender, EventArgs e) => Abrir<FrmConfiguracionStock_60MN>();
+
         // ---------------- MAESTROS ----------------
+        /// <summary>CUN01 Gestionar Clientes (y desde la ficha, sus mascotas).</summary>
         private void mnuClientes_Click(object sender, EventArgs e) => Abrir<FrmClientes_60MN>();
 
-        // DESHABILITADO POR AHORA (Gestión de Stock y Bitácora de cambios): los ítems están ocultos
-        // (ver OpcionesDeshabilitadas) y sus formularios no se compilan (ver VetCare.csproj).
-        private void mnuProductos_Click(object sender, EventArgs e) { /* Abrir<FrmProductos_60MN>(); */ }
+        /// <summary>CUN02 Gestionar Mascotas.</summary>
+        private void mnuMascotas_Click(object sender, EventArgs e) => Abrir<FrmGestionMascotas_60MN>();
 
-        private void mnuMovimientosStock_Click(object sender, EventArgs e) { /* Abrir<FrmMovimientoStock_60MN>(); */ }
+        /// <summary>CUN08 Administrar Existencias (alta y modificación de productos).</summary>
+        private void mnuProductos_Click(object sender, EventArgs e) => Abrir<FrmProductos_60MN>();
 
-        private void mnuConfiguracionStock_Click(object sender, EventArgs e) { /* Abrir<FrmConfiguracionStock_60MN>(); */ }
+        /// <summary>CUN11 Gestionar Proveedores.</summary>
+        private void mnuProveedores_Click(object sender, EventArgs e) => Abrir<FrmProveedores_60MN>();
 
-        private void mnuBitacoraCambios_Click(object sender, EventArgs e) { /* Abrir<FrmBitacoraCambios_60MN>(); */ }
+        // ---------------- PACIENTES ----------------
+        /// <summary>CUN03 Gestionar Historias Clínicas: primero se elige el paciente.</summary>
+        private void mnuHistoriasClinicas_Click(object sender, EventArgs e)
+        {
+            Mascota_60MN? mascota = ElegirPaciente("msg.ElegirPacienteHistoria", "Elija el paciente para ver su historia clínica.");
+            if (mascota != null)
+                AccionesPaciente_60MN.AbrirHistoria(this, mascota);
+        }
+
+        /// <summary>CUN04 Registrar Atención: primero se elige el paciente.</summary>
+        private void mnuRegistrarAtencion_Click(object sender, EventArgs e)
+        {
+            Mascota_60MN? mascota = ElegirPaciente("msg.ElegirPacienteAtencion", "Elija el paciente a atender.");
+            if (mascota != null)
+                AccionesPaciente_60MN.RegistrarAtencion(this, mascota);
+        }
+
+        private Mascota_60MN? ElegirPaciente(string claveProposito, string propositoPorDefecto)
+        {
+            using FrmBuscarPaciente_60MN selector = new FrmBuscarPaciente_60MN(claveProposito, propositoPorDefecto);
+            return selector.ShowDialog(this) == DialogResult.OK ? selector.Seleccionada : null;
+        }
+
+        // ---------------- STOCK ----------------
+        /// <summary>CUN09 Registrar Movimiento de Stock.</summary>
+        private void mnuMovimientosStock_Click(object sender, EventArgs e) => Abrir<FrmMovimientoStock_60MN>();
 
         // ---------------- USUARIO ----------------
 
@@ -198,13 +228,20 @@ namespace VetCare
             formulario.ShowDialog(this);
         }
 
-        // ---------------- VENTAS / COMPRAS / REPORTES / AYUDA ----------------
+        // ---------------- VENTAS / REPORTES / AYUDA ----------------
+        /// <summary>CUN05 Registrar Medicación en Carrito.</summary>
         private void mnuCarrito_Click(object sender, EventArgs e) => Abrir<FrmCarrito_60MN>();
 
-        // DESHABILITADO POR AHORA (CUN15 Reporte de existencias, Gestión de Stock).
-        private void mnuReporte1_Click(object sender, EventArgs e) { /* Abrir<FrmReporteExistencias_60MN>(); */ }
+        /// <summary>CUN05: consulta de las ventas registradas (sin facturación).</summary>
+        private void mnuVentasRegistradas_Click(object sender, EventArgs e) => Abrir<FrmVentas_60MN>();
 
-        /// <summary>Reporte inteligente: demanda estacional de insumos y productos más entregados.</summary>
+        /// <summary>CUN07 Generar Reporte de Atenciones.</summary>
+        private void mnuReporteAtenciones_Click(object sender, EventArgs e) => Abrir<FrmReporteAtenciones_60MN>();
+
+        /// <summary>CUN12 Generar Reporte de Existencias.</summary>
+        private void mnuReporte1_Click(object sender, EventArgs e) => Abrir<FrmReporteExistencias_60MN>();
+
+        /// <summary>CUN13 Generar Reporte Inteligente: demanda estacional de insumos y productos más entregados.</summary>
         private void mnuReporte2_Click(object sender, EventArgs e) => Abrir<FrmReporteInteligente_60MN>();
 
         /// <summary>Opciones del menú todavía no desarrolladas ("TD").</summary>
@@ -213,6 +250,9 @@ namespace VetCare
             string opcion = (sender as ToolStripItem)?.Text ?? string.Empty;
             Mensajes_60MN.Informar($"{opcion}: {T("msg.EnDesarrollo", "Funcionalidad en desarrollo (TD).")}");
         }
+
+        /// <summary>Ayuda en línea (G05): el tema de la ventana activa, igual que F1.</summary>
+        private void mnuAyudaEnLinea_Click(object sender, EventArgs e) => FrmAyuda_60MN.Mostrar(this);
 
         private void mnuAcercaDe_Click(object sender, EventArgs e)
         {

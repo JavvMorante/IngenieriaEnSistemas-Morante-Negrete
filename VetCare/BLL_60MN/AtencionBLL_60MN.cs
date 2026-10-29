@@ -16,9 +16,6 @@ namespace BLL_60MN
         /// <summary>CUN08 4.1: diferencia de peso respecto del último valor que pide confirmación.</summary>
         public const decimal DiferenciaPesoSignificativa = 0.20m;
 
-        /// <summary>CUN09 4.2: días antes del vencimiento en que se advierte "próximo a vencer".</summary>
-        public const int DiasProximoAVencer = 30;
-
         private readonly AtencionDAL_60MN mapper = new AtencionDAL_60MN();
         private readonly HistoriaClinicaDAL_60MN historias = new HistoriaClinicaDAL_60MN();
         private readonly GestorDigitoVerificador_60MN dv = new GestorDigitoVerificador_60MN();
@@ -62,8 +59,13 @@ namespace BLL_60MN
 
             atencion.Motivo = (atencion.Motivo ?? string.Empty).Trim();
             atencion.Diagnostico = (atencion.Diagnostico ?? string.Empty).Trim();
+            // Las indicaciones son opcionales: la atención puede cerrarse sin medicación ni tratamiento.
+            atencion.Indicaciones = string.IsNullOrWhiteSpace(atencion.Indicaciones) ? null : atencion.Indicaciones!.Trim();
             if (atencion.Motivo.Length == 0 || atencion.Diagnostico.Length == 0)
                 throw new NegocioException_60MN("Complete el motivo de consulta y el diagnóstico.");
+            Validaciones_60MN.Largo(atencion.Motivo, 300, "El motivo de consulta");
+            Validaciones_60MN.Largo(atencion.Diagnostico, 1000, "El diagnóstico");
+            Validaciones_60MN.Largo(atencion.Indicaciones, 1000, "El texto de las indicaciones");
             if (atencion.Peso <= 0 || atencion.Peso > 200)
                 throw new NegocioException_60MN("El peso debe ser mayor a 0 y menor a 200 kg.");
             if (atencion.Temperatura < 30 || atencion.Temperatura > 45)
@@ -83,100 +85,12 @@ namespace BLL_60MN
 
             bitacora.Registrar(EventoSistema_60MN.AtencionRegistrada,
                 $"Atención Nº {atencion.Id} en la historia {hc.Numero}: {atencion.Motivo}" +
+                (atencion.TieneIndicaciones ? " (con indicaciones)" : string.Empty) +
                 (cambiaPeso ? $" (peso {hc.PesoActual:0.##} → {atencion.Peso:0.##} kg)." : "."));
             return mapper.ObtenerPorId(atencion.Id)!;
         }
 
         public Atencion_60MN? ObtenerAtencion(int atencionId) => mapper.ObtenerPorId(atencionId);
-
-        // =====================================================================
-        // CUN09 - Registrar Medicación en Carrito («include» CUN14)
-        // =====================================================================
-
-        /// <summary>Atenciones de los últimos días para asociar la medicación (VENTAS > Carrito).</summary>
-        public List<Atencion_60MN> ListarAtencionesRecientes(int dias = 30)
-        {
-            SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.Carrito);
-            return mapper.ListarRecientes(dias);
-        }
-
-        /// <summary>Pasos 3 y 4: productos activos con stock, precio y vencimiento.</summary>
-        public List<Producto_60MN> BuscarProductos(string? texto, int? categoriaId)
-        {
-            SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.Carrito);
-            return new ProductoDAL_60MN().Buscar(texto, categoriaId, incluirInactivos: false);
-        }
-
-        /// <summary>
-        /// Paso 9: genera los egresos de stock y asocia el detalle a la atención en una
-        /// sola transacción. Devuelve los productos que quedaron con alerta de reposición.
-        /// </summary>
-        public List<string> RegistrarMedicacion(int atencionId, IList<ItemCarrito_60MN> items)
-        {
-            SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.Carrito);
-            Atencion_60MN atencion = mapper.ObtenerPorId(atencionId) ?? throw new NegocioException_60MN("La atención no existe.");
-            if (items.Count == 0)
-                throw new NegocioException_60MN("El carrito está vacío.");
-
-            ProductoDAL_60MN productos = new ProductoDAL_60MN();
-            foreach (ItemCarrito_60MN item in items)
-            {
-                Producto_60MN p = productos.ObtenerPorId(item.ProductoId) ?? throw new NegocioException_60MN("Un producto del carrito ya no existe.");
-                // 5.1: cantidad menor o igual a cero.
-                if (item.Cantidad <= 0)
-                    throw new NegocioException_60MN($"La cantidad de {p.Nombre} debe ser mayor a cero.");
-                if (!p.Activo)
-                    throw new NegocioException_60MN($"El producto {p.Codigo} está dado de baja.");
-                // 4.2: no se entrega medicación vencida.
-                if (p.Vencido)
-                    throw new NegocioException_60MN($"El producto {p.Codigo} \"{p.Nombre}\" (lote {p.Lote}) está vencido.");
-                item.PrecioUnitario = p.PrecioVenta;
-                item.Codigo = p.Codigo;
-                item.Producto = p.Nombre;
-                item.Lote = p.Lote;
-            }
-            // 4.1: la suma por producto no puede superar el stock (también se controla dentro de la transacción).
-            foreach (var grupo in items.GroupBy(i => i.ProductoId))
-            {
-                Producto_60MN p = productos.ObtenerPorId(grupo.Key)!;
-                int total = grupo.Sum(i => i.Cantidad);
-                if (total > p.StockActual)
-                    throw new NegocioException_60MN($"Stock insuficiente de {p.Nombre}: disponible {p.StockActual}, solicitado {total}.");
-            }
-
-            List<EntregaCarrito_60MN> entregas;
-            try
-            {
-                entregas = mapper.RegistrarCarrito(atencionId, items, SesionActual_60MN.UsuarioId,
-                    $"Medicación entregada en la atención Nº {atencionId}");
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw new NegocioException_60MN(ex.Message);
-            }
-
-            ProductoBLL_60MN productoBLL = new ProductoBLL_60MN();
-            List<string> alertas = new List<string>();
-            foreach (EntregaCarrito_60MN entrega in entregas)
-            {
-                dv.ActualizarFila(TablaDV_60MN.MovimientoStock, entrega.MovimientoId);
-                dv.ActualizarFila(TablaDV_60MN.AtencionDetalle, entrega.DetalleId);
-                dv.ActualizarFila(TablaDV_60MN.Productos, entrega.ProductoId);
-            }
-            foreach (int productoId in entregas.Select(e => e.ProductoId).Distinct())
-            {
-                Producto_60MN p = productos.ObtenerPorId(productoId)!;
-                // Postcondición: si alguna existencia alcanza el stock mínimo se dispara la alerta (sin duplicarla).
-                if (productoBLL.EvaluarAlerta(p) || p.BajoStockMinimo)
-                    alertas.Add($"{p.Nombre} (stock {p.StockActual}, mínimo {p.StockMinimo})");
-            }
-
-            bitacora.Registrar(EventoSistema_60MN.MedicacionEntregada,
-                $"Medicación de la atención Nº {atencionId} ({atencion.Paciente}): " +
-                string.Join(", ", items.Select(i => $"{i.Cantidad} x {i.Producto}")) +
-                $". Total $ {items.Sum(i => i.Subtotal).ToString("N2", CultureInfo.GetCultureInfo("es-AR"))}.");
-            return alertas;
-        }
 
         // =====================================================================
         // CUN10 - Emitir Informe de Atención
@@ -213,14 +127,17 @@ namespace BLL_60MN
             sb.AppendLine($"Signos vitales:  peso {a.Peso:0.##} kg · temperatura {a.Temperatura:0.0} °C · FC {a.FrecuenciaCardiaca} lpm");
             sb.AppendLine();
             sb.AppendLine("Motivo de consulta:");
-            sb.AppendLine("  " + a.Motivo);
+            AgregarAjustado(sb, a.Motivo);
             sb.AppendLine();
-            sb.AppendLine("Diagnóstico e indicaciones:");
-            sb.AppendLine("  " + a.Diagnostico);
+            sb.AppendLine("Diagnóstico:");
+            AgregarAjustado(sb, a.Diagnostico);
             sb.AppendLine();
-            sb.AppendLine("Medicación prescripta:");
+            sb.AppendLine("Indicaciones / tratamiento:");
+            AgregarAjustado(sb, a.TieneIndicaciones ? a.Indicaciones! : "(sin indicaciones)");
+            sb.AppendLine();
+            sb.AppendLine("Medicación entregada en la atención:");
             if (a.Medicacion.Count == 0)
-                sb.AppendLine("  (sin medicación)");
+                sb.AppendLine("  (sin medicación entregada)");
             foreach (ItemCarrito_60MN item in a.Medicacion)
                 sb.AppendLine($"  {item.Cantidad,3} x {item.Producto} (lote {item.Lote})  $ {item.Subtotal.ToString("N2", ar)}");
             if (a.Medicacion.Count > 0)
@@ -229,6 +146,29 @@ namespace BLL_60MN
             sb.AppendLine($"Emitido el {DateTime.Now:dd/MM/yyyy HH:mm} por {SesionActual_60MN.NombreUsuario}" +
                           (a.InformesEmitidos > 0 ? $" (reimpresión Nº {a.InformesEmitidos})" : string.Empty));
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Agrega un texto libre al informe cortado en líneas del ancho del informe (sin partir
+        /// palabras), con sangría, para que se lea completo en pantalla y al imprimir.
+        /// </summary>
+        private static void AgregarAjustado(StringBuilder sb, string texto, int ancho = 56)
+        {
+            foreach (string parrafo in texto.Replace("\r\n", "\n").Split('\n'))
+            {
+                StringBuilder linea = new StringBuilder();
+                foreach (string palabra in parrafo.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (linea.Length > 0 && linea.Length + 1 + palabra.Length > ancho)
+                    {
+                        sb.AppendLine("  " + linea);
+                        linea.Clear();
+                    }
+                    if (linea.Length > 0) linea.Append(' ');
+                    linea.Append(palabra);
+                }
+                sb.AppendLine("  " + linea);
+            }
         }
 
         /// <summary>Paso 5 / postcondición: la emisión (o reimpresión, flujo 1.1) queda en la bitácora.</summary>

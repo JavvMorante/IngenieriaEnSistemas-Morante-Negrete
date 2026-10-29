@@ -68,7 +68,7 @@ namespace VetCare
             //
             cboTipoDocumento.DropDownStyle = ComboBoxStyle.DropDownList;
             cboTipoDocumento.FormattingEnabled = true;
-            cboTipoDocumento.Location = new Point(190, 20);
+            cboTipoDocumento.Location = new Point(210, 20);
             cboTipoDocumento.Name = "cboTipoDocumento";
             cboTipoDocumento.Size = new Size(100, 28);
             cboTipoDocumento.TabIndex = 1;
@@ -84,10 +84,10 @@ namespace VetCare
             //
             // txtNroDocumento
             //
-            txtNroDocumento.Location = new Point(190, 61);
-            txtNroDocumento.MaxLength = 15;
+            txtNroDocumento.Location = new Point(210, 61);
+            txtNroDocumento.MaxLength = 12;
             txtNroDocumento.Name = "txtNroDocumento";
-            txtNroDocumento.Size = new Size(160, 27);
+            txtNroDocumento.Size = new Size(300, 27);
             txtNroDocumento.TabIndex = 3;
             //
             // lblNombre
@@ -101,10 +101,10 @@ namespace VetCare
             //
             // txtNombre
             //
-            txtNombre.Location = new Point(190, 101);
-            txtNombre.MaxLength = 80;
+            txtNombre.Location = new Point(210, 101);
+            txtNombre.MaxLength = 40;
             txtNombre.Name = "txtNombre";
-            txtNombre.Size = new Size(320, 27);
+            txtNombre.Size = new Size(300, 27);
             txtNombre.TabIndex = 5;
             //
             // lblApellido
@@ -118,10 +118,10 @@ namespace VetCare
             //
             // txtApellido
             //
-            txtApellido.Location = new Point(190, 141);
-            txtApellido.MaxLength = 80;
+            txtApellido.Location = new Point(210, 141);
+            txtApellido.MaxLength = 40;
             txtApellido.Name = "txtApellido";
-            txtApellido.Size = new Size(320, 27);
+            txtApellido.Size = new Size(300, 27);
             txtApellido.TabIndex = 7;
             //
             // lblDireccion
@@ -135,10 +135,10 @@ namespace VetCare
             //
             // txtDireccion
             //
-            txtDireccion.Location = new Point(190, 181);
-            txtDireccion.MaxLength = 150;
+            txtDireccion.Location = new Point(210, 181);
+            txtDireccion.MaxLength = 60;
             txtDireccion.Name = "txtDireccion";
-            txtDireccion.Size = new Size(320, 27);
+            txtDireccion.Size = new Size(300, 27);
             txtDireccion.TabIndex = 9;
             //
             // lblTelefono
@@ -152,10 +152,10 @@ namespace VetCare
             //
             // txtTelefono
             //
-            txtTelefono.Location = new Point(190, 221);
-            txtTelefono.MaxLength = 30;
+            txtTelefono.Location = new Point(210, 221);
+            txtTelefono.MaxLength = 20;
             txtTelefono.Name = "txtTelefono";
-            txtTelefono.Size = new Size(200, 27);
+            txtTelefono.Size = new Size(300, 27);
             txtTelefono.TabIndex = 11;
             //
             // lblEmail
@@ -169,10 +169,10 @@ namespace VetCare
             //
             // txtEmail
             //
-            txtEmail.Location = new Point(190, 261);
+            txtEmail.Location = new Point(210, 261);
             txtEmail.MaxLength = 150;
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(320, 27);
+            txtEmail.Size = new Size(300, 27);
             txtEmail.TabIndex = 13;
             //
             // grpMascotas

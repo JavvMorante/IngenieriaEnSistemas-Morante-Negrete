@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Globalization;
 using BLL_60MN;
 using Entidades_60MN;
@@ -6,15 +5,17 @@ using Entidades_60MN;
 namespace VetCare
 {
     /// <summary>
-    /// CUN09 Registrar Medicación en Carrito: se eligen productos con stock y se confirma
-    /// la entrega, que genera los egresos de stock («include» CUN14) asociados a la atención.
-    /// Se abre desde la atención (con la atención fija) o desde VENTAS > Carrito.
+    /// CUN05 Registrar Medicación en Carrito: se eligen productos con stock y, al confirmar, se
+    /// graba la venta con sus egresos de stock («include» CUN09). El carrito vive en memoria
+    /// (Carrito_60MN) hasta la confirmación. Se abre desde la atención (cliente y atención
+    /// fijos) o desde VENTAS > Carrito eligiendo un cliente, con o sin atención. No se factura.
     /// </summary>
     public partial class FrmCarrito_60MN : FormBase_60MN
     {
-        private readonly AtencionBLL_60MN atencionBLL = new AtencionBLL_60MN();
+        private readonly VentaBLL_60MN ventaBLL = new VentaBLL_60MN();
         private readonly int? atencionId;
-        private readonly BindingList<ItemCarrito_60MN> carrito = new BindingList<ItemCarrito_60MN>();
+        private readonly Carrito_60MN carrito = new Carrito_60MN();
+        private Cliente_60MN? cliente;
 
         public FrmCarrito_60MN() : this(null) { }
 
@@ -24,9 +25,10 @@ namespace VetCare
             this.atencionId = atencionId;
             dgvProductos.AutoGenerateColumns = false;
             dgvCarrito.AutoGenerateColumns = false;
-            dgvCarrito.DataSource = carrito;
             TextoGuia_60MN.Asignar(txtBuscar, "Código o nombre");
         }
+
+        private static string T(string clave, string porDefecto) => TraductorFormularios_60MN.T(clave, porDefecto);
 
         private void FrmCarrito_60MN_Load(object sender, EventArgs e)
         {
@@ -34,27 +36,64 @@ namespace VetCare
             {
                 if (atencionId.HasValue)
                 {
-                    Atencion_60MN? atencion = atencionBLL.ObtenerAtencion(atencionId.Value);
-                    if (atencion != null) cboAtencion.Items.Add(atencion);
+                    // Desde la atención: el cliente es el dueño de la mascota y la atención queda fija.
+                    Atencion_60MN atencion = ventaBLL.ObtenerAtencion(atencionId.Value)
+                        ?? throw new InvalidOperationException("La atención no existe.");
+                    MostrarCliente(ventaBLL.ObtenerCliente(atencion.ClienteId));
+                    cboAtencion.Items.Clear();
+                    cboAtencion.Items.Add(atencion);
+                    cboAtencion.SelectedIndex = 0;
                     cboAtencion.Enabled = false;
+                    btnElegirCliente.Visible = false;
                 }
                 else
                 {
-                    // Paso 2: atenciones de los últimos días a las que asociar la medicación.
-                    foreach (Atencion_60MN a in atencionBLL.ListarAtencionesRecientes())
-                        cboAtencion.Items.Add(a);
+                    MostrarCliente(null);
                 }
-                if (cboAtencion.Items.Count > 0)
-                    cboAtencion.SelectedIndex = 0;
-                else
-                    Mensajes_60MN.Advertir("No hay atenciones recientes. Registre primero la atención del paciente.");
+                RefrescarCarrito();
                 Buscar();
             }
             catch (Exception ex)
             {
                 Mensajes_60MN.MostrarError(ex);
-                BeginInvoke(Close);
+                BeginInvoke(new Action(Close));
             }
+        }
+
+        /// <summary>Paso 2 (desde VENTAS > Carrito): el cliente de la venta y, si corresponde, la atención.</summary>
+        private void btnElegirCliente_Click(object sender, EventArgs e)
+        {
+            using FrmBuscarCliente_60MN selector = new FrmBuscarCliente_60MN("msg.ElegirClienteVenta", "Elija el cliente de la venta");
+            if (selector.ShowDialog(this) != DialogResult.OK || selector.Seleccionado == null) return;
+            try
+            {
+                MostrarCliente(ventaBLL.ObtenerCliente(selector.Seleccionado.Id));
+            }
+            catch (Exception ex)
+            {
+                Mensajes_60MN.MostrarError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Muestra el cliente y carga sus atenciones recientes. Desde VENTAS > Carrito la
+        /// primera opción es "sin atención": también se vende a un cliente sin atención.
+        /// </summary>
+        private void MostrarCliente(Cliente_60MN? elegido)
+        {
+            cliente = elegido;
+            txtCliente.Text = cliente == null
+                ? T("msg.SinClienteVenta", "(elija el cliente de la venta)")
+                : $"{cliente.NombreCompleto} - {cliente.Documento}";
+            if (atencionId.HasValue) return;
+
+            cboAtencion.Items.Clear();
+            cboAtencion.Enabled = cliente != null;
+            if (cliente == null) return;
+            cboAtencion.Items.Add(T("msg.VentaSinAtencion", "(venta sin atención)"));
+            foreach (Atencion_60MN a in ventaBLL.ListarAtencionesRecientes(cliente.Id))
+                cboAtencion.Items.Add(a);
+            cboAtencion.SelectedIndex = 0;
         }
 
         private void btnBuscar_Click(object sender, EventArgs e) => Buscar();
@@ -71,9 +110,7 @@ namespace VetCare
         {
             try
             {
-                dgvProductos.DataSource = atencionBLL.BuscarProductos(txtBuscar.Text, null)
-                                                     .Where(p => p.StockActual > 0)
-                                                     .ToList();
+                dgvProductos.DataSource = ventaBLL.BuscarProductos(txtBuscar.Text, null);
             }
             catch (Exception ex)
             {
@@ -87,7 +124,7 @@ namespace VetCare
             if (dgvProductos.Rows[e.RowIndex].DataBoundItem is not Producto_60MN p || e.CellStyle == null) return;
             if (p.Vencido)
                 e.CellStyle.BackColor = Color.MistyRose;
-            else if (p.DiasParaVencer <= AtencionBLL_60MN.DiasProximoAVencer)
+            else if (p.DiasParaVencer <= VentaBLL_60MN.DiasProximoAVencer)
                 e.CellStyle.BackColor = Color.LightYellow;
         }
 
@@ -116,77 +153,85 @@ namespace VetCare
                 Mensajes_60MN.Advertir($"El producto {p.Nombre} (lote {p.Lote}) está vencido y no puede entregarse.");
                 return;
             }
-            if (p.DiasParaVencer <= AtencionBLL_60MN.DiasProximoAVencer &&
+            if (p.DiasParaVencer <= VentaBLL_60MN.DiasProximoAVencer &&
                 !Mensajes_60MN.Confirmar($"El lote {p.Lote} de {p.Nombre} vence el {p.FechaVencimiento:dd/MM/yyyy} " +
                                          $"({p.DiasParaVencer} día(s)). ¿Desea entregarlo igualmente?"))
                 return;
 
             // 4.1: stock insuficiente (contando lo que ya está en el carrito).
-            ItemCarrito_60MN? existente = carrito.FirstOrDefault(i => i.ProductoId == p.Id);
-            int total = cantidad + (existente?.Cantidad ?? 0);
+            int total = cantidad + (carrito.Buscar(p.Id)?.Cantidad ?? 0);
             if (total > p.StockActual)
             {
                 Mensajes_60MN.Advertir($"Stock insuficiente de {p.Nombre}: disponible {p.StockActual}, solicitado {total}.");
                 return;
             }
 
-            if (existente != null)
+            carrito.Agregar(new ItemCarrito_60MN
             {
-                existente.Cantidad = total;
-                carrito.ResetBindings();
-            }
-            else
-            {
-                carrito.Add(new ItemCarrito_60MN
-                {
-                    ProductoId = p.Id,
-                    Codigo = p.Codigo,
-                    Producto = p.Nombre,
-                    Lote = p.Lote,
-                    Cantidad = cantidad,
-                    PrecioUnitario = p.PrecioVenta
-                });
-            }
-            ActualizarTotal();
+                ProductoId = p.Id,
+                Codigo = p.Codigo,
+                Producto = p.Nombre,
+                Lote = p.Lote,
+                Cantidad = cantidad,
+                PrecioUnitario = p.PrecioVenta
+            });
+            RefrescarCarrito();
         }
 
         private void btnQuitar_Click(object sender, EventArgs e)
         {
             if (dgvCarrito.CurrentRow?.DataBoundItem is ItemCarrito_60MN item)
             {
-                carrito.Remove(item);
-                ActualizarTotal();
+                carrito.Quitar(item.ProductoId);
+                RefrescarCarrito();
             }
         }
 
         private void btnCancelar_Click(object sender, EventArgs e) => Close();
 
-        protected override void AlCambiarIdioma() => ActualizarTotal();
+        protected override void AlCambiarIdioma()
+        {
+            ActualizarTotal();
+            if (cliente == null)
+                txtCliente.Text = T("msg.SinClienteVenta", "(elija el cliente de la venta)");
+        }
+
+        private void RefrescarCarrito()
+        {
+            dgvCarrito.DataSource = null;
+            dgvCarrito.DataSource = carrito.Items.ToList();
+            ActualizarTotal();
+        }
 
         private void ActualizarTotal() =>
-            lblTotal.Text = $"{TraductorFormularios_60MN.T("msg.Total", "Total")}: $ {carrito.Sum(i => i.Subtotal).ToString("N2", CultureInfo.GetCultureInfo("es-AR"))}";
+            lblTotal.Text = $"{T("msg.Total", "Total")}: $ {carrito.Total.ToString("N2", CultureInfo.GetCultureInfo("es-AR"))}";
 
-        /// <summary>Paso 9: confirma la entrega; los egresos y el detalle se registran en una sola transacción.</summary>
+        /// <summary>Paso 9: confirma la venta; encabezado, detalle y egresos se registran en una sola transacción.</summary>
         private void btnConfirmar_Click(object sender, EventArgs e)
         {
-            if (cboAtencion.SelectedItem is not Atencion_60MN atencion)
+            if (cliente == null)
             {
-                Mensajes_60MN.Advertir("Seleccione la atención a la que se asocia la medicación.");
+                Mensajes_60MN.Advertir("Elija el cliente de la venta.");
                 return;
             }
-            if (carrito.Count == 0)
+            if (carrito.Items.Count == 0)
             {
                 Mensajes_60MN.Advertir("El carrito está vacío.");
                 return;
             }
-            if (!Mensajes_60MN.Confirmar($"¿Confirma la entrega de {carrito.Count} producto(s) para {atencion.Paciente}?\n{lblTotal.Text}"))
+            Atencion_60MN? atencion = cboAtencion.SelectedItem as Atencion_60MN;
+            string destino = atencion != null ? $"{atencion.Paciente} (atención Nº {atencion.Id})" : cliente.NombreCompleto;
+            if (!Mensajes_60MN.Confirmar($"¿Confirma la venta de {carrito.Items.Count} producto(s) para {destino}?\n{lblTotal.Text}"))
                 return;
+
+            carrito.ClienteId = cliente.Id;
+            carrito.AtencionId = atencion?.Id;
             try
             {
-                List<string> alertas = atencionBLL.RegistrarMedicacion(atencion.Id, carrito.ToList());
-                string mensaje = "Medicación registrada y stock actualizado correctamente.";
-                if (alertas.Count > 0)
-                    mensaje += "\n\nAlerta de stock mínimo:\n- " + string.Join("\n- ", alertas);
+                ResultadoVenta_60MN resultado = ventaBLL.RegistrarVenta(carrito);
+                string mensaje = $"Venta V-{resultado.VentaId:00000} registrada y stock actualizado correctamente.";
+                if (resultado.Alertas.Count > 0)
+                    mensaje += "\n\nAlerta de stock mínimo:\n- " + string.Join("\n- ", resultado.Alertas);
                 Mensajes_60MN.Informar(mensaje);
                 DialogResult = DialogResult.OK;
                 Close();

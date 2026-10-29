@@ -17,10 +17,18 @@ namespace DAL_60MN
                 });
         }
 
-        public List<Proveedor_60MN> ListarProveedores()
+        /// <summary>
+        /// Proveedores para los combos de stock. Con soloActivos (alta y modificación de productos)
+        /// se omiten los dados de baja, salvo ademasId: el proveedor actual del producto que se modifica.
+        /// </summary>
+        public List<Proveedor_60MN> ListarProveedores(bool soloActivos, int? ademasId = null)
         {
-            return Conexion_60MN.EjecutarLista("SELECT ProveedorID, RazonSocial, CUIT FROM Proveedor ORDER BY RazonSocial",
-                r => new Proveedor_60MN { Id = r.GetInt32(0), RazonSocial = r.GetString(1), Cuit = r.GetString(2) });
+            return Conexion_60MN.EjecutarLista(@"
+SELECT ProveedorID, RazonSocial, CUIT, Activo FROM Proveedor
+ WHERE @todos = 1 OR Activo = 1 OR ProveedorID = @ademas
+ ORDER BY RazonSocial",
+                r => new Proveedor_60MN { Id = r.GetInt32(0), RazonSocial = r.GetString(1), Cuit = r.GetString(2), Activo = r.GetBoolean(3) },
+                ("@todos", !soloActivos), ("@ademas", ademasId));
         }
 
         /// <summary>Margen de ganancia general preconfigurado (PN4: por ejemplo 30%).</summary>

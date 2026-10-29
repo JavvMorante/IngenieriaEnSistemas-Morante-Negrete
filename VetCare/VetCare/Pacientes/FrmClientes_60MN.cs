@@ -271,54 +271,16 @@ namespace VetCare
         private void btnHistoriaClinica_Click(object sender, EventArgs e)
         {
             Mascota_60MN? mascota = MascotaSeleccionada();
-            if (mascota == null) return;
-            if (!mascota.TieneHistoriaClinica && !PuedeAbrirHistoria(mascota, "La mascota no tiene historia clínica. ¿Desea abrirla ahora?"))
-                return;
-            AbrirHistoria(mascota);
+            if (mascota != null)
+                AccionesPaciente_60MN.AbrirHistoria(this, mascota, RefrescarFicha);
         }
 
-        // CUN08
+        // CUN08 (1.1: sin historia clínica se deriva a CUN05)
         private void btnNuevaAtencion_Click(object sender, EventArgs e)
         {
             Mascota_60MN? mascota = MascotaSeleccionada();
-            if (mascota == null) return;
-            if (!mascota.TieneHistoriaClinica)
-            {
-                // CUN08 1.1: sin historia clínica se deriva a CUN05.
-                if (PuedeAbrirHistoria(mascota, "La mascota no posee historia clínica. Debe crearse antes de registrar la atención. ¿Abrirla ahora?"))
-                    AbrirHistoria(mascota);
-                return;
-            }
-            try
-            {
-                HistoriaClinica_60MN? hc = new HistoriaClinicaBLL_60MN().Consultar(mascota.Id);
-                if (hc == null) return;
-                VentanasMdi_60MN.Abrir(this, () => new FrmAtencion_60MN(hc), $"atencion:{hc.Id}", RefrescarFicha);
-            }
-            catch (Exception ex)
-            {
-                Mensajes_60MN.MostrarError(ex);
-            }
-        }
-
-        private bool PuedeAbrirHistoria(Mascota_60MN mascota, string pregunta)
-        {
-            if (!SessionManager_60MN.Instancia.TienePermiso(CodigosPatente_60MN.HistoriaClinicaAlta))
-            {
-                Mensajes_60MN.Advertir("La mascota no tiene historia clínica y usted no tiene permiso para crearla.");
-                return false;
-            }
-            if (!mascota.Activo)
-            {
-                Mensajes_60MN.Advertir("La mascota está dada de baja.");
-                return false;
-            }
-            return Mensajes_60MN.Confirmar(pregunta);
-        }
-
-        private void AbrirHistoria(Mascota_60MN mascota)
-        {
-            VentanasMdi_60MN.Abrir(this, () => new FrmHistoriaClinica_60MN(mascota.Id), $"historia:{mascota.Id}", RefrescarFicha);
+            if (mascota != null)
+                AccionesPaciente_60MN.RegistrarAtencion(this, mascota, RefrescarFicha);
         }
     }
 }

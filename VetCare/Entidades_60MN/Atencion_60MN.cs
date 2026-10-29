@@ -28,13 +28,24 @@ namespace Entidades_60MN
 
         public string Diagnostico { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Indicaciones o tratamiento (qué comprar, dosis, frecuencia). Opcional: la atención puede
+        /// cerrarse sin medicación; lo que efectivamente se entrega va en Medicacion (CUN09).
+        /// </summary>
+        public string? Indicaciones { get; set; }
+
+        public bool TieneIndicaciones => !string.IsNullOrWhiteSpace(Indicaciones);
+
         /// <summary>Cantidad de veces que se emitió el informe (CUN10, reimpresión 1.1).</summary>
         public int InformesEmitidos { get; set; }
 
-        /// <summary>Medicación entregada en el carrito (CUN09).</summary>
+        /// <summary>Medicación entregada: los ítems de las ventas asociadas a la atención (CUN05).</summary>
         public List<ItemCarrito_60MN> Medicacion { get; } = new List<ItemCarrito_60MN>();
 
         // Contexto para listados e informes
+        /// <summary>Dueño de la mascota: cliente de la venta de la medicación.</summary>
+        public int ClienteId { get; set; }
+
         public string NumeroHistoriaClinica { get; set; } = string.Empty;
 
         public string Paciente { get; set; } = string.Empty;
@@ -44,23 +55,5 @@ namespace Entidades_60MN
         public string Descripcion => $"{FechaHora:dd/MM/yyyy HH:mm} - {Paciente} ({Propietario}) - {Motivo}";
 
         public override string ToString() => Descripcion;
-    }
-
-    /// <summary>Producto entregado en una atención (fila de AtencionDetalle, CUN09).</summary>
-    public class ItemCarrito_60MN
-    {
-        public int ProductoId { get; set; }
-
-        public string Codigo { get; set; } = string.Empty;
-
-        public string Producto { get; set; } = string.Empty;
-
-        public string Lote { get; set; } = string.Empty;
-
-        public int Cantidad { get; set; }
-
-        public decimal PrecioUnitario { get; set; }
-
-        public decimal Subtotal => Cantidad * PrecioUnitario;
     }
 }

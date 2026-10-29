@@ -24,9 +24,41 @@ namespace VetCare
         {
             InitializeComponent();
             original = producto;
+
+            // Filtro de teclado y largos según las reglas de la BLL; lo pegado con Ctrl+V se valida al salir del campo.
+            txtNombre.MaxLength = ProductoBLL_60MN.LargoNombre;
+            txtLote.MaxLength = ProductoBLL_60MN.LargoLote;
+            txtLote.CharacterCasing = CharacterCasing.Upper;
+            txtNombre.KeyPress += (s, e) => Filtrar(e, c => char.IsLetterOrDigit(c) || c == ' ' || ProductoBLL_60MN.SignosNombre.IndexOf(c) >= 0);
+            txtLote.KeyPress += (s, e) => Filtrar(e, c => (c >= 'A' && c <= 'Z') || char.IsDigit(c) || c == '-' || c == '/');
+            foreach (Control campo in Campos.Values)
+                campo.Leave += (s, e) => MarcarCampo((Control)s);
         }
 
         private bool EsAlta => original == null;
+
+        /// <summary>Control de la pantalla para cada dato del producto (nombre de la propiedad, como en los errores de la BLL).</summary>
+        private Dictionary<string, Control> Campos => new Dictionary<string, Control>
+        {
+            [nameof(Producto_60MN.Nombre)] = txtNombre,
+            [nameof(Producto_60MN.CategoriaId)] = cboCategoria,
+            [nameof(Producto_60MN.ProveedorId)] = cboProveedor,
+            [nameof(Producto_60MN.StockActual)] = nudStockActual,
+            [nameof(Producto_60MN.StockMinimo)] = nudStockMinimo,
+            [nameof(Producto_60MN.PrecioCosto)] = nudPrecioCosto,
+            [nameof(Producto_60MN.PrecioVenta)] = nudPrecioVenta,
+            [nameof(Producto_60MN.FechaVencimiento)] = dtpVencimiento,
+            [nameof(Producto_60MN.Lote)] = txtLote
+        };
+
+        private static void Filtrar(KeyPressEventArgs e, Func<char, bool> permitido)
+        {
+            if (!char.IsControl(e.KeyChar) && !permitido(e.KeyChar))
+            {
+                e.Handled = true;
+                System.Media.SystemSounds.Beep.Play();
+            }
+        }
 
         private void FrmProducto_60MN_Load(object sender, EventArgs e)
         {
@@ -38,7 +70,8 @@ namespace VetCare
                 cboCategoria.SelectedIndex = -1;
                 cboProveedor.DisplayMember = nameof(Proveedor_60MN.RazonSocial);
                 cboProveedor.ValueMember = nameof(Proveedor_60MN.Id);
-                cboProveedor.DataSource = productoBLL.ListarProveedores();
+                // CUN11: solo proveedores activos; al modificar se conserva el actual aunque esté dado de baja.
+                cboProveedor.DataSource = productoBLL.ListarProveedores(original?.ProveedorId);
                 cboProveedor.SelectedIndex = -1;
             }
             catch (Exception ex)
@@ -127,23 +160,24 @@ namespace VetCare
             ActualizarSugerido();
         }
 
+        private Producto_60MN DatosIngresados() => new Producto_60MN
+        {
+            Id = original?.Id ?? 0,
+            Nombre = txtNombre.Text,
+            CategoriaId = cboCategoria.SelectedValue is int categoria ? categoria : 0,
+            ProveedorId = cboProveedor.SelectedValue is int proveedor ? proveedor : 0,
+            StockActual = (int)nudStockActual.Value,
+            StockMinimo = (int)nudStockMinimo.Value,
+            PrecioCosto = nudPrecioCosto.Value,
+            PrecioVenta = nudPrecioVenta.Value,
+            FechaVencimiento = dtpVencimiento.Value.Date,
+            Lote = txtLote.Text
+        };
+
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            if (!ValidarCampos()) return;
-
-            Producto_60MN producto = new Producto_60MN
-            {
-                Id = original?.Id ?? 0,
-                Nombre = txtNombre.Text,
-                CategoriaId = (int)cboCategoria.SelectedValue!,
-                ProveedorId = (int)cboProveedor.SelectedValue!,
-                StockActual = (int)nudStockActual.Value,
-                StockMinimo = (int)nudStockMinimo.Value,
-                PrecioCosto = nudPrecioCosto.Value,
-                PrecioVenta = nudPrecioVenta.Value,
-                FechaVencimiento = dtpVencimiento.Value.Date,
-                Lote = txtLote.Text
-            };
+            Producto_60MN producto = DatosIngresados();
+            if (!MostrarErrores(productoBLL.ValidarDatos(producto, EsAlta))) return;
 
             // CUN11 6.1 / CUN12 5.2: margen negativo.
             if (producto.PrecioVenta < producto.PrecioCosto &&
@@ -174,6 +208,10 @@ namespace VetCare
             catch (ProductoDuplicadoException_60MN ex) when (EsAlta)
             {
                 OfrecerSumarStock(ex.Existente, producto.StockActual);
+            }
+            catch (DatosProductoInvalidosException_60MN ex)
+            {
+                MostrarErrores(ex.Errores);
             }
             catch (Exception ex)
             {
@@ -207,25 +245,30 @@ namespace VetCare
             }
         }
 
-        private bool ValidarCampos()
+        /// <summary>Pone en cada campo el error que informó la BLL y lleva el foco al primero. Devuelve true si no hay errores.</summary>
+        private bool MostrarErrores(IReadOnlyDictionary<string, string> errores)
         {
             errorProvider.Clear();
-            bool valido = true;
-            void Marcar(Control control, string mensaje)
+            Control? primero = null;
+            foreach (KeyValuePair<string, Control> campo in Campos)
             {
-                errorProvider.SetError(control, mensaje);
-                valido = false;
+                if (!errores.TryGetValue(campo.Key, out string? motivo)) continue;
+                errorProvider.SetError(campo.Value, motivo);
+                primero ??= campo.Value;
             }
+            primero?.Focus();
+            return errores.Count == 0;
+        }
 
-            if (string.IsNullOrWhiteSpace(txtNombre.Text)) Marcar(txtNombre, "Campo obligatorio.");
-            if (cboCategoria.SelectedIndex < 0) Marcar(cboCategoria, "Seleccione una categoría.");
-            if (cboProveedor.SelectedIndex < 0) Marcar(cboProveedor, "Seleccione un proveedor.");
-            if (nudPrecioCosto.Value <= 0) Marcar(nudPrecioCosto, "Ingrese el precio de costo.");
-            if (nudPrecioVenta.Value <= 0) Marcar(nudPrecioVenta, "Ingrese el precio de venta.");
-            if (string.IsNullOrWhiteSpace(txtLote.Text)) Marcar(txtLote, "Campo obligatorio.");
-            // CUN11 4.2: vencimiento anterior a hoy.
-            if (EsAlta && dtpVencimiento.Value.Date < DateTime.Today) Marcar(dtpVencimiento, "La fecha de vencimiento es anterior a la fecha actual.");
-            return valido;
+        /// <summary>Al salir de nombre o lote se valida ese campo; los vacíos se avisan recién al aceptar.</summary>
+        private void MarcarCampo(Control campo)
+        {
+            if (campo is not TextBox texto) return;
+            string clave = Campos.First(c => c.Value == campo).Key;
+            string? motivo = null;
+            if (texto.Text.Trim().Length > 0)
+                productoBLL.ValidarDatos(DatosIngresados(), EsAlta).TryGetValue(clave, out motivo);
+            errorProvider.SetError(campo, motivo ?? string.Empty);
         }
     }
 }

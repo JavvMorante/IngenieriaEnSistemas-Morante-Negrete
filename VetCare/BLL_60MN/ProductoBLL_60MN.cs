@@ -20,18 +20,47 @@ namespace BLL_60MN
         }
     }
 
+    /// <summary>
+    /// CUN11 / CUN12: uno o más datos del producto son inválidos. Errores va por campo
+    /// (nombre de la propiedad de Producto_60MN → motivo) para marcarlos en la GUI.
+    /// </summary>
+    public class DatosProductoInvalidosException_60MN : NegocioException_60MN
+    {
+        public IReadOnlyDictionary<string, string> Errores { get; }
+
+        public DatosProductoInvalidosException_60MN(IReadOnlyDictionary<string, string> errores)
+            : base("Revise los datos marcados:\n" + string.Join("\n", errores.Values))
+        {
+            Errores = errores;
+        }
+    }
+
     /// <summary>CUN11 Registrar Producto y CUN12 Modificar Producto.</summary>
     public class ProductoBLL_60MN
     {
+        // Largos máximos (la GUI los usa como MaxLength); menores que las columnas de Productos.
+        public const int LargoNombre = 80;
+        public const int LargoLote = 20;
+        /// <summary>Signos que admite el nombre de un producto, además de letras, números y espacios.</summary>
+        public const string SignosNombre = Validaciones_60MN.SignosProducto;
+
         private readonly ProductoDAL_60MN mapper = new ProductoDAL_60MN();
         private readonly CatalogoStockDAL_60MN catalogo = new CatalogoStockDAL_60MN();
+        private readonly ProveedorDAL_60MN proveedores = new ProveedorDAL_60MN();
         private readonly MovimientoStockDAL_60MN alertas = new MovimientoStockDAL_60MN();
         private readonly GestorDigitoVerificador_60MN dv = new GestorDigitoVerificador_60MN();
         private readonly BitacoraBLL_60MN bitacora = new BitacoraBLL_60MN();
 
         public List<Categoria_60MN> ListarCategorias() => catalogo.ListarCategorias();
 
-        public List<Proveedor_60MN> ListarProveedores() => catalogo.ListarProveedores();
+        /// <summary>
+        /// Proveedores activos para el alta y la modificación de productos (CUN11: los dados de
+        /// baja no se ofrecen). ademasId agrega el proveedor actual del producto que se modifica.
+        /// </summary>
+        public List<Proveedor_60MN> ListarProveedores(int? ademasId = null) => catalogo.ListarProveedores(soloActivos: true, ademasId);
+
+        /// <summary>Todos los proveedores, incluso los dados de baja (filtros de reportes).</summary>
+        public List<Proveedor_60MN> ListarTodosLosProveedores() => catalogo.ListarProveedores(soloActivos: false);
 
         public List<Producto_60MN> Buscar(string? texto, int? categoriaId, bool incluirInactivos)
         {
@@ -63,11 +92,8 @@ namespace BLL_60MN
         {
             SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.ProductoAlta);
             Normalizar(producto);
-            Validar(producto);
-            if (producto.StockActual < 0)
-                throw new NegocioException_60MN("El stock actual no puede ser negativo.");
-            if (producto.FechaVencimiento.Date < DateTime.Today)
-                throw new NegocioException_60MN("La fecha de vencimiento es anterior a la fecha actual: no se puede registrar el producto.");
+            Validar(producto, esAlta: true);
+            ProveedorActivo(producto.ProveedorId);
 
             Producto_60MN? duplicado = mapper.ObtenerPorNombreYLote(producto.Nombre, producto.Lote);
             if (duplicado != null)
@@ -87,11 +113,14 @@ namespace BLL_60MN
         {
             SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.ProductoModificar);
             Normalizar(producto);
-            Validar(producto);
+            Validar(producto, esAlta: false);
 
             Producto_60MN actual = mapper.ObtenerPorId(producto.Id) ?? throw new NegocioException_60MN("El producto ya no existe.");
             if (!actual.Activo)
                 throw new NegocioException_60MN("El producto se encuentra dado de baja: no se puede editar.");
+            // Puede conservar su proveedor aunque esté dado de baja, pero no pasar a uno dado de baja.
+            if (producto.ProveedorId != actual.ProveedorId)
+                ProveedorActivo(producto.ProveedorId);
             if (mapper.ObtenerPorNombreYLote(producto.Nombre, producto.Lote, producto.Id) != null)
                 throw new NegocioException_60MN("Ya existe otro producto con el mismo nombre y lote.");
 
@@ -176,22 +205,89 @@ namespace BLL_60MN
 
         private static int UsuarioParaAuditoria => SesionActual_60MN.UsuarioId ?? 0;
 
-        private static void Normalizar(Producto_60MN p)
+        private void ProveedorActivo(int proveedorId)
         {
-            p.Nombre = (p.Nombre ?? string.Empty).Trim();
-            p.Lote = (p.Lote ?? string.Empty).Trim();
+            Proveedor_60MN proveedor = proveedores.ObtenerPorId(proveedorId)
+                ?? throw new DatosProductoInvalidosException_60MN(new Dictionary<string, string>
+                    { [nameof(Producto_60MN.ProveedorId)] = "El proveedor no existe." });
+            if (!proveedor.Activo)
+                throw new DatosProductoInvalidosException_60MN(new Dictionary<string, string>
+                    { [nameof(Producto_60MN.ProveedorId)] = $"El proveedor {proveedor.RazonSocial} está dado de baja." });
         }
 
-        private static void Validar(Producto_60MN p)
+        private static void Normalizar(Producto_60MN p)
         {
-            if (p.Nombre.Length == 0 || p.Lote.Length == 0 || p.CategoriaId <= 0 || p.ProveedorId <= 0)
-                throw new NegocioException_60MN("Complete todos los campos obligatorios.");
+            p.Nombre = Validaciones_60MN.Normalizar(p.Nombre);
+            p.Lote = (p.Lote ?? string.Empty).Trim().ToUpperInvariant();
+        }
+
+        /// <summary>
+        /// Valida los datos del producto sin guardarlos y devuelve los errores por campo
+        /// (vacío si todo es correcto). La GUI lo usa para marcar cada campo; Registrar y
+        /// Modificar aplican las mismas reglas.
+        /// </summary>
+        public IReadOnlyDictionary<string, string> ValidarDatos(Producto_60MN producto, bool esAlta)
+        {
+            Producto_60MN copia = new Producto_60MN
+            {
+                Nombre = producto.Nombre, Lote = producto.Lote, CategoriaId = producto.CategoriaId, ProveedorId = producto.ProveedorId,
+                StockActual = producto.StockActual, StockMinimo = producto.StockMinimo, PrecioCosto = producto.PrecioCosto,
+                PrecioVenta = producto.PrecioVenta, FechaVencimiento = producto.FechaVencimiento
+            };
+            Normalizar(copia);
+            return ErroresProducto(copia, esAlta);
+        }
+
+        private static void Validar(Producto_60MN p, bool esAlta)
+        {
+            Dictionary<string, string> errores = ErroresProducto(p, esAlta);
+            if (errores.Count > 0)
+                throw new DatosProductoInvalidosException_60MN(errores);
+        }
+
+        private static Dictionary<string, string> ErroresProducto(Producto_60MN p, bool esAlta)
+        {
+            Dictionary<string, string> errores = new Dictionary<string, string>();
+            void Revisar(string campo, Action regla)
+            {
+                try { regla(); }
+                catch (NegocioException_60MN ex) { errores[campo] = ex.Message; }
+            }
+
+            if (p.Nombre.Length == 0)
+                errores[nameof(Producto_60MN.Nombre)] = "Campo obligatorio.";
+            else
+                Revisar(nameof(Producto_60MN.Nombre), () =>
+                {
+                    Validaciones_60MN.Largo(p.Nombre, LargoNombre, "El nombre");
+                    Validaciones_60MN.NombreProducto(p.Nombre, "El nombre");
+                });
+
+            if (p.Lote.Length == 0)
+                errores[nameof(Producto_60MN.Lote)] = "Campo obligatorio.";
+            else
+                Revisar(nameof(Producto_60MN.Lote), () =>
+                {
+                    Validaciones_60MN.Largo(p.Lote, LargoLote, "El lote");
+                    Validaciones_60MN.Lote(p.Lote, "El lote");
+                });
+
+            if (p.CategoriaId <= 0)
+                errores[nameof(Producto_60MN.CategoriaId)] = "Seleccione una categoría.";
+            if (p.ProveedorId <= 0)
+                errores[nameof(Producto_60MN.ProveedorId)] = "Seleccione un proveedor.";
+            if (esAlta && p.StockActual < 0)
+                errores[nameof(Producto_60MN.StockActual)] = "El stock actual no puede ser negativo.";
             if (p.StockMinimo < 0)
-                throw new NegocioException_60MN("El stock mínimo no puede ser negativo.");
+                errores[nameof(Producto_60MN.StockMinimo)] = "El stock mínimo no puede ser negativo.";
             if (p.PrecioCosto <= 0)
-                throw new NegocioException_60MN("El precio de costo debe ser mayor a cero.");
+                errores[nameof(Producto_60MN.PrecioCosto)] = "El precio de costo debe ser mayor a cero.";
             if (p.PrecioVenta <= 0)
-                throw new NegocioException_60MN("El precio de venta debe ser mayor a cero.");
+                errores[nameof(Producto_60MN.PrecioVenta)] = "El precio de venta debe ser mayor a cero.";
+            // CUN11 4.2: no se da de alta un producto ya vencido.
+            if (esAlta && p.FechaVencimiento.Date < DateTime.Today)
+                errores[nameof(Producto_60MN.FechaVencimiento)] = "La fecha de vencimiento es anterior a la fecha actual: no se puede registrar el producto.";
+            return errores;
         }
     }
 }

@@ -186,10 +186,18 @@ CREATE TABLE Categoria (
 );
 GO
 
+-- CUN11 Gestionar Proveedores. El CUIT se guarda con sus 11 dígitos (sin guiones) y no se modifica;
+-- la baja es lógica (Activo = 0) y los productos conservan su proveedor.
 CREATE TABLE Proveedor (
     ProveedorID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Proveedor PRIMARY KEY,
     RazonSocial  VARCHAR(120)      NOT NULL,
-    CUIT         VARCHAR(13)       NOT NULL CONSTRAINT UX_Proveedor_CUIT UNIQUE
+    CUIT         VARCHAR(13)       NOT NULL CONSTRAINT UX_Proveedor_CUIT UNIQUE,
+    Telefono     VARCHAR(30)       NOT NULL,
+    Email        VARCHAR(150)      NULL,
+    Direccion    VARCHAR(150)      NOT NULL,
+    Contacto     VARCHAR(80)       NULL,
+    Activo       BIT               NOT NULL CONSTRAINT DF_Proveedor_Activo DEFAULT (1),
+    DVH          CHAR(64)          NULL
 );
 GO
 
@@ -340,21 +348,41 @@ CREATE TABLE Atencion (
     Motivo              VARCHAR(300)      NOT NULL,
     Diagnostico         VARCHAR(1000)     NOT NULL,
     InformesEmitidos    INT               NOT NULL CONSTRAINT DF_Atencion_Informes DEFAULT (0),
+    -- Indicaciones o tratamiento (por ejemplo, qué comprar y cómo administrarlo). Opcional: la atención
+    -- puede cerrarse sin medicación; lo entregado en el carrito (CUN05) se registra aparte como venta.
+    Indicaciones        VARCHAR(1000)     NULL,
     DVH                 CHAR(64)          NULL
 );
 CREATE INDEX IX_Atencion_HC ON Atencion (HistoriaClinicaID, FechaHora);
 GO
 
--- CUN09 Registrar Medicación en Carrito: cada ítem entregado genera un egreso de stock (CUN14).
-CREATE TABLE AtencionDetalle (
-    AtencionDetalleID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_AtencionDetalle PRIMARY KEY,
-    AtencionID         INT               NOT NULL CONSTRAINT FK_AtencionDetalle_Atencion REFERENCES Atencion (AtencionID),
-    ProductoID         INT               NOT NULL CONSTRAINT FK_AtencionDetalle_Producto REFERENCES Productos (ProductoID),
-    Cantidad           INT               NOT NULL CONSTRAINT CK_AtencionDetalle_Cantidad CHECK (Cantidad > 0),
-    PrecioUnitario     DECIMAL(12,2)     NOT NULL,
-    MovimientoID       INT               NOT NULL CONSTRAINT FK_AtencionDetalle_Movimiento REFERENCES MovimientoStock (MovimientoID),
-    DVH                CHAR(64)          NULL
+-- CUN05 Registrar Medicación en Carrito: el carrito vive en memoria y al confirmarlo se graba una
+-- venta (sin facturación). La atención es opcional: también se vende a un cliente sin atención.
+CREATE TABLE VentaEncabezado (
+    VentaID     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_VentaEncabezado PRIMARY KEY,
+    ClienteID   INT               NOT NULL CONSTRAINT FK_VentaEncabezado_Cliente REFERENCES Cliente (ClienteID),
+    AtencionID  INT               NULL     CONSTRAINT FK_VentaEncabezado_Atencion REFERENCES Atencion (AtencionID),
+    FechaHora   DATETIME2(0)      NOT NULL,
+    UsuarioID   INT               NULL,
+    Total       DECIMAL(12,2)     NOT NULL,
+    DVH         CHAR(64)          NULL
 );
+CREATE INDEX IX_VentaEncabezado_Fecha ON VentaEncabezado (FechaHora);
+CREATE INDEX IX_VentaEncabezado_Atencion ON VentaEncabezado (AtencionID);
+GO
+
+-- Cada ítem vendido genera un egreso de stock (CUN09) en la misma transacción.
+CREATE TABLE VentaDetalle (
+    VentaDetalleID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_VentaDetalle PRIMARY KEY,
+    VentaID         INT               NOT NULL CONSTRAINT FK_VentaDetalle_Venta REFERENCES VentaEncabezado (VentaID),
+    ProductoID      INT               NOT NULL CONSTRAINT FK_VentaDetalle_Producto REFERENCES Productos (ProductoID),
+    Cantidad        INT               NOT NULL CONSTRAINT CK_VentaDetalle_Cantidad CHECK (Cantidad > 0),
+    PrecioUnitario  DECIMAL(12,2)     NOT NULL,
+    Subtotal        DECIMAL(12,2)     NOT NULL,
+    MovimientoID    INT               NOT NULL CONSTRAINT FK_VentaDetalle_Movimiento REFERENCES MovimientoStock (MovimientoID),
+    DVH             CHAR(64)          NULL
+);
+CREATE INDEX IX_VentaDetalle_Venta ON VentaDetalle (VentaID);
 GO
 
 /* ---------------------------------------------------------------------
@@ -425,10 +453,8 @@ BEGIN
 END
 GO
 
--- DESHABILITADO POR AHORA: la Bitácora de cambios no registra versiones de productos.
--- Para reactivarla: ENABLE TRIGGER TR_Productos_BitacoraCambios ON Productos;
-DISABLE TRIGGER TR_Productos_BitacoraCambios ON Productos;
-GO
+-- Activo: registra las versiones de cada producto (postcondición de CUN11, CUN12 y CUN14)
+-- aunque la pantalla de la Bitácora de cambios (CUS10) siga deshabilitada.
 
 /* ---------------------------------------------------------------------
    MULTI-IDIOMA (patrón Observer en la GUI)
@@ -489,13 +515,105 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'mnuAdmin', N'ADMIN'), (2, 'mnuUsuarios', N'Users'), (2, 'mnuPerfiles', N'Profiles'), (2, 'mnuBackup', N'Backup'),
 (2, 'mnuRestore', N'Restore'), (2, 'mnuBitacoraEventos', N'Event log'), (2, 'mnuDigitosVerificadores', N'Check digits'),
 (2, 'mnuMaestros', N'MASTER DATA'), (2, 'mnuProductos', N'Products'), (2, 'mnuMovimientosStock', N'Stock movements'),
-(2, 'mnuClientes', N'Customers and patients'), (2, 'mnuProveedores', N'Suppliers'), (2, 'mnuBitacoraCambios', N'Change log'),
+(2, 'mnuClientes', N'Customers'), (2, 'mnuMascotas', N'Pets'), (2, 'mnuProveedores', N'Suppliers'), (2, 'mnuBitacoraCambios', N'Change log'),
+(2, 'mnuPacientes', N'PATIENTS'), (2, 'mnuHistoriasClinicas', N'Medical records'), (2, 'mnuRegistrarAtencion', N'Register consultation'),
+(2, 'mnuStock', N'STOCK'), (2, 'mnuVentasRegistradas', N'Recorded sales'), (2, 'mnuReporteAtenciones', N'Consultations report'),
 (2, 'mnuUsuario', N'USER'), (2, 'mnuReLogin', N'Re-Login'), (2, 'mnuCambiarClave', N'Change password'),
 (2, 'mnuLogout', N'Logout'), (2, 'mnuCambiarIdioma', N'Change language'),
-(2, 'mnuVentas', N'SALES'), (2, 'mnuCarrito', N'Cart'), (2, 'mnuFacturar', N'Invoice'), (2, 'mnuDespachar', N'Dispatch'),
-(2, 'mnuCompras', N'PURCHASES'), (2, 'mnuGestionCompras', N'Purchases'),
-(2, 'mnuReportes', N'REPORTS'), (2, 'mnuReporte1', N'Stock report'), (2, 'mnuReporte2', N'Smart report'), (2, 'mnuReporte3', N'Report 3'),
+(2, 'mnuVentas', N'SALES'), (2, 'mnuCarrito', N'Cart'),
+(2, 'mnuReportes', N'REPORTS'), (2, 'mnuReporte1', N'Stock report'), (2, 'mnuReporte2', N'Smart report'),
 (2, 'mnuAyuda', N'HELP'), (2, 'mnuAyudaEnLinea', N'Online help (F1)'), (2, 'mnuAcercaDe', N'About VetCare'),
+-- Selector de paciente (PACIENTES > Historias clínicas / Registrar atención)
+(2, 'FrmBuscarPaciente_60MN', N'Select patient'), (2, 'FrmBuscarPaciente_60MN.btnAceptar', N'Select'),
+(2, 'colPaciente', N'Patient'), (2, 'colPropietario', N'Owner'), (2, 'msg.CriterioEspecie', N'Species'),
+(2, 'msg.ElegirPaciente', N'Search for and choose the patient.'),
+(2, 'msg.ElegirPacienteHistoria', N'Choose the patient to see their medical record.'),
+(2, 'msg.ElegirPacienteAtencion', N'Choose the patient to attend.'),
+(2, 'msg.SinPacientes', N'No patients were found with that criterion.'),
+(2, 'msg.SinHistoriaAbrir', N'The pet has no medical record. Do you want to open it now?'),
+(2, 'msg.SinHistoriaAtencion', N'The pet has no medical record. It must be created before registering the consultation. Open it now?'),
+-- CUN02 Gestionar Mascotas (MAESTROS > Mascotas) y selector de cliente
+(2, 'FrmGestionMascotas_60MN', N'Pet management'), (2, 'FrmGestionMascotas_60MN.lblTitulo', N'Pets'),
+(2, 'FrmGestionMascotas_60MN.colMascota', N'Pet'), (2, 'FrmGestionMascotas_60MN.btnBaja', N'Deactivate'),
+(2, 'msg.MascotasEncontradas', N'{0} pet(s) found.'),
+(2, 'msg.SinMascotasBusqueda', N'No pets were found. To register one, use "Add".'),
+(2, 'FrmBuscarCliente_60MN', N'Select customer'), (2, 'FrmBuscarCliente_60MN.lblTitulo', N'Choose the customer who owns the pet'),
+(2, 'FrmBuscarCliente_60MN.btnAceptar', N'Select'),
+(2, 'msg.SinClientesActivos', N'No active customers were found. Register the customer from MASTER DATA > Customers.'),
+-- CUN11 Gestionar Proveedores (MAESTROS > Proveedores)
+(2, 'FrmProveedores_60MN', N'Suppliers'), (2, 'FrmProveedores_60MN.lblTitulo', N'Suppliers'),
+(2, 'FrmProveedores_60MN.btnNuevo', N'New supplier'), (2, 'colRazonSocial', N'Company name'), (2, 'colCuit', N'Tax ID (CUIT)'),
+(2, 'colContacto', N'Contact'), (2, 'colProductosActivos', N'Active products'), (2, 'colEstadoProducto', N'Status'),
+(2, 'msg.CriterioRazonSocial', N'Company name'), (2, 'msg.ProductosQueProvee', N'Products supplied'),
+(2, 'FrmProveedor_60MN', N'Supplier'), (2, 'FrmProveedor_60MN.TituloAlta', N'Register supplier'),
+(2, 'FrmProveedor_60MN.TituloModificacion', N'Modify supplier'), (2, 'lblRazonSocial', N'Company name *'),
+(2, 'lblCuit', N'Tax ID (CUIT) *'), (2, 'lblContacto', N'Contact'),
+(2, 'FrmProveedor_60MN.NotaAlta', N'The CUIT is entered with or without dashes and cannot be changed afterwards.'),
+(2, 'FrmProveedor_60MN.NotaModificacion', N'The CUIT cannot be changed.'),
+-- CUN05 Carrito y venta (sin facturación) y VENTAS > Ventas registradas
+(2, 'FrmCarrito_60MN.btnConfirmar', N'Confirm sale'), (2, 'lblCliente', N'Customer'), (2, 'btnElegirCliente', N'Choose customer...'),
+(2, 'msg.ElegirClienteVenta', N'Choose the customer for the sale'), (2, 'msg.SinClienteVenta', N'(choose the customer for the sale)'),
+(2, 'msg.VentaSinAtencion', N'(sale without consultation)'),
+(2, 'FrmVentas_60MN', N'Recorded sales'), (2, 'FrmVentas_60MN.lblTitulo', N'Recorded sales'),
+(2, 'FrmVentas_60MN.btnElegirCliente', N'Choose...'), (2, 'btnQuitarCliente', N'All'),
+(2, 'colNumero', N'Sale'), (2, 'colCliente', N'Customer'), (2, 'colAtencion', N'Consultation'), (2, 'colUnidades', N'Units'),
+(2, 'colTotal', N'Total $'), (2, 'colProducto', N'Product'), (2, 'lblDetalle', N'Sale detail'),
+(2, 'msg.ElegirClienteConsulta', N'Choose the customer to look up'), (2, 'msg.TodosLosClientes', N'(all customers)'),
+(2, 'msg.ResumenVentas', N'{0} sale(s) · {1} unit(s) · Total $ {2}'), (2, 'msg.DetalleVenta', N'Sale detail'),
+-- CUN07 Generar Reporte de Atenciones (REPORTES > Reporte de atenciones)
+(2, 'FrmReporteAtenciones_60MN', N'Consultations report'), (2, 'FrmReporteAtenciones_60MN.grpFiltros', N'Filters'),
+(2, 'FrmReporteAtenciones_60MN.lblProfesional', N'Veterinarian'), (2, 'FrmReporteAtenciones_60MN.lblResumen', N'Choose the period and press Generate.'),
+(2, 'lblPorProfesional', N'Consultations by professional'), (2, 'colProfesionalTotal', N'Professional'),
+(2, 'colCantidadAtenciones', N'Consultations'), (2, 'colPacientes', N'Patients'), (2, 'colPorcentaje', N'% of total'),
+(2, 'msg.SinAtencionesPeriodo', N'No consultations were registered in the period with the given filters.'),
+(2, 'msg.ResumenAtenciones', N'{0} consultation(s) · {1} patient(s) · {2} professional(s)'),
+-- Ayuda en línea (F1): temas en inglés; el español está en TemasAyuda_60MN
+(2, 'FrmAyuda_60MN', N'Online help - VetCare'),
+(2, 'lblIndice', N'Topic index'),
+(2, 'ayuda.general.titulo', N'VetCare: how to use the system'),
+(2, 'ayuda.general.texto', N'The main menu shows only the options your profile allows. MASTER DATA holds customers, pets, products and suppliers; PATIENTS, medical records and consultations; SALES, the cart; STOCK, the movements; REPORTS, the reports. Press F1 on any screen to see its help, or choose another topic in this index.'),
+(2, 'ayuda.login.titulo', N'Signing in and changing the password'),
+(2, 'ayuda.login.texto', N'Enter your user name and password. Three failed attempts lock the user: ask an administrator to unlock it. A new password must have at least 8 characters, with upper case, lower case and numbers.'),
+(2, 'ayuda.usuarios.titulo', N'Users'),
+(2, 'ayuda.usuarios.texto', N'ADMIN > Users: search, add, modify, deactivate, reactivate or unlock users. When adding one you choose its initial profile and the system generates a password that must be changed on first sign in. Permissions assigns families and individual patents.'),
+(2, 'ayuda.perfiles.titulo', N'Profiles (families and patents)'),
+(2, 'ayuda.perfiles.texto', N'ADMIN > Profiles: each family is a set of patents and may include other families. The system does not allow cycles between families nor a change that leaves it without an operational administrator.'),
+(2, 'ayuda.bitacoraEventos.titulo', N'Event log'),
+(2, 'ayuda.bitacoraEventos.texto', N'ADMIN > Event log: filter by dates, criticality, module, event and user. Export XML saves the signed events; Import XML validates them (signatures, catalog, duplicates) and adds all of them or none.'),
+(2, 'ayuda.bitacoraCambios.titulo', N'Change log'),
+(2, 'ayuda.bitacoraCambios.texto', N'ADMIN > Change log: version history of each product. You can compare two versions and restore a previous one.'),
+(2, 'ayuda.integridad.titulo', N'Check digits'),
+(2, 'ayuda.integridad.texto', N'ADMIN > Check digits: verifies the DVH (one per row) and DVV (one per table) of the protected tables and shows the inconsistencies. Recalculate accepts the current state of the database: use it only after a migration or after reviewing the changes.'),
+(2, 'ayuda.backup.titulo', N'Backup and restore'),
+(2, 'ayuda.backup.texto', N'ADMIN > Backup creates a copy of the database in the chosen folder. ADMIN > Restore replaces it with an earlier backup: later changes are lost and the session is closed. A database with check digit inconsistencies is not backed up.'),
+(2, 'ayuda.idioma.titulo', N'Change language'),
+(2, 'ayuda.idioma.texto', N'USER > Change language translates every open screen. The chosen language is saved as yours and applied every time you sign in.'),
+(2, 'ayuda.clientes.titulo', N'CUN01 Manage Customers'),
+(2, 'ayuda.clientes.texto', N'MASTER DATA > Customers: search by document, last name or pet name. From the record you can register, modify, deactivate or reactivate customers and manage their pets. The document is validated by type (DNI, CUIL with check digit, passport) and cannot be changed after registration.'),
+(2, 'ayuda.mascotas.titulo', N'CUN02 Manage Pets'),
+(2, 'ayuda.mascotas.texto', N'MASTER DATA > Pets: search by name, species or the owner''s document or last name. To add a pet, first choose its customer. Deactivation is logical: the medical record is kept.'),
+(2, 'ayuda.historia.titulo', N'CUN03 Manage Medical Records'),
+(2, 'ayuda.historia.texto', N'PATIENTS > Medical records: choose the patient. If it has no medical record you can open one. From the record you see the consultations, update the data (keeping the previous values) and print it.'),
+(2, 'ayuda.atencion.titulo', N'CUN04 Register Consultation'),
+(2, 'ayuda.atencion.texto', N'PATIENTS > Register consultation: choose the patient (it must have a medical record). Enter vital signs, reason and diagnosis; instructions are optional. Once registered, you can add medication (cart) and issue the report.'),
+(2, 'ayuda.carrito.titulo', N'CUN05 Register Medication in Cart'),
+(2, 'ayuda.carrito.texto', N'From the consultation (Add medication) or from SALES > Cart choosing the customer, with or without a consultation. Add products in stock; expired ones are not delivered. Confirming records the sale and the stock issue. SALES > Recorded sales lists the sales. The system does not invoice.'),
+(2, 'ayuda.informe.titulo', N'CUN06 Issue Consultation Report'),
+(2, 'ayuda.informe.texto', N'The report gathers patient, owner, professional, vital signs, reason, diagnosis, instructions and medication. Print it or choose "Microsoft Print to PDF" to save it; every issue is recorded.'),
+(2, 'ayuda.reporteAtenciones.titulo', N'CUN07 Generate Consultations Report'),
+(2, 'ayuda.reporteAtenciones.texto', N'REPORTS > Consultations report: choose the period and, optionally, the veterinarian and the species. It shows the consultations and the totals by professional; it can be printed (or PDF) and exported to CSV.'),
+(2, 'ayuda.productos.titulo', N'CUN08 Manage Stock Items'),
+(2, 'ayuda.productos.texto', N'MASTER DATA > Products: search, register and modify products. The sale price is proposed with the category margin. Stock is not edited directly: it is adjusted with a stock movement.'),
+(2, 'ayuda.movimientos.titulo', N'CUN09 Register Stock Movement'),
+(2, 'ayuda.movimientos.texto', N'STOCK > Stock movements: register receipts, issues, adjustments or the write-off of an expired batch, always with a reason. If stock reaches the minimum or falls below it, a replenishment alert is raised.'),
+(2, 'ayuda.configuracion.titulo', N'CUN10 Configure Margin and Minimum Stock Alert'),
+(2, 'ayuda.configuracion.texto', N'ADMIN > Stock settings: general profit margin, specific margin for each category and suggested minimum stock for new products.'),
+(2, 'ayuda.proveedores.titulo', N'CUN11 Manage Suppliers'),
+(2, 'ayuda.proveedores.texto', N'MASTER DATA > Suppliers: search by company name or CUIT and see the products each one supplies. The CUIT is validated with its check digit and cannot be changed. A deactivated supplier is not offered when registering products.'),
+(2, 'ayuda.reporteExistencias.titulo', N'CUN12 Generate Stock Report'),
+(2, 'ayuda.reporteExistencias.texto', N'REPORTS > Stock report: current stock, products below the minimum or about to expire, filtered by category and supplier. It can be printed (or PDF) and exported to CSV.'),
+(2, 'ayuda.reporteInteligente.titulo', N'CUN13 Generate Smart Report'),
+(2, 'ayuda.reporteInteligente.texto', N'REPORTS > Smart report: crosses the demand for supplies by month and category (stock) with the products most delivered in consultations (patients) to anticipate purchases.'),
 -- Login
 (2, 'FrmLogin_60MN', N'VetCare - Sign in'), (2, 'FrmLogin_60MN.lblIdioma', N'Change language'),
 (2, 'FrmLogin_60MN.lblSubtitulo', N'Sign in'), (2, 'FrmLogin_60MN.lblUsuario', N'Login'), (2, 'FrmLogin_60MN.lblClave', N'Password'),
@@ -544,7 +662,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'colVersionB', N'Later version'), (2, 'lblReferencia', N'Highlighted fields changed between versions.'),
 -- Integridad
 (2, 'FrmIntegridad_60MN', N'Data integrity'), (2, 'FrmIntegridad_60MN.lblTitulo', N'Data integrity'),
-(2, 'lblDescripcion', N'Checks the horizontal (DVH, one per row) and vertical (DVV, one per table) check digits of Usuario, Familia, Patente, their relation tables, Bitacora, Productos, MovimientoStock, Cliente, Mascota, HistoriaClinica, Atencion and AtencionDetalle.'),
+(2, 'lblDescripcion', N'Checks the horizontal (DVH, one per row) and vertical (DVV, one per table) check digits of Usuario, Familia, Patente, their relation tables, Bitacora, Productos, MovimientoStock, Cliente, Mascota, HistoriaClinica, Atencion, Proveedor, VentaEncabezado and VentaDetalle.'),
 (2, 'colTabla', N'Table'), (2, 'colTipo', N'Type'), (2, 'colRegistro', N'Record (key)'), (2, 'colDetalle', N'Detail'),
 (2, 'btnVerificar', N'Verify'), (2, 'btnRecalcular', N'Recalculate digits'),
 -- Productos
@@ -604,7 +722,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 -- Atención, carrito e informe (CUN08 a CUN10)
 (2, 'FrmAtencion_60MN', N'Register consultation'), (2, 'lblProfesional', N'Professional'), (2, 'grpSignos', N'Vital signs'),
 (2, 'lblPeso', N'Weight (kg)'), (2, 'lblTemperatura', N'Temperature (°C)'), (2, 'lblFrecuencia', N'Heart rate (bpm)'),
-(2, 'FrmAtencion_60MN.lblMotivo', N'Reason for consultation *'), (2, 'lblDiagnostico', N'Diagnosis and instructions *'),
+(2, 'FrmAtencion_60MN.lblMotivo', N'Reason for consultation *'), (2, 'lblDiagnostico', N'Diagnosis *'),
 (2, 'btnRegistrar', N'Register consultation'), (2, 'btnInforme', N'Issue report'),
 (2, 'FrmCarrito_60MN', N'Medication cart'), (2, 'lblAtencion', N'Consultation'), (2, 'FrmCarrito_60MN.lblBuscar', N'Product'),
 (2, 'colPrecio', N'Price'), (2, 'colVence', N'Expiration'), (2, 'FrmCarrito_60MN.lblCantidad', N'Quantity'),
@@ -660,6 +778,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'msg.Diagnostico', N'Diagnosis'),
 (2, 'msg.Medicacion', N'Medication'),
 (2, 'msg.SinMedicacion', N'(no medication)'),
+(2, 'lblIndicaciones', N'Instructions / treatment (optional: what to buy, dose, frequency)'), (2, 'msg.Indicaciones', N'Instructions'), (2, 'msg.SinIndicaciones', N'(no instructions)'),
 (2, 'msg.Lote', N'batch'),
 (2, 'msg.SesionYaIniciada', N'A session is already open.'),
 (2, 'msg.DebeCambiarClave', N'You must change your password to sign in.'),

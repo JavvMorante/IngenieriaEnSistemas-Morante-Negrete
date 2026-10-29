@@ -11,6 +11,15 @@ namespace DAL_60MN
         NombreMascota
     }
 
+    /// <summary>Criterios de la búsqueda de mascotas (selector de paciente y CUN02 Gestionar Mascotas).</summary>
+    public enum CriterioBusquedaMascota_60MN
+    {
+        NombreMascota,
+        Especie,
+        Documento,
+        Apellido
+    }
+
     /// <summary>Mapper de las tablas Cliente y Mascota (CUN01 a CUN04).</summary>
     public class ClienteDAL_60MN
     {
@@ -96,6 +105,35 @@ UPDATE Cliente SET Nombre = @nombre, Apellido = @apellido, Direccion = @direccio
         {
             return Conexion_60MN.EjecutarLista(SelectMascota + " WHERE m.ClienteID = @id AND (@bajas = 1 OR m.Activo = 1) ORDER BY m.Nombre",
                 MapearMascota, ("@id", clienteId), ("@bajas", incluirBajas));
+        }
+
+        /// <summary>
+        /// Mascotas con su dueño, por nombre o especie de la mascota o por documento o apellido
+        /// del dueño. Sin bajas, excluye las mascotas dadas de baja y las de clientes dados de baja.
+        /// </summary>
+        public List<Mascota_60MN> BuscarMascotas(CriterioBusquedaMascota_60MN criterio, string valor, bool incluirBajas)
+        {
+            string condicion = criterio switch
+            {
+                CriterioBusquedaMascota_60MN.Especie => "m.Especie LIKE @patron",
+                CriterioBusquedaMascota_60MN.Documento => "c.NroDocumento LIKE @patron",
+                CriterioBusquedaMascota_60MN.Apellido => "c.Apellido LIKE @patron",
+                _ => "m.Nombre LIKE @patron"
+            };
+            string sql = @"
+SELECT m.MascotaID, m.ClienteID, m.Nombre, m.Especie, m.Raza, m.Sexo, m.FechaNacimiento, m.Activo, h.Numero,
+       c.Apellido + ', ' + c.Nombre AS Propietario, c.TipoDocumento + ' ' + c.NroDocumento AS DocumentoPropietario
+  FROM Mascota m
+  JOIN Cliente c ON c.ClienteID = m.ClienteID
+  LEFT JOIN HistoriaClinica h ON h.MascotaID = m.MascotaID" +
+                $" WHERE ({condicion}) AND (@bajas = 1 OR (m.Activo = 1 AND c.Activo = 1)) ORDER BY m.Nombre, c.Apellido, c.Nombre";
+            return Conexion_60MN.EjecutarLista(sql, r =>
+            {
+                Mascota_60MN m = MapearMascota(r);
+                m.Propietario = r.GetString(9);
+                m.DocumentoPropietario = r.GetString(10);
+                return m;
+            }, ("@patron", "%" + valor.Trim() + "%"), ("@bajas", incluirBajas));
         }
 
         public Mascota_60MN? ObtenerMascota(int id)

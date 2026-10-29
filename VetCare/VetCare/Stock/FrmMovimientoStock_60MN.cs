@@ -18,6 +18,9 @@ namespace VetCare
             InitializeComponent();
             dgvMovimientos.AutoGenerateColumns = false;
             productoInicial = productoId;
+            txtMotivo.MaxLength = MovimientoStockBLL_60MN.LargoMotivo;
+            txtMotivo.Leave += (s, e) =>
+                errorProvider.SetError(txtMotivo, txtMotivo.Text.Trim().Length == 0 ? string.Empty : MovimientoStockBLL_60MN.ErrorMotivo(txtMotivo.Text) ?? string.Empty);
         }
 
         private void FrmMovimientoStock_60MN_Load(object sender, EventArgs e) => CargarProductos(productoInicial);
@@ -85,7 +88,8 @@ namespace VetCare
             bool valido = true;
             if (producto == null) { errorProvider.SetError(cboProducto, "Seleccione un producto."); valido = false; }
             if (!chkVencimiento.Checked && nudCantidad.Value <= 0) { errorProvider.SetError(nudCantidad, "La cantidad debe ser mayor a cero."); valido = false; }
-            if (string.IsNullOrWhiteSpace(txtMotivo.Text)) { errorProvider.SetError(txtMotivo, "Indique el motivo."); valido = false; }
+            string? errorMotivo = MovimientoStockBLL_60MN.ErrorMotivo(txtMotivo.Text);
+            if (errorMotivo != null) { errorProvider.SetError(txtMotivo, errorMotivo); valido = false; }
             if (!valido) return;
 
             TipoMovimiento_60MN tipo = rdoIngreso.Checked ? TipoMovimiento_60MN.Ingreso

@@ -52,6 +52,21 @@ namespace VetCare
             AlCambiarIdioma();
         }
 
+        /// <summary>
+        /// Ayuda en línea (G05): F1 en cualquier formulario abre el tema de la pantalla activa.
+        /// La tecla llega primero al formulario que tiene el foco (una ventana hija o un
+        /// diálogo), así que cada pantalla abre su propio tema.
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F1 && !(this is FrmAyuda_60MN) && !DesignMode && !EnDiseno)
+            {
+                FrmAyuda_60MN.Mostrar(this);
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         /// <summary>Punto de extensión para re-traducir textos que arma el código (no el diseñador).</summary>
         protected virtual void AlCambiarIdioma() { }
     }

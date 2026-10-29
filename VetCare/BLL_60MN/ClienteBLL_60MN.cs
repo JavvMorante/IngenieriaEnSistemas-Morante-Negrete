@@ -20,10 +20,76 @@ namespace BLL_60MN
         }
     }
 
+    /// <summary>
+    /// CUN01 5.2 / CUN02 5.2: uno o más datos del cliente son inválidos. Errores va por
+    /// campo (nombre de la propiedad de Cliente_60MN → motivo) para marcarlos en la GUI.
+    /// </summary>
+    public class DatosClienteInvalidosException_60MN : NegocioException_60MN
+    {
+        public IReadOnlyDictionary<string, string> Errores { get; }
+
+        public DatosClienteInvalidosException_60MN(IReadOnlyDictionary<string, string> errores)
+            : base("Revise los datos marcados:\n" + string.Join("\n", errores.Values))
+        {
+            Errores = errores;
+        }
+    }
+
+    /// <summary>
+    /// Regla de formato del número según el tipo de documento. La GUI la usa para el
+    /// filtro de teclado y el largo del campo; la BLL, para validar antes de guardar.
+    /// </summary>
+    public sealed class ReglaDocumento_60MN
+    {
+        public string Tipo { get; }
+        public int LargoMinimo { get; }
+        public int LargoMaximo { get; }
+        /// <summary>Pasaporte: admite letras además de números.</summary>
+        public bool AdmiteLetras { get; }
+        /// <summary>CUIL: se puede tipear con guiones (20-30111222-0); se guardan solo los dígitos.</summary>
+        public bool AdmiteGuiones { get; }
+        /// <summary>Largo del campo de la pantalla, contando los guiones del CUIL.</summary>
+        public int LargoTipeo => AdmiteGuiones ? LargoMaximo + 2 : LargoMaximo;
+        public string Ayuda { get; }
+
+        internal ReglaDocumento_60MN(string tipo, int minimo, int maximo, bool letras, bool guiones, string ayuda)
+        {
+            Tipo = tipo; LargoMinimo = minimo; LargoMaximo = maximo; AdmiteLetras = letras; AdmiteGuiones = guiones; Ayuda = ayuda;
+        }
+    }
+
     /// <summary>Gestión de Pacientes: CUN01 Registrar, CUN02 Modificar, CUN03 Consultar Cliente y CUN04 Gestionar Mascota.</summary>
     public class ClienteBLL_60MN
     {
-        public static readonly string[] TiposDocumento = { "DNI", "LE", "LC", "CI", "PAS" };
+        public static readonly string[] TiposDocumento = { "DNI", "CUIL", "LE", "LC", "CI", "PAS" };
+
+        /// <summary>
+        /// Formato del número por tipo: DNI, LE y LC son de 7 u 8 dígitos; el CUIL tiene
+        /// 11 dígitos con dígito verificador; la cédula, de 6 a 12 dígitos; el pasaporte
+        /// combina letras y números (el argentino es AAA123456).
+        /// </summary>
+        private static readonly Dictionary<string, ReglaDocumento_60MN> ReglasDocumento = new[]
+        {
+            new ReglaDocumento_60MN("DNI", 7, 8, false, false, "7 u 8 dígitos, sin puntos"),
+            new ReglaDocumento_60MN("CUIL", 11, 11, false, true, "11 dígitos, con o sin guiones (20-30111222-0)"),
+            new ReglaDocumento_60MN("LE", 7, 8, false, false, "7 u 8 dígitos"),
+            new ReglaDocumento_60MN("LC", 7, 8, false, false, "7 u 8 dígitos"),
+            new ReglaDocumento_60MN("CI", 6, 12, false, false, "6 a 12 dígitos"),
+            new ReglaDocumento_60MN("PAS", 6, 12, true, false, "6 a 12 letras y números (ej. AAA123456)")
+        }.ToDictionary(r => r.Tipo);
+
+        public static ReglaDocumento_60MN ReglaDocumento(string tipo) =>
+            ReglasDocumento.TryGetValue((tipo ?? string.Empty).Trim().ToUpperInvariant(), out ReglaDocumento_60MN? regla)
+                ? regla : ReglasDocumento["DNI"];
+
+        // Largos máximos de los datos del cliente (la GUI los usa como MaxLength). Son
+        // menores o iguales que las columnas de la tabla Cliente.
+        public const int LargoNombre = 40;
+        public const int LargoApellido = 40;
+        public const int LargoDireccion = 60;
+        public const int LargoTelefono = 20;
+        public const int LargoMinimoTelefono = 6;
+        public const int LargoEmail = 150;
 
         private readonly ClienteDAL_60MN mapper = new ClienteDAL_60MN();
         private readonly GestorDigitoVerificador_60MN dv = new GestorDigitoVerificador_60MN();
@@ -127,6 +193,24 @@ namespace BLL_60MN
         // CUN04 - Gestionar Mascota
         // =====================================================================
 
+        /// <summary>
+        /// Búsqueda de mascotas con su dueño: la usan el selector de paciente (PACIENTES >
+        /// Historias clínicas / Registrar atención) y la gestión de mascotas. El documento se
+        /// acepta con puntos o guiones, como en el alta del cliente.
+        /// </summary>
+        public List<Mascota_60MN> BuscarMascotas(CriterioBusquedaMascota_60MN criterio, string valor, bool incluirBajas)
+        {
+            SesionActual_60MN.RequiereAlgunPermiso(CodigosPatente_60MN.ClienteConsultar, CodigosPatente_60MN.Mascota);
+            valor = criterio == CriterioBusquedaMascota_60MN.Documento ? SinSeparadores(valor) : (valor ?? string.Empty).Trim();
+            if (valor.Length == 0)
+                throw new NegocioException_60MN("Ingrese el valor a buscar.");
+
+            List<Mascota_60MN> mascotas = mapper.BuscarMascotas(criterio, valor, incluirBajas);
+            bitacora.Registrar(EventoSistema_60MN.ClientesConsultados,
+                $"Búsqueda de mascotas por {criterio}: \"{valor}\" ({mascotas.Count} resultado(s)).");
+            return mascotas;
+        }
+
         /// <summary>Flujo 5.1: la GUI lo consulta para pedir confirmación si el nombre ya existe para ese cliente.</summary>
         public bool ExisteMascotaConNombre(int clienteId, string nombre, int excluirId = 0) =>
             mapper.ExisteMascotaConNombre(clienteId, (nombre ?? string.Empty).Trim(), excluirId);
@@ -198,39 +282,117 @@ namespace BLL_60MN
         private static void Normalizar(Cliente_60MN c)
         {
             c.TipoDocumento = (c.TipoDocumento ?? string.Empty).Trim().ToUpperInvariant();
-            // El documento se acepta con puntos o espacios ("30.111.222") y se guarda solo con sus caracteres.
-            c.NroDocumento = new string((c.NroDocumento ?? string.Empty).Where(ch => ch != '.' && !char.IsWhiteSpace(ch)).ToArray()).ToUpperInvariant();
+            // Documento y teléfono se guardan solo con sus dígitos: se quitan los separadores
+            // habituales ("30.111.222", "11 4244-1020"); cualquier otro carácter queda y se rechaza.
+            c.NroDocumento = SinSeparadores(c.NroDocumento).ToUpperInvariant();
             c.Nombre = Validaciones_60MN.Normalizar(c.Nombre);
             c.Apellido = Validaciones_60MN.Normalizar(c.Apellido);
             c.Direccion = Validaciones_60MN.Normalizar(c.Direccion);
-            c.Telefono = Validaciones_60MN.Normalizar(c.Telefono);
+            c.Telefono = SinSeparadores(c.Telefono);
             c.Email = string.IsNullOrWhiteSpace(c.Email) ? null : c.Email!.Trim();
+        }
+
+        private static string SinSeparadores(string? valor) => Validaciones_60MN.SinSeparadores(valor);
+
+        /// <summary>
+        /// CUN01 5.2 / CUN02 5.2: valida los datos del cliente sin guardarlos y devuelve los
+        /// errores por campo (vacío si todo es correcto). La GUI lo usa para marcar cada
+        /// campo al salir de él; Registrar y Modificar aplican las mismas reglas.
+        /// </summary>
+        public IReadOnlyDictionary<string, string> ValidarDatos(Cliente_60MN cliente, bool esAlta)
+        {
+            Cliente_60MN copia = new Cliente_60MN
+            {
+                TipoDocumento = cliente.TipoDocumento, NroDocumento = cliente.NroDocumento, Nombre = cliente.Nombre,
+                Apellido = cliente.Apellido, Direccion = cliente.Direccion, Telefono = cliente.Telefono, Email = cliente.Email
+            };
+            Normalizar(copia);
+            return ErroresCliente(copia, esAlta);
         }
 
         private static void ValidarCliente(Cliente_60MN c, bool esAlta)
         {
-            // CUN01 5.2 / CUN02 5.2: campos obligatorios.
-            if (c.Nombre.Length == 0 || c.Apellido.Length == 0 || c.Direccion.Length == 0 || c.Telefono.Length == 0 ||
-                (esAlta && c.NroDocumento.Length == 0))
-                throw new NegocioException_60MN("Complete todos los campos obligatorios.");
-            if (!TiposDocumento.Contains(c.TipoDocumento))
-                throw new NegocioException_60MN("El tipo de documento no es válido.");
-            if (c.TipoDocumento == "PAS"
-                    ? !c.NroDocumento.All(char.IsLetterOrDigit) || c.NroDocumento.Length < 6 || c.NroDocumento.Length > 15
-                    : !c.NroDocumento.All(char.IsDigit) || c.NroDocumento.Length < 7 || c.NroDocumento.Length > 8)
-                throw new NegocioException_60MN("El número de documento no es válido (7 u 8 dígitos; pasaporte: 6 a 15 letras o números).");
-
-            Validaciones_60MN.Largo(c.Nombre, 80, "El nombre");
-            Validaciones_60MN.Largo(c.Apellido, 80, "El apellido");
-            Validaciones_60MN.Largo(c.Direccion, 150, "La dirección");
-            Validaciones_60MN.Largo(c.Telefono, 30, "El teléfono");
-            Validaciones_60MN.Largo(c.Email, 150, "El mail");
-            Validaciones_60MN.NombrePropio(c.Nombre, "El nombre");
-            Validaciones_60MN.NombrePropio(c.Apellido, "El apellido");
-            Validaciones_60MN.Telefono(c.Telefono, "El teléfono");
-            if (c.Email != null && !Validaciones_60MN.EsEmailValido(c.Email))
-                throw new NegocioException_60MN("El formato del mail es inválido (ejemplo: nombre@dominio.com).");
+            Dictionary<string, string> errores = ErroresCliente(c, esAlta);
+            if (errores.Count > 0)
+                throw new DatosClienteInvalidosException_60MN(errores);
         }
+
+        private static Dictionary<string, string> ErroresCliente(Cliente_60MN c, bool esAlta)
+        {
+            Dictionary<string, string> errores = new Dictionary<string, string>();
+            void Revisar(string campo, string valor, bool obligatorio, Action regla)
+            {
+                if (valor.Length == 0)
+                {
+                    if (obligatorio) errores[campo] = "Campo obligatorio.";
+                    return;
+                }
+                try { regla(); }
+                catch (NegocioException_60MN ex) { errores[campo] = ex.Message; }
+            }
+
+            if (!TiposDocumento.Contains(c.TipoDocumento))
+                errores[nameof(Cliente_60MN.TipoDocumento)] = "El tipo de documento no es válido.";
+
+            // En una modificación el documento no se edita (CUN02 5.1) y no se vuelve a validar.
+            if (esAlta)
+                Revisar(nameof(Cliente_60MN.NroDocumento), c.NroDocumento, true, () => ValidarNroDocumento(c.TipoDocumento, c.NroDocumento));
+
+            Revisar(nameof(Cliente_60MN.Nombre), c.Nombre, true, () =>
+            {
+                Validaciones_60MN.Largo(c.Nombre, LargoNombre, "El nombre");
+                Validaciones_60MN.NombrePropio(c.Nombre, "El nombre");
+            });
+            Revisar(nameof(Cliente_60MN.Apellido), c.Apellido, true, () =>
+            {
+                Validaciones_60MN.Largo(c.Apellido, LargoApellido, "El apellido");
+                Validaciones_60MN.NombrePropio(c.Apellido, "El apellido");
+            });
+            Revisar(nameof(Cliente_60MN.Direccion), c.Direccion, true, () =>
+            {
+                Validaciones_60MN.Largo(c.Direccion, LargoDireccion, "La dirección");
+                Validaciones_60MN.Direccion(c.Direccion, "La dirección");
+            });
+            Revisar(nameof(Cliente_60MN.Telefono), c.Telefono, true, () =>
+                Validaciones_60MN.TelefonoDigitos(c.Telefono, LargoMinimoTelefono, LargoTelefono, "El teléfono"));
+            Revisar(nameof(Cliente_60MN.Email), c.Email ?? string.Empty, false, () =>
+            {
+                Validaciones_60MN.Largo(c.Email, LargoEmail, "El mail");
+                if (!Validaciones_60MN.EsEmailValido(c.Email))
+                    throw new NegocioException_60MN("El formato del mail es inválido (ejemplo: nombre@dominio.com).");
+            });
+            return errores;
+        }
+
+        /// <summary>Número de documento según su tipo (ver ReglasDocumento); el CUIL además verifica su último dígito.</summary>
+        private static void ValidarNroDocumento(string tipo, string numero)
+        {
+            ReglaDocumento_60MN regla = ReglaDocumento(tipo);
+            string nombre = tipo == "PAS" ? "El pasaporte" : tipo == "CUIL" ? "El CUIL" : $"El {tipo}";
+            if (regla.AdmiteLetras)
+            {
+                if (!numero.All(ch => (ch >= 'A' && ch <= 'Z') || char.IsDigit(ch)))
+                    throw new NegocioException_60MN($"{nombre} solo puede contener letras (sin ñ ni acentos) y números.");
+                if (!numero.Any(char.IsDigit))
+                    throw new NegocioException_60MN($"{nombre} debe incluir números.");
+            }
+            else if (!numero.All(char.IsDigit))
+                throw new NegocioException_60MN($"{nombre} solo puede contener números.");
+
+            if (numero.Length < regla.LargoMinimo || numero.Length > regla.LargoMaximo)
+                throw new NegocioException_60MN($"{nombre} no tiene un largo válido: {regla.Ayuda}.");
+
+            if (tipo == "CUIL")
+            {
+                if (!PrefijosCuil.Contains(numero.Substring(0, 2)))
+                    throw new NegocioException_60MN("El CUIL debe empezar con 20, 23, 24 o 27.");
+                if (!Validaciones_60MN.CuitConDigitoValido(numero))
+                    throw new NegocioException_60MN("El CUIL no es válido: el dígito verificador (el último) no corresponde.");
+            }
+        }
+
+        /// <summary>Prefijos del CUIL de personas: 20 varón, 27 mujer, 23 y 24 los asigna ANSES cuando el número se repite.</summary>
+        private static readonly string[] PrefijosCuil = { "20", "23", "24", "27" };
 
         private static void NormalizarMascota(Mascota_60MN m)
         {

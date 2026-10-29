@@ -4,51 +4,76 @@
 Plataforma: **.NET Framework 4.8** (WinForms, C# con `LangVersion latest`), proyectos con formato SDK. Se abre con
 Visual Studio 2022 o se compila con `dotnet build VetCare.sln`.
 
+**Instalación nueva**
 1. Ejecutar `BDScript/VetCareBD_60MN.sql` en SQL Server (SSMS o `sqlcmd -S .\SQLEXPRESS01 -E -C -f 65001 -i BDScript\VetCareBD_60MN.sql`).
-   **Borra y recrea** `VetCareBD_60MN`.
+   **Borra y recrea** `VetCareBD_60MN` con el esquema V2.4 y los datos de prueba (con sus DVH y DVV).
 2. Ajustar `conexionBD` en `VetCare/App.config` si la instancia es otra.
 3. Ejecutar el proyecto `VetCare`.
+
+**Base existente (sin borrarla)** – hacer antes un backup:
+1. `BDScript/Migracion_IdiomaPorUsuario_60MN.sql` (si la base es anterior a esa migración).
+2. `BDScript/Migracion_V24_60MN.sql`: proveedores completos, ventas (pasa `AtencionDetalle` a `VentaEncabezado`/`VentaDetalle`
+   y la elimina), quita las patentes de facturación, ajusta las familias y agrega las traducciones. Se puede correr más de una vez.
+3. Ingresar como `admin` (o como `emergencia` si la integridad bloquea a todos los administradores) y usar
+   **ADMIN > Dígitos verificadores > Recalcular**: las tablas nuevas o modificadas quedan sin DVH hasta recalcular.
 
 | Usuario | Contraseña | Permisos |
 |---|---|---|
 | admin | Admin1234 | Familia Administrador (acceso total, incluye todas las familias) |
-| operario | Operario1234 | Familia Operario de stock (CUN11, CUN12, CUN14, CUN15) + patente individual `STK_CONFIG` (CUN13) |
-| vendedor | Vendedor1234 | Familia Vendedor: clientes y mascotas (CUN01–CUN04) y carrito de medicación (CUN09) |
-| veterinario | Veterinario1234 | Familia Veterinario: consulta de clientes, historia clínica, atención, carrito e informe (CUN05–CUN10) |
+| operario | Operario1234 | Familia Operario de stock (CUN08, CUN09, CUN11, CUN12) + patente individual `STK_CONFIG` (CUN10) |
+| vendedor | Vendedor1234 | Familia Vendedor: clientes (CUN01), mascotas (CUN02), carrito y ventas registradas (CUN05) |
+| veterinario | Veterinario1234 | Familia Veterinario: consulta de clientes, CUN03 a CUN07 y reporte inteligente (CUN13) |
 | emergencia | Emergencia1234 | Solo en `UsuarioEmergencia_60MN.xml`, no en la base |
 
-## Deshabilitado por ahora: Gestión de Stock y Bitácora de cambios
-Por ahora solo funcionan Gestión de Pacientes y Seguridad. Nada se borró; para reactivar:
-1. `VetCare/VetCare.csproj`: quitar el `ItemGroup` marcado "DESHABILITADO POR AHORA" (saca de la compilación `Stock/**`,
-   `FrmBitacoraCambios_60MN` y `FrmCompararVersiones_60MN`).
-2. `VetCare/FrmMenuPrincipal_60MN.cs`: vaciar `OpcionesDeshabilitadas` y descomentar los `Abrir<...>()` de
-   `mnuProductos`, `mnuMovimientosStock`, `mnuConfiguracionStock`, `mnuReporte1` y `mnuBitacoraCambios`.
-3. `Herramientas_60MN/GeneradorScriptBD_60MN/Estructura.sql`: quitar el `DISABLE TRIGGER TR_Productos_BitacoraCambios`
-   y regenerar el script.
+El detalle de perfiles, patentes y menú de cada usuario está en `Usuarios_y_Permisos_VetCare_60MN.md` (raíz del repositorio).
 
-La BLL/DAL de productos y movimientos sigue compilando porque el Carrito de medicación (CUN09) la usa: cada entrega
-descuenta stock y genera su egreso. Las patentes y familias de stock siguen en la base sin cambios (Seguridad intacta);
-el usuario `operario` por ahora solo ve USUARIO y AYUDA.
+## Estado
+Implementados los casos de uso del Trabajo de Diploma **V2.4**: los dos procesos de negocio, la seguridad, la bitácora de
+cambios y la ayuda en línea (F1). **El sistema no factura**: el carrito registra ventas, sin comprobantes ni despacho.
 
-## Casos de uso implementados (Trabajo de Diploma V2.1)
-- Seguridad: CUS01–CUS13 (usuarios, perfiles, login/logout, bitácoras, idioma, **CUS12 Gestión de Backup** y dígitos verificadores).
-- Gestión de Pacientes (MAESTROS > Clientes y pacientes, VENTAS > Carrito): CUN01 Registrar Cliente, CUN02 Modificar Cliente,
-  CUN03 Consultar Cliente, CUN04 Gestionar Mascota, CUN05 Crear Historia Clínica, CUN06 Consultar Historia Clínica,
-  CUN07 Actualizar Historia Clínica, CUN08 Registrar Atención, CUN09 Registrar Medicación en Carrito, CUN10 Emitir Informe de Atención.
-- Gestión de Stock (MAESTROS, REPORTES): CUN11 Registrar Producto, CUN12 Modificar Producto, CUN13 Configurar Margen y Alerta
-  de Stock Mínimo, CUN14 Registrar Movimiento de Stock, CUN15 Generar Reporte de Existencias.
-- Fuera del alcance (quedan en el menú como "en desarrollo"): Proveedores, Facturar, Despachar, Compras, Reporte 2 y 3, Ayuda en línea.
+El trigger `TR_Productos_BitacoraCambios` está activo: guarda las versiones de cada producto en `Productos_C`
+(postcondición de CUN08 y CUN09). Solo tienen historial los productos creados o modificados desde que el trigger está activo.
+
+Validaciones en la BLL con error por campo (la pantalla filtra lo que se tipea y marca el campo):
+- Cliente: documento según su tipo (DNI/LE/LC 7–8 dígitos, CUIL con dígito verificador, CI, pasaporte), nombre, apellido,
+  dirección, teléfono (solo dígitos) y mail.
+- Proveedor: CUIT de 11 dígitos con dígito verificador, único y no modificable; razón social, teléfono y dirección obligatorios.
+- Producto: nombre (letras, números y `. , - / % ( ) + '`, hasta 80), lote (A–Z, números, `-` y `/`, hasta 20); motivo de
+  movimiento (texto con palabras, hasta 150).
+
+Manual de usuario de los dos procesos: https://claude.ai/artifact/4M31Q78g2iPzFQyTQN1LbH
+
+## Casos de uso implementados (Trabajo de Diploma V2.4)
+- Seguridad: CUS01–CUS13 (usuarios, perfiles, login/logout, bitácoras, idioma, CUS12 Gestión de Backup y dígitos verificadores).
+
+| PN1 – Gestión de Pacientes | PN2 – Gestión de Stock |
+|---|---|
+| CUN01 Gestionar Clientes | CUN08 Administrar Existencias |
+| CUN02 Gestionar Mascotas | CUN09 Registrar Movimiento de Stock |
+| CUN03 Gestionar Historias Clínicas | CUN10 Configurar Margen y Alerta de Stock Mínimo |
+| CUN04 Registrar Atención | CUN11 Gestionar Proveedores |
+| CUN05 Registrar Medicación en Carrito | CUN12 Generar Reporte de Existencias |
+| CUN06 Emitir Informe de Atención | CUN13 Generar Reporte Inteligente (cruza PN1 y PN2) |
+| CUN07 Generar Reporte de Atenciones | |
 
 | Pantalla | Casos de uso |
 |---|---|
-| `Pacientes/FrmClientes_60MN` | CUN03 (búsqueda y ficha), acceso a CUN01, CUN02, CUN04, CUN05/06, CUN08 |
-| `Pacientes/FrmCliente_60MN`, `FrmMascotas_60MN` | CUN01, CUN02, CUN04 |
-| `Pacientes/FrmHistoriaClinica_60MN` | CUN05 (alta), CUN06 (consulta e impresión), CUN07 (modificación con historial en `HistoriaClinica_H`) |
-| `Pacientes/FrmAtencion_60MN` | CUN08 (y desde ahí «extend» CUN09 y CUN10) |
-| `Pacientes/FrmCarrito_60MN` | CUN09 («include» CUN14: cada entrega genera un EGRESO de stock) |
-| `Pacientes/FrmInformeAtencion_60MN` | CUN10 (impresora o PDF con "Microsoft Print to PDF"; reimpresiones en bitácora) |
-| `Stock/FrmConfiguracionStock_60MN` | CUN13 |
-| `Stock/FrmReporteExistencias_60MN` | CUN15 (impresión/PDF y exportación CSV) |
+| `Pacientes/FrmClientes_60MN`, `FrmCliente_60MN` | CUN01 (búsqueda, ficha, alta, modificación, baja); desde la ficha, mascotas, historia clínica y atención |
+| `Pacientes/FrmGestionMascotas_60MN`, `FrmMascotas_60MN`, `FrmBuscarCliente_60MN` | CUN02 (para añadir se elige primero el cliente) |
+| `Pacientes/FrmBuscarPaciente_60MN` | Selector de paciente de PACIENTES > Historias clínicas y Registrar atención |
+| `Pacientes/FrmHistoriaClinica_60MN` | CUN03 (alta, consulta e impresión, actualización con historial en `HistoriaClinica_H`) |
+| `Pacientes/FrmAtencion_60MN` | CUN04: motivo y diagnóstico obligatorios, indicaciones opcionales; desde ahí «extend» CUN05 y CUN06 |
+| `Pacientes/FrmCarrito_60MN` | CUN05: carrito en memoria (`Carrito_60MN`); al confirmar, venta + egreso de stock por ítem («include» CUN09) en una transacción. Desde la atención o desde VENTAS > Carrito eligiendo cliente, con o sin atención |
+| `Pacientes/FrmVentas_60MN` | VENTAS > Ventas registradas: consulta por período y cliente, con el detalle (solo consulta) |
+| `Pacientes/FrmInformeAtencion_60MN` | CUN06 (impresora o PDF con "Microsoft Print to PDF"; la medicación sale de la venta de la atención) |
+| `Reportes/FrmReporteAtenciones_60MN` | CUN07 (filtros por veterinario y especie, totales por profesional, impresión/PDF y CSV) |
+| `Stock/FrmProductos_60MN`, `FrmProducto_60MN` | CUN08 (precio sugerido por margen, lote duplicado → ingreso, stock bloqueado: se ajusta con CUN09) |
+| `Stock/FrmMovimientoStock_60MN` | CUN09 (ingreso, egreso, ajuste, baja por vencimiento, alerta de reposición) |
+| `Stock/FrmConfiguracionStock_60MN` | CUN10 |
+| `Stock/FrmProveedores_60MN`, `FrmProveedor_60MN` | CUN11 (productos que provee, baja lógica con aviso si tiene productos activos) |
+| `Stock/FrmReporteExistencias_60MN` | CUN12 (impresión/PDF y exportación CSV) |
+| `Reportes/FrmReporteInteligente_60MN` | CUN13 |
+| `Utilidades/FrmAyuda_60MN` | Ayuda en línea (F1 en cualquier pantalla o AYUDA > Ayuda en línea; temas en `TemasAyuda_60MN`) |
 | `Seguridad/FrmBackupRestore_60MN` | CUS12 |
 
 ## Bitácora de eventos: exportar / importar XML (serialización)
@@ -86,7 +111,8 @@ ADMIN > Backup o ADMIN > Restore abren `FrmBackupRestore_60MN`; cada sección se
   Clave: `VETCARE_CLAVE_CRIPTO` del App.config.
 - **Dígitos verificadores**: DVH por fila y DVV por tabla con HMAC-SHA256 (`VETCARE_CLAVE_DV`) –
   `Seguridad_60MN/Integridad`. Tablas: Usuario, Patente, Familia, FamiliaPatente, FamiliaFamilia, UsuarioFamilia, UsuarioPatente,
-  Bitacora, Productos, MovimientoStock, Cliente, Mascota, HistoriaClinica, Atencion, AtencionDetalle.
+  Bitacora, Productos, MovimientoStock, Cliente, Mascota, HistoriaClinica, Atencion, Proveedor, VentaEncabezado y VentaDetalle
+  (registradas en `TablaDV_60MN`; `AtencionDetalle` se reemplazó por las tablas de venta en V2.4).
   Se verifican al iniciar sesión: si hay inconsistencias solo ingresan usuarios con la patente `SEG_INTEGRIDAD`.
   Un registro de usuario alterado no puede iniciar sesión.
 - **Permisos**: modelo Usuario - Familia - Patente con patrón Composite (ver sección "Modelo de permisos").
@@ -116,12 +142,28 @@ ADMIN > Backup o ADMIN > Restore abren `FrmBackupRestore_60MN`; cada sección se
   familias; ningún cambio puede dejar al sistema sin un administrador operativo (se simula antes de guardar).
 
 ## Menú principal
-Horizontal: ADMIN, MAESTROS, USUARIO, VENTAS, COMPRAS, REPORTES, AYUDA (`FrmMenuPrincipal_60MN`, armado en el diseñador).
-Cada ítem tiene en `Tag` la(s) patente(s) que lo habilitan; un menú sin ítems visibles se oculta.
-Las opciones fuera del alcance (Proveedores, Facturar, Despachar, Compras, Reporte 2 y 3) tienen patente propia
-(`MAE_PROVEEDORES`, `VEN_FACTURAR`, ...) y muestran "en desarrollo". El Administrador tiene todas porque su familia incluye
-a las demás (Gestión de Usuarios, Auditoría, Operario de stock, Vendedor y Veterinario).
-USUARIO > Re-Login cierra la sesión y vuelve al Login; USUARIO > Logout cierra la sesión y sale de la aplicación.
+Horizontal (`FrmMenuPrincipal_60MN`, armado en el diseñador). Cada ítem tiene en `Tag` la(s) patente(s) que lo
+habilitan; un menú sin ítems visibles se oculta.
+
+| Menú | Ítems (Tag = patentes) |
+|---|---|
+| ADMIN | Usuarios, Perfiles, Backup, Restore, Bitácora de eventos, Bitácora de cambios (`SEG_BITACORA_CAMBIOS`), Dígitos verificadores, Configuración de stock (`STK_CONFIG`) |
+| MAESTROS | Clientes (`PAC_CLIENTE_CONSULTA\|PAC_CLIENTE_ALTA\|PAC_CLIENTE_MODIF`), Mascotas (`PAC_MASCOTA`), Productos (`STK_PROD_ALTA\|STK_PROD_MODIF`), Proveedores (`MAE_PROVEEDORES`) |
+| PACIENTES | Historias clínicas (`HC_CONSULTA\|HC_ALTA\|HC_MODIF`), Registrar atención (`ATN_REGISTRAR`): ambos abren primero el selector de paciente |
+| VENTAS | Carrito, Ventas registradas (`VEN_CARRITO`) |
+| STOCK | Movimientos de stock (`STK_MOVIMIENTO`) |
+| REPORTES | Reporte de atenciones (`REP_REPORTES`), Reporte de existencias (`STK_REPORTE`), Reporte inteligente (`REP_REPORTES`) |
+| USUARIO | Re-Login, Cambiar clave, Logout, Cambiar idioma (sin patente) |
+| AYUDA | Ayuda en línea (F1), Acerca de VetCare |
+
+El Administrador ve todo porque su familia incluye a las demás (Gestión de Usuarios, Auditoría, Operario de stock,
+Vendedor y Veterinario). USUARIO > Re-Login cierra la sesión y vuelve al Login; USUARIO > Logout cierra la sesión y sale.
+
+## Ayuda en línea (F1)
+`FormBase_60MN.ProcessCmdKey` atrapa F1 en cualquier pantalla y abre `FrmAyuda_60MN` con el tema de la ventana activa
+(en el menú principal, el de la ventana hija activa); AYUDA > Ayuda en línea hace lo mismo. Los temas (uno por caso de uso
+y por pantalla de seguridad) están en `Utilidades/TemasAyuda_60MN.cs`: el español es el texto base y el inglés está en
+`Traduccion` (claves `ayuda.<tema>.titulo` y `ayuda.<tema>.texto`, hasta 400 caracteres).
 
 ## Multi-idioma (patrón Observer)
 | Pieza | Dónde | Rol |

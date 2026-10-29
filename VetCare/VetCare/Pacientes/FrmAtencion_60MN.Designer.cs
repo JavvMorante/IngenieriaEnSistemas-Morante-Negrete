@@ -43,6 +43,8 @@ namespace VetCare
             txtMotivo = new TextBox();
             lblDiagnostico = new Label();
             txtDiagnostico = new TextBox();
+            lblIndicaciones = new Label();
+            txtIndicaciones = new TextBox();
             btnRegistrar = new Button();
             btnMedicacion = new Button();
             btnInforme = new Button();
@@ -185,26 +187,45 @@ namespace VetCare
             lblDiagnostico.AutoSize = true;
             lblDiagnostico.Location = new Point(20, 292);
             lblDiagnostico.Name = "lblDiagnostico";
-            lblDiagnostico.Size = new Size(203, 20);
+            lblDiagnostico.Size = new Size(98, 20);
             lblDiagnostico.TabIndex = 7;
-            lblDiagnostico.Text = "Diagnóstico e indicaciones *";
+            lblDiagnostico.Text = "Diagnóstico *";
             //
             // txtDiagnostico
             //
             txtDiagnostico.Location = new Point(20, 316);
-            txtDiagnostico.MaxLength = 2000;
+            txtDiagnostico.MaxLength = 1000;
             txtDiagnostico.Multiline = true;
             txtDiagnostico.Name = "txtDiagnostico";
             txtDiagnostico.ScrollBars = ScrollBars.Vertical;
-            txtDiagnostico.Size = new Size(700, 110);
+            txtDiagnostico.Size = new Size(700, 80);
             txtDiagnostico.TabIndex = 8;
+            //
+            // lblIndicaciones
+            //
+            lblIndicaciones.AutoSize = true;
+            lblIndicaciones.Location = new Point(20, 406);
+            lblIndicaciones.Name = "lblIndicaciones";
+            lblIndicaciones.Size = new Size(420, 20);
+            lblIndicaciones.TabIndex = 13;
+            lblIndicaciones.Text = "Indicaciones / tratamiento (opcional: qué comprar, dosis, frecuencia)";
+            //
+            // txtIndicaciones
+            //
+            txtIndicaciones.Location = new Point(20, 430);
+            txtIndicaciones.MaxLength = 1000;
+            txtIndicaciones.Multiline = true;
+            txtIndicaciones.Name = "txtIndicaciones";
+            txtIndicaciones.ScrollBars = ScrollBars.Vertical;
+            txtIndicaciones.Size = new Size(700, 80);
+            txtIndicaciones.TabIndex = 9;
             //
             // btnRegistrar
             //
-            btnRegistrar.Location = new Point(20, 442);
+            btnRegistrar.Location = new Point(20, 526);
             btnRegistrar.Name = "btnRegistrar";
             btnRegistrar.Size = new Size(160, 36);
-            btnRegistrar.TabIndex = 9;
+            btnRegistrar.TabIndex = 10;
             btnRegistrar.Tag = "ATN_REGISTRAR";
             btnRegistrar.Text = "Registrar atención";
             btnRegistrar.UseVisualStyleBackColor = true;
@@ -213,10 +234,10 @@ namespace VetCare
             // btnMedicacion
             //
             btnMedicacion.Enabled = false;
-            btnMedicacion.Location = new Point(190, 442);
+            btnMedicacion.Location = new Point(190, 526);
             btnMedicacion.Name = "btnMedicacion";
             btnMedicacion.Size = new Size(180, 36);
-            btnMedicacion.TabIndex = 10;
+            btnMedicacion.TabIndex = 11;
             btnMedicacion.Tag = "VEN_CARRITO";
             btnMedicacion.Text = "Agregar medicación";
             btnMedicacion.UseVisualStyleBackColor = true;
@@ -225,10 +246,10 @@ namespace VetCare
             // btnInforme
             //
             btnInforme.Enabled = false;
-            btnInforme.Location = new Point(380, 442);
+            btnInforme.Location = new Point(380, 526);
             btnInforme.Name = "btnInforme";
             btnInforme.Size = new Size(180, 36);
-            btnInforme.TabIndex = 11;
+            btnInforme.TabIndex = 12;
             btnInforme.Tag = "ATN_INFORME";
             btnInforme.Text = "Emitir informe";
             btnInforme.UseVisualStyleBackColor = true;
@@ -237,10 +258,10 @@ namespace VetCare
             // btnCerrar
             //
             btnCerrar.DialogResult = DialogResult.Cancel;
-            btnCerrar.Location = new Point(610, 442);
+            btnCerrar.Location = new Point(610, 526);
             btnCerrar.Name = "btnCerrar";
             btnCerrar.Size = new Size(110, 36);
-            btnCerrar.TabIndex = 12;
+            btnCerrar.TabIndex = 13;
             btnCerrar.Text = "Cerrar";
             btnCerrar.UseVisualStyleBackColor = true;
             //
@@ -249,11 +270,13 @@ namespace VetCare
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCerrar;
-            ClientSize = new Size(740, 494);
+            ClientSize = new Size(740, 578);
             Controls.Add(btnCerrar);
             Controls.Add(btnInforme);
             Controls.Add(btnMedicacion);
             Controls.Add(btnRegistrar);
+            Controls.Add(txtIndicaciones);
+            Controls.Add(lblIndicaciones);
             Controls.Add(txtDiagnostico);
             Controls.Add(lblDiagnostico);
             Controls.Add(txtMotivo);
@@ -297,6 +320,8 @@ namespace VetCare
         private TextBox txtMotivo;
         private Label lblDiagnostico;
         private TextBox txtDiagnostico;
+        private Label lblIndicaciones;
+        private TextBox txtIndicaciones;
         private Button btnRegistrar;
         private Button btnMedicacion;
         private Button btnInforme;

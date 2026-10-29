@@ -49,7 +49,7 @@ namespace VetCare
                             dgvProductos.CurrentCell = fila.Cells[0];
 
                 int alertas = productoBLL.ContarAlertasActivas();
-                lblAlertas.Text = alertas > 0 ? $"⚠ {alertas} producto(s) con alerta de reposición (stock en o por debajo del mínimo)." : string.Empty;
+                lblAlertas.Text = alertas > 0 ? $"⚠ {alertas} producto(s) con alerta de reposición (stock en o debajo del mínimo)." : string.Empty;
             }
             catch (Exception ex)
             {

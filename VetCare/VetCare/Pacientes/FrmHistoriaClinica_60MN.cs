@@ -252,8 +252,10 @@ namespace VetCare
             sb.Append($"{a.FechaHora:dd/MM/yyyy HH:mm} · {a.Profesional}\n");
             sb.Append($"{T("msg.Peso", "Peso")} {a.Peso:0.##} kg · {T("msg.Temperatura", "Temp.")} {a.Temperatura:0.0} °C · " +
                       $"{T("msg.FrecuenciaCardiaca", "FC")} {a.FrecuenciaCardiaca} lpm\n\n");
-            sb.Append($"{T("msg.Motivo", "Motivo")}: {a.Motivo}\n\n{T("msg.Diagnostico", "Diagnóstico")}: {a.Diagnostico}\n\n" +
-                      $"{T("msg.Medicacion", "Medicación")}:\n");
+            sb.Append($"{T("msg.Motivo", "Motivo")}: {a.Motivo}\n\n{T("msg.Diagnostico", "Diagnóstico")}: {a.Diagnostico}\n\n");
+            sb.Append($"{T("msg.Indicaciones", "Indicaciones")}: " +
+                      $"{(a.TieneIndicaciones ? a.Indicaciones : T("msg.SinIndicaciones", "(sin indicaciones)"))}\n\n");
+            sb.Append($"{T("msg.Medicacion", "Medicación")}:\n");
             if (a.Medicacion.Count == 0)
                 sb.Append($"  {T("msg.SinMedicacion", "(sin medicación)")}\n");
             foreach (ItemCarrito_60MN item in a.Medicacion)

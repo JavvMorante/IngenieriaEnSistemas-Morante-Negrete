@@ -39,21 +39,23 @@ HAVING SUM(-m.Cantidad) > 0
         }
 
         /// <summary>
-        /// Productos entregados en atenciones dentro del período (CUN09), ordenados por
-        /// cantidad descendente. Se consulta AtencionDetalle y no MovimientoStock porque
-        /// aquí interesa el consumo clínico real y no los ingresos ni los ajustes.
+        /// Productos entregados en atenciones dentro del período (CUN05), ordenados por
+        /// cantidad descendente. Se consultan las ventas con atención (AtencionID no nulo) y
+        /// no MovimientoStock porque aquí interesa el consumo clínico real y no los ingresos,
+        /// los ajustes ni las ventas sin atención.
         /// </summary>
         public List<ProductoEntregado_60MN> TopProductosEntregados(DateTime desde, DateTime hasta, int top)
         {
             const string sql = @"
 SELECT TOP (@top) p.ProductoID, p.Codigo, p.Nombre, c.Nombre AS Categoria,
-       SUM(d.Cantidad)                    AS Cantidad,
-       SUM(d.Cantidad * d.PrecioUnitario) AS Importe,
-       COUNT(DISTINCT d.AtencionID)       AS Atenciones
-  FROM AtencionDetalle d
-  JOIN Atencion  a ON a.AtencionID  = d.AtencionID
-  JOIN Productos p ON p.ProductoID  = d.ProductoID
-  JOIN Categoria c ON c.CategoriaID = p.CategoriaID
+       SUM(d.Cantidad)              AS Cantidad,
+       SUM(d.Subtotal)              AS Importe,
+       COUNT(DISTINCT v.AtencionID) AS Atenciones
+  FROM VentaDetalle d
+  JOIN VentaEncabezado v ON v.VentaID     = d.VentaID
+  JOIN Atencion        a ON a.AtencionID  = v.AtencionID
+  JOIN Productos       p ON p.ProductoID  = d.ProductoID
+  JOIN Categoria       c ON c.CategoriaID = p.CategoriaID
  WHERE a.FechaHora >= @desde
    AND a.FechaHora <  @hasta
  GROUP BY p.ProductoID, p.Codigo, p.Nombre, c.Nombre

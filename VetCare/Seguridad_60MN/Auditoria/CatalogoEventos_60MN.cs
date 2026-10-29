@@ -17,21 +17,35 @@ namespace Seguridad_60MN.Auditoria
         Backup
     }
 
-    /// <summary>Eventos tipificados que registra el caso de uso transversal Registrar Evento.</summary>
+    /// <summary>
+    /// Eventos tipificados que registra el caso de uso transversal Registrar Evento.
+    /// Se guardan por nombre: no cambiar los nombres existentes (las bitácoras exportadas a XML los referencian).
+    /// Numeración de casos de uso del Trabajo de Diploma V2.4.
+    /// </summary>
     public enum EventoSistema_60MN
     {
+        // Seguridad (CUS01 a CUS13)
         Login, LoginFallido, LoginEmergencia, Logout, UsuarioBloqueado, RegistroAlterado, AccesoDenegadoIntegridad,
         UsuarioCreado, UsuarioModificado, UsuarioBaja, UsuarioReactivado, UsuarioDesbloqueado, ClaveCambiada, ClaveBlanqueada, IdiomaCambiado,
         RolCreado, RolModificado, RolEliminado, PermisosUsuarioModificados,
         BitacoraEventosConsultada, BitacoraCambiosConsultada,
         BitacoraExportada, BitacoraImportada, BitacoraImportacionRechazada,
         IntegridadVerificada, IntegridadFallida, DigitosRecalculados,
+        // PN2 - Gestión de Stock: CUN08 Administrar Existencias, CUN09 Movimiento de Stock, CUN10 Configurar Margen
         ProductoCreado, ProductoModificado, ProductoBaja, ProductoVersionRestaurada, MovimientoStock, AlertaReposicion,
+        // CUN10, CUN12 Reporte de Existencias y CUN13 Reporte Inteligente
         ConfiguracionStockModificada, ReporteExistenciasGenerado, ReporteInteligenteGenerado,
+        // CUN11 Gestionar Proveedores
+        ProveedorRegistrado, ProveedorModificado, ProveedorBaja,
+        // PN1 - Gestión de Pacientes: CUN01 Gestionar Clientes y CUN02 Gestionar Mascotas
         ClienteRegistrado, ClienteModificado, ClienteBaja, ClienteReactivado, ClientesConsultados,
         MascotaRegistrada, MascotaModificada, MascotaBaja,
+        // CUN03 Gestionar Historias Clínicas
         HistoriaClinicaCreada, HistoriaClinicaConsultada, HistoriaClinicaModificada,
-        AtencionRegistrada, MedicacionEntregada, InformeAtencionEmitido,
+        // CUN04 Registrar Atención, CUN05 Medicación en Carrito (MedicacionEntregada: anterior a V2.4; hoy VentaRegistrada),
+        // CUN06 Emitir Informe de Atención y CUN07 Reporte de Atenciones
+        AtencionRegistrada, MedicacionEntregada, InformeAtencionEmitido, VentaRegistrada, VentasConsultadas, ReporteAtencionesGenerado,
+        // CUS12 Gestión de Backup
         BackupRealizado, RestoreIniciado, RestoreRealizado
     }
 
@@ -96,14 +110,21 @@ namespace Seguridad_60MN.Auditoria
             Agregar(ModuloSistema_60MN.Integridad, 1, EventoSistema_60MN.IntegridadFallida, EventoSistema_60MN.DigitosRecalculados);
             Agregar(ModuloSistema_60MN.Integridad, 4, EventoSistema_60MN.IntegridadVerificada);
 
+            // PN2: CUN08 Administrar Existencias, CUN09 Movimiento de Stock, CUN10 Configurar Margen y Alerta,
+            // CUN11 Gestionar Proveedores, CUN12 Reporte de Existencias y CUN13 Reporte Inteligente.
             Agregar(ModuloSistema_60MN.Stock, 3, EventoSistema_60MN.ProductoBaja, EventoSistema_60MN.ProductoVersionRestaurada,
                 EventoSistema_60MN.AlertaReposicion);
             Agregar(ModuloSistema_60MN.Stock, 4, EventoSistema_60MN.ProductoCreado, EventoSistema_60MN.ProductoModificado,
                 EventoSistema_60MN.MovimientoStock);
             Agregar(ModuloSistema_60MN.Stock, 3, EventoSistema_60MN.ConfiguracionStockModificada);
+            // CUN11 Gestionar Proveedores: la baja es más crítica porque deja de ofrecerse en el alta de productos.
+            Agregar(ModuloSistema_60MN.Stock, 4, EventoSistema_60MN.ProveedorRegistrado, EventoSistema_60MN.ProveedorModificado);
+            Agregar(ModuloSistema_60MN.Stock, 3, EventoSistema_60MN.ProveedorBaja);
             Agregar(ModuloSistema_60MN.Stock, 5, EventoSistema_60MN.ReporteExistenciasGenerado,
                 EventoSistema_60MN.ReporteInteligenteGenerado);
 
+            // PN1: CUN01 Clientes, CUN02 Mascotas, CUN03 Historias Clínicas, CUN04 Atención, CUN05 Carrito,
+            // CUN06 Informe de Atención y CUN07 Reporte de Atenciones.
             Agregar(ModuloSistema_60MN.Pacientes, 3, EventoSistema_60MN.ClienteBaja, EventoSistema_60MN.MascotaBaja,
                 EventoSistema_60MN.HistoriaClinicaModificada);
             Agregar(ModuloSistema_60MN.Pacientes, 4, EventoSistema_60MN.ClienteRegistrado, EventoSistema_60MN.ClienteModificado,
@@ -111,6 +132,11 @@ namespace Seguridad_60MN.Auditoria
                 EventoSistema_60MN.HistoriaClinicaCreada, EventoSistema_60MN.HistoriaClinicaConsultada,
                 EventoSistema_60MN.AtencionRegistrada, EventoSistema_60MN.MedicacionEntregada, EventoSistema_60MN.InformeAtencionEmitido);
             Agregar(ModuloSistema_60MN.Pacientes, 5, EventoSistema_60MN.ClientesConsultados);
+            // CUN05: la venta del carrito (con o sin atención). MedicacionEntregada queda para los
+            // eventos registrados antes de V2.4 (bitácoras exportadas a XML que se vuelvan a importar).
+            Agregar(ModuloSistema_60MN.Pacientes, 4, EventoSistema_60MN.VentaRegistrada);
+            // Consulta de ventas (CUN05) y CUN07 Reporte de Atenciones: informativos.
+            Agregar(ModuloSistema_60MN.Pacientes, 5, EventoSistema_60MN.VentasConsultadas, EventoSistema_60MN.ReporteAtencionesGenerado);
 
             Agregar(ModuloSistema_60MN.Backup, 1, EventoSistema_60MN.RestoreIniciado, EventoSistema_60MN.RestoreRealizado);
             Agregar(ModuloSistema_60MN.Backup, 2, EventoSistema_60MN.BackupRealizado);

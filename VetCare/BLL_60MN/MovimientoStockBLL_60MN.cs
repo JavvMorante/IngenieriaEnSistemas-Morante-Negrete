@@ -28,6 +28,27 @@ namespace BLL_60MN
         private readonly GestorDigitoVerificador_60MN dv = new GestorDigitoVerificador_60MN();
         private readonly BitacoraBLL_60MN bitacora = new BitacoraBLL_60MN();
 
+        /// <summary>Largo máximo del motivo (deja lugar al prefijo "Vencimiento del lote: " en la columna de 200).</summary>
+        public const int LargoMotivo = 150;
+
+        /// <summary>CUN14 paso 4: el motivo es obligatorio y descriptivo. Devuelve el error o null si es válido.</summary>
+        public static string? ErrorMotivo(string? motivo)
+        {
+            motivo = Validaciones_60MN.Normalizar(motivo);
+            if (motivo.Length == 0)
+                return "Debe indicar el motivo del movimiento.";
+            try
+            {
+                Validaciones_60MN.Largo(motivo, LargoMotivo, "El motivo");
+                Validaciones_60MN.TextoLibre(motivo, "El motivo");
+                return null;
+            }
+            catch (NegocioException_60MN ex)
+            {
+                return ex.Message;
+            }
+        }
+
         /// <param name="cantidad">Cantidad ingresada por el actor (siempre positiva).</param>
         /// <param name="restar">Solo para ajustes: true si el ajuste descuenta stock.</param>
         /// <param name="ajustePorVencimiento">Flujo 4.2: da de baja el lote completo y lo excluye de la venta.</param>
@@ -36,9 +57,10 @@ namespace BLL_60MN
         {
             SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.MovimientoStock);
 
-            motivo = (motivo ?? string.Empty).Trim();
-            if (motivo.Length == 0)
-                throw new NegocioException_60MN("Debe indicar el motivo del movimiento.");
+            string? errorMotivo = ErrorMotivo(motivo);
+            if (errorMotivo != null)
+                throw new NegocioException_60MN(errorMotivo);
+            motivo = Validaciones_60MN.Normalizar(motivo);
 
             Producto_60MN producto = productos.ObtenerPorId(productoId) ?? throw new NegocioException_60MN("El producto no existe.");
             if (!producto.Activo)

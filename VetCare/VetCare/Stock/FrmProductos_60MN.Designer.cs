@@ -254,12 +254,13 @@ namespace VetCare
             // lblAlertas
             //
             lblAlertas.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            lblAlertas.AutoSize = true;
+            lblAlertas.AutoSize = false;
             lblAlertas.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblAlertas.ForeColor = Color.Firebrick;
-            lblAlertas.Location = new Point(12, 516);
+            lblAlertas.Location = new Point(12, 506);
             lblAlertas.Name = "lblAlertas";
-            lblAlertas.Size = new Size(0, 20);
+            lblAlertas.Size = new Size(390, 42);
+            lblAlertas.TextAlign = ContentAlignment.MiddleLeft;
             lblAlertas.TabIndex = 8;
             //
             // btnNuevo

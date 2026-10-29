@@ -67,13 +67,14 @@ namespace VetCare
                     Temperatura = nudTemperatura.Value,
                     FrecuenciaCardiaca = (int)nudFrecuencia.Value,
                     Motivo = txtMotivo.Text,
-                    Diagnostico = txtDiagnostico.Text
+                    Diagnostico = txtDiagnostico.Text,
+                    Indicaciones = txtIndicaciones.Text
                 });
                 Mensajes_60MN.Informar($"Atención Nº {registrada.Id} registrada en la historia {historia.Numero}.");
 
                 // La atención ya no se edita: se habilitan medicación e informe.
                 grpSignos.Enabled = false;
-                txtMotivo.ReadOnly = txtDiagnostico.ReadOnly = true;
+                txtMotivo.ReadOnly = txtDiagnostico.ReadOnly = txtIndicaciones.ReadOnly = true;
                 btnRegistrar.Enabled = false;
                 btnMedicacion.Enabled = btnInforme.Enabled = true;
             }

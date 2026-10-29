@@ -28,345 +28,354 @@ namespace VetCare
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle estiloFecha = new DataGridViewCellStyle();
-            DataGridViewCellStyle estiloCriticidad = new DataGridViewCellStyle();
-            lblTitulo = new Label();
-            lblDesde = new Label();
-            dtpDesde = new DateTimePicker();
-            lblHasta = new Label();
-            dtpHasta = new DateTimePicker();
-            lblCriticidad = new Label();
-            cboCriticidad = new ComboBox();
-            lblModulo = new Label();
-            cboModulo = new ComboBox();
-            lblEvento = new Label();
-            cboEvento = new ComboBox();
-            lblUsuario = new Label();
-            cboUsuario = new ComboBox();
-            btnBuscar = new Button();
-            btnLimpiar = new Button();
-            btnExportarXml = new Button();
-            btnImportarXml = new Button();
-            btnVerXml = new Button();
-            dgvEventos = new DataGridView();
-            colFecha = new DataGridViewTextBoxColumn();
-            colUsuario = new DataGridViewTextBoxColumn();
-            colModulo = new DataGridViewTextBoxColumn();
-            colEvento = new DataGridViewTextBoxColumn();
-            colCriticidad = new DataGridViewTextBoxColumn();
-            colDescripcion = new DataGridViewTextBoxColumn();
-            lblDetalleUsuario = new Label();
-            lblResultados = new Label();
-            ((System.ComponentModel.ISupportInitialize)dgvEventos).BeginInit();
-            SuspendLayout();
-            //
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.lblDesde = new System.Windows.Forms.Label();
+            this.dtpDesde = new System.Windows.Forms.DateTimePicker();
+            this.lblHasta = new System.Windows.Forms.Label();
+            this.dtpHasta = new System.Windows.Forms.DateTimePicker();
+            this.lblCriticidad = new System.Windows.Forms.Label();
+            this.cboCriticidad = new System.Windows.Forms.ComboBox();
+            this.lblModulo = new System.Windows.Forms.Label();
+            this.cboModulo = new System.Windows.Forms.ComboBox();
+            this.lblEvento = new System.Windows.Forms.Label();
+            this.cboEvento = new System.Windows.Forms.ComboBox();
+            this.lblUsuario = new System.Windows.Forms.Label();
+            this.cboUsuario = new System.Windows.Forms.ComboBox();
+            this.btnBuscar = new System.Windows.Forms.Button();
+            this.btnLimpiar = new System.Windows.Forms.Button();
+            this.btnExportarXml = new System.Windows.Forms.Button();
+            this.btnImportarXml = new System.Windows.Forms.Button();
+            this.btnVerXml = new System.Windows.Forms.Button();
+            this.dgvEventos = new System.Windows.Forms.DataGridView();
+            this.colFecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colUsuario = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colModulo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colEvento = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCriticidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDescripcion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblDetalleUsuario = new System.Windows.Forms.Label();
+            this.lblResultados = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEventos)).BeginInit();
+            this.SuspendLayout();
+            // 
             // lblTitulo
-            //
-            lblTitulo.AutoSize = true;
-            lblTitulo.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            lblTitulo.Location = new Point(12, 12);
-            lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(191, 28);
-            lblTitulo.TabIndex = 0;
-            lblTitulo.Text = "Bitácora de eventos";
-            //
+            // 
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblTitulo.Location = new System.Drawing.Point(12, 12);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(200, 28);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "Bitácora de eventos";
+            // 
             // lblDesde
-            //
-            lblDesde.AutoSize = true;
-            lblDesde.Location = new Point(12, 56);
-            lblDesde.Name = "lblDesde";
-            lblDesde.Size = new Size(51, 20);
-            lblDesde.TabIndex = 1;
-            lblDesde.Text = "Desde";
-            //
+            // 
+            this.lblDesde.AutoSize = true;
+            this.lblDesde.Location = new System.Drawing.Point(12, 56);
+            this.lblDesde.Name = "lblDesde";
+            this.lblDesde.Size = new System.Drawing.Size(51, 20);
+            this.lblDesde.TabIndex = 1;
+            this.lblDesde.Text = "Desde";
+            // 
             // dtpDesde
-            //
-            dtpDesde.Checked = false;
-            dtpDesde.Format = DateTimePickerFormat.Short;
-            dtpDesde.Location = new Point(80, 52);
-            dtpDesde.Name = "dtpDesde";
-            dtpDesde.ShowCheckBox = true;
-            dtpDesde.Size = new Size(160, 27);
-            dtpDesde.TabIndex = 2;
-            //
+            // 
+            this.dtpDesde.Checked = false;
+            this.dtpDesde.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpDesde.Location = new System.Drawing.Point(80, 52);
+            this.dtpDesde.Name = "dtpDesde";
+            this.dtpDesde.ShowCheckBox = true;
+            this.dtpDesde.Size = new System.Drawing.Size(160, 27);
+            this.dtpDesde.TabIndex = 2;
+            // 
             // lblHasta
-            //
-            lblHasta.AutoSize = true;
-            lblHasta.Location = new Point(260, 56);
-            lblHasta.Name = "lblHasta";
-            lblHasta.Size = new Size(47, 20);
-            lblHasta.TabIndex = 3;
-            lblHasta.Text = "Hasta";
-            //
+            // 
+            this.lblHasta.AutoSize = true;
+            this.lblHasta.Location = new System.Drawing.Point(260, 56);
+            this.lblHasta.Name = "lblHasta";
+            this.lblHasta.Size = new System.Drawing.Size(47, 20);
+            this.lblHasta.TabIndex = 3;
+            this.lblHasta.Text = "Hasta";
+            // 
             // dtpHasta
-            //
-            dtpHasta.Checked = false;
-            dtpHasta.Format = DateTimePickerFormat.Short;
-            dtpHasta.Location = new Point(320, 52);
-            dtpHasta.Name = "dtpHasta";
-            dtpHasta.ShowCheckBox = true;
-            dtpHasta.Size = new Size(160, 27);
-            dtpHasta.TabIndex = 4;
-            //
+            // 
+            this.dtpHasta.Checked = false;
+            this.dtpHasta.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpHasta.Location = new System.Drawing.Point(320, 52);
+            this.dtpHasta.Name = "dtpHasta";
+            this.dtpHasta.ShowCheckBox = true;
+            this.dtpHasta.Size = new System.Drawing.Size(160, 27);
+            this.dtpHasta.TabIndex = 4;
+            // 
             // lblCriticidad
-            //
-            lblCriticidad.AutoSize = true;
-            lblCriticidad.Location = new Point(500, 56);
-            lblCriticidad.Name = "lblCriticidad";
-            lblCriticidad.Size = new Size(72, 20);
-            lblCriticidad.TabIndex = 5;
-            lblCriticidad.Text = "Criticidad";
-            //
+            // 
+            this.lblCriticidad.AutoSize = true;
+            this.lblCriticidad.Location = new System.Drawing.Point(500, 56);
+            this.lblCriticidad.Name = "lblCriticidad";
+            this.lblCriticidad.Size = new System.Drawing.Size(73, 20);
+            this.lblCriticidad.TabIndex = 5;
+            this.lblCriticidad.Text = "Criticidad";
+            // 
             // cboCriticidad
-            //
-            cboCriticidad.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboCriticidad.FormattingEnabled = true;
-            cboCriticidad.Location = new Point(580, 52);
-            cboCriticidad.Name = "cboCriticidad";
-            cboCriticidad.Size = new Size(200, 28);
-            cboCriticidad.TabIndex = 6;
-            //
+            // 
+            this.cboCriticidad.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboCriticidad.FormattingEnabled = true;
+            this.cboCriticidad.Location = new System.Drawing.Point(580, 52);
+            this.cboCriticidad.Name = "cboCriticidad";
+            this.cboCriticidad.Size = new System.Drawing.Size(200, 28);
+            this.cboCriticidad.TabIndex = 6;
+            // 
             // lblModulo
-            //
-            lblModulo.AutoSize = true;
-            lblModulo.Location = new Point(12, 96);
-            lblModulo.Name = "lblModulo";
-            lblModulo.Size = new Size(62, 20);
-            lblModulo.TabIndex = 7;
-            lblModulo.Text = "Módulo";
-            //
+            // 
+            this.lblModulo.AutoSize = true;
+            this.lblModulo.Location = new System.Drawing.Point(12, 96);
+            this.lblModulo.Name = "lblModulo";
+            this.lblModulo.Size = new System.Drawing.Size(61, 20);
+            this.lblModulo.TabIndex = 7;
+            this.lblModulo.Text = "Módulo";
+            // 
             // cboModulo
-            //
-            cboModulo.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboModulo.FormattingEnabled = true;
-            cboModulo.Location = new Point(80, 92);
-            cboModulo.Name = "cboModulo";
-            cboModulo.Size = new Size(160, 28);
-            cboModulo.TabIndex = 8;
-            cboModulo.SelectedIndexChanged += cboModulo_SelectedIndexChanged;
-            //
+            // 
+            this.cboModulo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboModulo.FormattingEnabled = true;
+            this.cboModulo.Location = new System.Drawing.Point(80, 92);
+            this.cboModulo.Name = "cboModulo";
+            this.cboModulo.Size = new System.Drawing.Size(160, 28);
+            this.cboModulo.TabIndex = 8;
+            // 
             // lblEvento
-            //
-            lblEvento.AutoSize = true;
-            lblEvento.Location = new Point(260, 96);
-            lblEvento.Name = "lblEvento";
-            lblEvento.Size = new Size(54, 20);
-            lblEvento.TabIndex = 9;
-            lblEvento.Text = "Evento";
-            //
+            // 
+            this.lblEvento.AutoSize = true;
+            this.lblEvento.Location = new System.Drawing.Point(260, 96);
+            this.lblEvento.Name = "lblEvento";
+            this.lblEvento.Size = new System.Drawing.Size(54, 20);
+            this.lblEvento.TabIndex = 9;
+            this.lblEvento.Text = "Evento";
+            // 
             // cboEvento
-            //
-            cboEvento.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboEvento.FormattingEnabled = true;
-            cboEvento.Location = new Point(320, 92);
-            cboEvento.Name = "cboEvento";
-            cboEvento.Size = new Size(160, 28);
-            cboEvento.TabIndex = 10;
-            //
+            // 
+            this.cboEvento.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboEvento.FormattingEnabled = true;
+            this.cboEvento.Location = new System.Drawing.Point(320, 92);
+            this.cboEvento.Name = "cboEvento";
+            this.cboEvento.Size = new System.Drawing.Size(160, 28);
+            this.cboEvento.TabIndex = 10;
+            // 
             // lblUsuario
-            //
-            lblUsuario.AutoSize = true;
-            lblUsuario.Location = new Point(500, 96);
-            lblUsuario.Name = "lblUsuario";
-            lblUsuario.Size = new Size(59, 20);
-            lblUsuario.TabIndex = 11;
-            lblUsuario.Text = "Usuario";
-            //
+            // 
+            this.lblUsuario.AutoSize = true;
+            this.lblUsuario.Location = new System.Drawing.Point(500, 96);
+            this.lblUsuario.Name = "lblUsuario";
+            this.lblUsuario.Size = new System.Drawing.Size(59, 20);
+            this.lblUsuario.TabIndex = 11;
+            this.lblUsuario.Text = "Usuario";
+            // 
             // cboUsuario
-            //
-            cboUsuario.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboUsuario.FormattingEnabled = true;
-            cboUsuario.Location = new Point(580, 92);
-            cboUsuario.Name = "cboUsuario";
-            cboUsuario.Size = new Size(200, 28);
-            cboUsuario.TabIndex = 12;
-            //
+            // 
+            this.cboUsuario.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboUsuario.FormattingEnabled = true;
+            this.cboUsuario.Location = new System.Drawing.Point(580, 92);
+            this.cboUsuario.Name = "cboUsuario";
+            this.cboUsuario.Size = new System.Drawing.Size(200, 28);
+            this.cboUsuario.TabIndex = 12;
+            // 
             // btnBuscar
-            //
-            btnBuscar.Location = new Point(800, 50);
-            btnBuscar.Name = "btnBuscar";
-            btnBuscar.Size = new Size(110, 34);
-            btnBuscar.TabIndex = 13;
-            btnBuscar.Text = "Buscar";
-            btnBuscar.UseVisualStyleBackColor = true;
-            btnBuscar.Click += btnBuscar_Click;
-            //
+            // 
+            this.btnBuscar.Location = new System.Drawing.Point(800, 50);
+            this.btnBuscar.Name = "btnBuscar";
+            this.btnBuscar.Size = new System.Drawing.Size(110, 34);
+            this.btnBuscar.TabIndex = 13;
+            this.btnBuscar.Text = "Buscar";
+            this.btnBuscar.UseVisualStyleBackColor = true;
+            // 
             // btnLimpiar
-            //
-            btnLimpiar.Location = new Point(800, 90);
-            btnLimpiar.Name = "btnLimpiar";
-            btnLimpiar.Size = new Size(110, 34);
-            btnLimpiar.TabIndex = 14;
-            btnLimpiar.Text = "Limpiar filtros";
-            btnLimpiar.UseVisualStyleBackColor = true;
-            btnLimpiar.Click += btnLimpiar_Click;
-            //
+            // 
+            this.btnLimpiar.Location = new System.Drawing.Point(800, 90);
+            this.btnLimpiar.Name = "btnLimpiar";
+            this.btnLimpiar.Size = new System.Drawing.Size(110, 34);
+            this.btnLimpiar.TabIndex = 14;
+            this.btnLimpiar.Text = "Limpiar filtros";
+            this.btnLimpiar.UseVisualStyleBackColor = true;
+            // 
             // btnExportarXml
-            //
-            btnExportarXml.Location = new Point(926, 50);
-            btnExportarXml.Name = "btnExportarXml";
-            btnExportarXml.Size = new Size(162, 34);
-            btnExportarXml.TabIndex = 15;
-            btnExportarXml.Tag = "SEG_BITACORA_EXPORT";
-            btnExportarXml.Text = "Exportar XML...";
-            btnExportarXml.UseVisualStyleBackColor = true;
-            btnExportarXml.Click += btnExportarXml_Click;
+            // 
+            this.btnExportarXml.Location = new System.Drawing.Point(926, 50);
+            this.btnExportarXml.Name = "btnExportarXml";
+            this.btnExportarXml.Size = new System.Drawing.Size(162, 34);
+            this.btnExportarXml.TabIndex = 15;
+            this.btnExportarXml.Tag = "SEG_BITACORA_EXPORT";
+            this.btnExportarXml.Text = "Exportar XML...";
+            this.btnExportarXml.UseVisualStyleBackColor = true;
             //
             // btnImportarXml
             //
-            btnImportarXml.Location = new Point(926, 90);
-            btnImportarXml.Name = "btnImportarXml";
-            btnImportarXml.Size = new Size(162, 34);
-            btnImportarXml.TabIndex = 16;
-            btnImportarXml.Tag = "SEG_BITACORA_IMPORT";
-            btnImportarXml.Text = "Importar XML...";
-            btnImportarXml.UseVisualStyleBackColor = true;
-            btnImportarXml.Click += btnImportarXml_Click;
+            this.btnImportarXml.Location = new System.Drawing.Point(926, 90);
+            this.btnImportarXml.Name = "btnImportarXml";
+            this.btnImportarXml.Size = new System.Drawing.Size(162, 34);
+            this.btnImportarXml.TabIndex = 16;
+            this.btnImportarXml.Tag = "SEG_BITACORA_IMPORT";
+            this.btnImportarXml.Text = "Importar XML...";
+            this.btnImportarXml.UseVisualStyleBackColor = true;
             //
             // btnVerXml
             //
-            btnVerXml.Location = new Point(926, 10);
-            btnVerXml.Name = "btnVerXml";
-            btnVerXml.Size = new Size(162, 34);
-            btnVerXml.TabIndex = 17;
-            btnVerXml.Tag = "SEG_BITACORA_EXPORT|SEG_BITACORA_IMPORT";
-            btnVerXml.Text = "Ver XML...";
-            btnVerXml.UseVisualStyleBackColor = true;
-            btnVerXml.Click += btnVerXml_Click;
-            //
+            this.btnVerXml.Location = new System.Drawing.Point(926, 10);
+            this.btnVerXml.Name = "btnVerXml";
+            this.btnVerXml.Size = new System.Drawing.Size(162, 34);
+            this.btnVerXml.TabIndex = 17;
+            this.btnVerXml.Tag = "SEG_BITACORA_EXPORT|SEG_BITACORA_IMPORT";
+            this.btnVerXml.Text = "Ver XML...";
+            this.btnVerXml.UseVisualStyleBackColor = true;
+            // 
             // dgvEventos
-            //
-            dgvEventos.AllowUserToAddRows = false;
-            dgvEventos.AllowUserToDeleteRows = false;
-            dgvEventos.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgvEventos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvEventos.BackgroundColor = SystemColors.Window;
-            dgvEventos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvEventos.Columns.AddRange(new DataGridViewColumn[] { colFecha, colUsuario, colModulo, colEvento, colCriticidad, colDescripcion });
-            dgvEventos.Location = new Point(12, 136);
-            dgvEventos.MultiSelect = false;
-            dgvEventos.Name = "dgvEventos";
-            dgvEventos.ReadOnly = true;
-            dgvEventos.RowHeadersVisible = false;
-            dgvEventos.RowHeadersWidth = 51;
-            dgvEventos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvEventos.Size = new Size(1076, 390);
-            dgvEventos.TabIndex = 15;
-            dgvEventos.DataBindingComplete += dgvEventos_DataBindingComplete;
-            dgvEventos.SelectionChanged += dgvEventos_SelectionChanged;
-            //
+            // 
+            this.dgvEventos.AllowUserToAddRows = false;
+            this.dgvEventos.AllowUserToDeleteRows = false;
+            this.dgvEventos.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvEventos.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvEventos.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dgvEventos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvEventos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colFecha,
+            this.colUsuario,
+            this.colModulo,
+            this.colEvento,
+            this.colCriticidad,
+            this.colDescripcion});
+            this.dgvEventos.Location = new System.Drawing.Point(12, 136);
+            this.dgvEventos.MultiSelect = false;
+            this.dgvEventos.Name = "dgvEventos";
+            this.dgvEventos.ReadOnly = true;
+            this.dgvEventos.RowHeadersVisible = false;
+            this.dgvEventos.RowHeadersWidth = 51;
+            this.dgvEventos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvEventos.Size = new System.Drawing.Size(1076, 390);
+            this.dgvEventos.TabIndex = 15;
+            // 
             // colFecha
-            //
-            colFecha.DataPropertyName = "FechaHora";
-            estiloFecha.Format = "dd/MM/yyyy HH:mm:ss";
-            colFecha.DefaultCellStyle = estiloFecha;
-            colFecha.FillWeight = 70F;
-            colFecha.HeaderText = "Fecha y hora";
-            colFecha.MinimumWidth = 6;
-            colFecha.Name = "colFecha";
-            colFecha.ReadOnly = true;
-            //
+            // 
+            this.colFecha.DataPropertyName = "FechaHora";
+            dataGridViewCellStyle1.Format = "dd/MM/yyyy HH:mm:ss";
+            this.colFecha.DefaultCellStyle = dataGridViewCellStyle1;
+            this.colFecha.FillWeight = 70F;
+            this.colFecha.HeaderText = "Fecha y hora";
+            this.colFecha.MinimumWidth = 6;
+            this.colFecha.Name = "colFecha";
+            this.colFecha.ReadOnly = true;
+            // 
             // colUsuario
-            //
-            colUsuario.DataPropertyName = "Usuario";
-            colUsuario.FillWeight = 55F;
-            colUsuario.HeaderText = "Usuario";
-            colUsuario.MinimumWidth = 6;
-            colUsuario.Name = "colUsuario";
-            colUsuario.ReadOnly = true;
-            //
+            // 
+            this.colUsuario.DataPropertyName = "Usuario";
+            this.colUsuario.FillWeight = 55F;
+            this.colUsuario.HeaderText = "Usuario";
+            this.colUsuario.MinimumWidth = 6;
+            this.colUsuario.Name = "colUsuario";
+            this.colUsuario.ReadOnly = true;
+            // 
             // colModulo
-            //
-            colModulo.DataPropertyName = "Modulo";
-            colModulo.FillWeight = 50F;
-            colModulo.HeaderText = "Módulo";
-            colModulo.MinimumWidth = 6;
-            colModulo.Name = "colModulo";
-            colModulo.ReadOnly = true;
-            //
+            // 
+            this.colModulo.DataPropertyName = "Modulo";
+            this.colModulo.FillWeight = 50F;
+            this.colModulo.HeaderText = "Módulo";
+            this.colModulo.MinimumWidth = 6;
+            this.colModulo.Name = "colModulo";
+            this.colModulo.ReadOnly = true;
+            // 
             // colEvento
-            //
-            colEvento.DataPropertyName = "Evento";
-            colEvento.FillWeight = 70F;
-            colEvento.HeaderText = "Evento";
-            colEvento.MinimumWidth = 6;
-            colEvento.Name = "colEvento";
-            colEvento.ReadOnly = true;
-            //
+            // 
+            this.colEvento.DataPropertyName = "Evento";
+            this.colEvento.FillWeight = 70F;
+            this.colEvento.HeaderText = "Evento";
+            this.colEvento.MinimumWidth = 6;
+            this.colEvento.Name = "colEvento";
+            this.colEvento.ReadOnly = true;
+            // 
             // colCriticidad
-            //
-            colCriticidad.DataPropertyName = "Criticidad";
-            estiloCriticidad.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            colCriticidad.DefaultCellStyle = estiloCriticidad;
-            colCriticidad.FillWeight = 35F;
-            colCriticidad.HeaderText = "Criticidad";
-            colCriticidad.MinimumWidth = 6;
-            colCriticidad.Name = "colCriticidad";
-            colCriticidad.ReadOnly = true;
-            //
+            // 
+            this.colCriticidad.DataPropertyName = "Criticidad";
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.colCriticidad.DefaultCellStyle = dataGridViewCellStyle2;
+            this.colCriticidad.FillWeight = 35F;
+            this.colCriticidad.HeaderText = "Criticidad";
+            this.colCriticidad.MinimumWidth = 6;
+            this.colCriticidad.Name = "colCriticidad";
+            this.colCriticidad.ReadOnly = true;
+            // 
             // colDescripcion
-            //
-            colDescripcion.DataPropertyName = "Descripcion";
-            colDescripcion.FillWeight = 200F;
-            colDescripcion.HeaderText = "Descripción";
-            colDescripcion.MinimumWidth = 6;
-            colDescripcion.Name = "colDescripcion";
-            colDescripcion.ReadOnly = true;
-            //
+            // 
+            this.colDescripcion.DataPropertyName = "Descripcion";
+            this.colDescripcion.FillWeight = 200F;
+            this.colDescripcion.HeaderText = "Descripción";
+            this.colDescripcion.MinimumWidth = 6;
+            this.colDescripcion.Name = "colDescripcion";
+            this.colDescripcion.ReadOnly = true;
+            // 
             // lblDetalleUsuario
-            //
-            lblDetalleUsuario.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            lblDetalleUsuario.AutoSize = true;
-            lblDetalleUsuario.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblDetalleUsuario.Location = new Point(12, 536);
-            lblDetalleUsuario.Name = "lblDetalleUsuario";
-            lblDetalleUsuario.Size = new Size(0, 20);
-            lblDetalleUsuario.TabIndex = 16;
-            //
+            // 
+            this.lblDetalleUsuario.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblDetalleUsuario.AutoSize = true;
+            this.lblDetalleUsuario.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblDetalleUsuario.Location = new System.Drawing.Point(12, 536);
+            this.lblDetalleUsuario.Name = "lblDetalleUsuario";
+            this.lblDetalleUsuario.Size = new System.Drawing.Size(0, 20);
+            this.lblDetalleUsuario.TabIndex = 16;
+            // 
             // lblResultados
-            //
-            lblResultados.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            lblResultados.ForeColor = Color.DimGray;
-            lblResultados.Location = new Point(788, 536);
-            lblResultados.Name = "lblResultados";
-            lblResultados.Size = new Size(300, 20);
-            lblResultados.TabIndex = 17;
-            lblResultados.TextAlign = ContentAlignment.TopRight;
-            //
+            // 
+            this.lblResultados.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblResultados.ForeColor = System.Drawing.Color.DimGray;
+            this.lblResultados.Location = new System.Drawing.Point(788, 536);
+            this.lblResultados.Name = "lblResultados";
+            this.lblResultados.Size = new System.Drawing.Size(300, 20);
+            this.lblResultados.TabIndex = 17;
+            this.lblResultados.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // FrmBitacoraEventos_60MN
-            //
-            AcceptButton = btnBuscar;
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1100, 568);
-            Controls.Add(lblResultados);
-            Controls.Add(lblDetalleUsuario);
-            Controls.Add(dgvEventos);
-            Controls.Add(btnVerXml);
-            Controls.Add(btnImportarXml);
-            Controls.Add(btnExportarXml);
-            Controls.Add(btnLimpiar);
-            Controls.Add(btnBuscar);
-            Controls.Add(cboUsuario);
-            Controls.Add(lblUsuario);
-            Controls.Add(cboEvento);
-            Controls.Add(lblEvento);
-            Controls.Add(cboModulo);
-            Controls.Add(lblModulo);
-            Controls.Add(cboCriticidad);
-            Controls.Add(lblCriticidad);
-            Controls.Add(dtpHasta);
-            Controls.Add(lblHasta);
-            Controls.Add(dtpDesde);
-            Controls.Add(lblDesde);
-            Controls.Add(lblTitulo);
-            MinimumSize = new Size(960, 450);
-            Name = "FrmBitacoraEventos_60MN";
-            Text = "Bitácora de eventos";
-            Load += FrmBitacoraEventos_60MN_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvEventos).EndInit();
-            ResumeLayout(false);
-            PerformLayout();
+            // 
+            this.AcceptButton = this.btnBuscar;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(1100, 568);
+            this.Controls.Add(this.lblResultados);
+            this.Controls.Add(this.lblDetalleUsuario);
+            this.Controls.Add(this.dgvEventos);
+            this.Controls.Add(this.btnVerXml);
+            this.Controls.Add(this.btnImportarXml);
+            this.Controls.Add(this.btnExportarXml);
+            this.Controls.Add(this.btnLimpiar);
+            this.Controls.Add(this.btnBuscar);
+            this.Controls.Add(this.cboUsuario);
+            this.Controls.Add(this.lblUsuario);
+            this.Controls.Add(this.cboEvento);
+            this.Controls.Add(this.lblEvento);
+            this.Controls.Add(this.cboModulo);
+            this.Controls.Add(this.lblModulo);
+            this.Controls.Add(this.cboCriticidad);
+            this.Controls.Add(this.lblCriticidad);
+            this.Controls.Add(this.dtpHasta);
+            this.Controls.Add(this.lblHasta);
+            this.Controls.Add(this.dtpDesde);
+            this.Controls.Add(this.lblDesde);
+            this.Controls.Add(this.lblTitulo);
+            this.MinimumSize = new System.Drawing.Size(960, 450);
+            this.Name = "FrmBitacoraEventos_60MN";
+            this.Text = "Bitácora de eventos";
+            this.Load += new System.EventHandler(this.FrmBitacoraEventos_60MN_Load);
+            this.cboModulo.SelectedIndexChanged += new System.EventHandler(this.cboModulo_SelectedIndexChanged);
+            this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
+            this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
+            this.btnExportarXml.Click += new System.EventHandler(this.btnExportarXml_Click);
+            this.btnImportarXml.Click += new System.EventHandler(this.btnImportarXml_Click);
+            this.btnVerXml.Click += new System.EventHandler(this.btnVerXml_Click);
+            this.dgvEventos.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvEventos_DataBindingComplete);
+            this.dgvEventos.SelectionChanged += new System.EventHandler(this.dgvEventos_SelectionChanged);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEventos)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion

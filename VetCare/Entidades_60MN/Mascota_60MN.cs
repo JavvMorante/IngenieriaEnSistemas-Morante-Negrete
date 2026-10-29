@@ -25,6 +25,12 @@ namespace Entidades_60MN
         /// <summary>Número de historia clínica (HC-00001) o vacío si todavía no tiene.</summary>
         public string NumeroHistoriaClinica { get; set; } = string.Empty;
 
+        /// <summary>Dueño ("Apellido, Nombre"): solo lo completa la búsqueda de mascotas (selector de paciente, CUN02).</summary>
+        public string Propietario { get; set; } = string.Empty;
+
+        /// <summary>Documento del dueño ("DNI 30111222"): solo lo completa la búsqueda de mascotas.</summary>
+        public string DocumentoPropietario { get; set; } = string.Empty;
+
         public string SexoTexto => Sexo == "H" ? "Hembra" : "Macho";
 
         public string Estado => Activo ? "Activa" : "Baja";
