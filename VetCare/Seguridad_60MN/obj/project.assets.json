@@ -1,7 +1,7 @@
 {
-  "version": 4,
+  "version": 3,
   "targets": {
-    "net48": {
+    ".NETFramework,Version=v4.8": {
       "Azure.Core/1.38.0": {
         "type": "package",
         "dependencies": {
@@ -1739,7 +1739,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net48": [
+    ".NETFramework,Version=v4.8": [
       "Microsoft.Data.SqlClient >= 5.2.2"
     ]
   },
@@ -1774,7 +1774,6 @@
       },
       "frameworks": {
         "net48": {
-          "framework": "net48",
           "targetAlias": "net48",
           "projectReferences": {}
         }
@@ -1789,11 +1788,10 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.400"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net48": {
-        "framework": "net48",
         "targetAlias": "net48",
         "dependencies": {
           "Microsoft.Data.SqlClient": {
@@ -1801,7 +1799,7 @@
             "version": "[5.2.2, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314\\RuntimeIdentifierGraph.json"
       }
     }
   }

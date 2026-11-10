@@ -4,18 +4,14 @@
 Plataforma: **.NET Framework 4.8** (WinForms, C# con `LangVersion latest`), proyectos con formato SDK. Se abre con
 Visual Studio 2022 o se compila con `dotnet build VetCare.sln`.
 
-**Instalación nueva**
+**Instalación** (único script de base de datos)
 1. Ejecutar `BDScript/VetCareBD_60MN.sql` en SQL Server (SSMS o `sqlcmd -S .\SQLEXPRESS01 -E -C -f 65001 -i BDScript\VetCareBD_60MN.sql`).
    **Borra y recrea** `VetCareBD_60MN` con el esquema V2.4 y los datos de prueba (con sus DVH y DVV).
 2. Ajustar `conexionBD` en `VetCare/App.config` si la instancia es otra.
 3. Ejecutar el proyecto `VetCare`.
 
-**Base existente (sin borrarla)** – hacer antes un backup:
-1. `BDScript/Migracion_IdiomaPorUsuario_60MN.sql` (si la base es anterior a esa migración).
-2. `BDScript/Migracion_V24_60MN.sql`: proveedores completos, ventas (pasa `AtencionDetalle` a `VentaEncabezado`/`VentaDetalle`
-   y la elimina), quita las patentes de facturación, ajusta las familias y agrega las traducciones. Se puede correr más de una vez.
-3. Ingresar como `admin` (o como `emergencia` si la integridad bloquea a todos los administradores) y usar
-   **ADMIN > Dígitos verificadores > Recalcular**: las tablas nuevas o modificadas quedan sin DVH hasta recalcular.
+No hay scripts de migración: una base de una versión anterior se reinstala con este script (pierde sus datos; hacer
+antes un backup si se los quiere conservar).
 
 | Usuario | Contraseña | Permisos |
 |---|---|---|
@@ -76,16 +72,18 @@ Manual de usuario de los dos procesos: https://claude.ai/artifact/4M31Q78g2iPzFQ
 | `Utilidades/FrmAyuda_60MN` | Ayuda en línea (F1 en cualquier pantalla o AYUDA > Ayuda en línea; temas en `TemasAyuda_60MN`) |
 | `Seguridad/FrmBackupRestore_60MN` | CUS12 |
 
-## Bitácora de eventos: exportar / importar XML (serialización)
-ADMIN > Bitácora de eventos → botones **Ver XML...**, **Exportar XML...** (`SEG_BITACORA_EXPORT`, familia Auditoría) e
-**Importar XML...** (`SEG_BITACORA_IMPORT`, familia Administrador).
+## Bitácora de eventos: serializar / deserializar XML
+ADMIN > Bitácora de eventos → botones **Exportar XML...** (serializa; `SEG_BITACORA_EXPORT`, familia Auditoría) y
+**Deserializar XML...** (`SEG_BITACORA_IMPORT`, familia Administrador).
 - Recorrido: `FrmBitacoraEventos_60MN` → `BitacoraBLL_60MN` (permiso, integridad, eventos) →
-  `Seguridad_60MN/Auditoria/SerializadorBitacora_60MN` (XmlSerializer, firmas, validación, importación) → tabla `Bitacora` + DVH/DVV.
+  `Seguridad_60MN/Auditoria/SerializadorBitacora_60MN` (XmlSerializer, firmas, validación).
 - El XML (`ArchivoBitacora_60MN` / `EventoBitacoraXml_60MN`) lleva la descripción **cifrada** (AES, igual que en la base),
   una firma HMAC-SHA256 por evento (como un DVH) y una firma del archivo (como un DVV).
-- Importar: lectura sin DTD ni entidades externas (anti-XXE), máximo 20 MB / 20.000 eventos, validación de firmas, catálogo
-  de eventos, fechas y longitudes; todo-o-nada, sin duplicados, y recalculando DVH/DVV. Se exige que el archivo sea el
-  mismo que se previsualizó (SHA-256). Eventos: `BitacoraExportada`, `BitacoraImportada`, `BitacoraImportacionRechazada`.
+- Deserializar: se elige un XML exportado antes y sus eventos se muestran en `FrmDeserializarBitacora_60MN` (grilla y Salir,
+  ventana del menú principal). No modifica la base. Lectura sin DTD ni entidades externas (anti-XXE), máximo 20 MB / 20.000
+  eventos, validación de firmas, catálogo de eventos, fechas y longitudes: un archivo alterado se rechaza y no se muestra.
+  Eventos: `BitacoraExportada`, `BitacoraDeserializada`, `BitacoraDeserializacionRechazada` (los viejos `BitacoraImportada` y
+  `BitacoraImportacionRechazada` quedan en el catálogo solo para leer registros anteriores).
 
 ## Backup y restore (CUS12)
 ADMIN > Backup o ADMIN > Restore abren `FrmBackupRestore_60MN`; cada sección se ve según la patente (`SEG_BACKUP` / `SEG_RESTORE`).
@@ -182,7 +180,6 @@ y por pantalla de seguridad) están en `Utilidades/TemasAyuda_60MN.cs`: el espa�
   - Al ingresar (`FrmLogin_60MN` → `IdiomaBLL_60MN.AplicarIdiomaAlIngresar`): si eligió un idioma en el combo del Login,
     se guarda como el suyo; si no, se le aplica su último idioma. El usuario de emergencia usa siempre español.
   - USUARIO > Cambiar idioma (`CambiarIdiomaUsuario`) guarda la elección contra el usuario y registra `IdiomaCambiado`.
-  - Base existente: aplicar `BDScript/Migracion_IdiomaPorUsuario_60MN.sql` y luego ADMIN > Dígitos verificadores > Recalcular.
 - Limitación: los mensajes de las reglas de negocio (excepciones de la BLL) y las etiquetas que arman datos en tiempo
   de ejecución siguen en español; los textos fijos de pantallas, menú, grillas y mensajes generales sí se traducen.
 

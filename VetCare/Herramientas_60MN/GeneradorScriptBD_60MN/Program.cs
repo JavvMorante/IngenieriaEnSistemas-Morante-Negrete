@@ -64,9 +64,9 @@ var patentes = new List<(int Id, string Nombre, string Codigo)>
     // El sistema no factura: las patentes 27 a 29 (facturar, despachar, compras) se quitaron.
     (26, "Gestionar proveedores", "MAE_PROVEEDORES"),
     (30, "Reportes de atenciones e inteligente", "REP_REPORTES"),
-    // Bitácora de eventos: exportar e importar en XML (patentes separadas: importar es más delicado)
+    // Bitácora de eventos: exportar (serializar) y deserializar en XML (patentes separadas)
     (31, "Exportar bitácora de eventos (XML)", "SEG_BITACORA_EXPORT"),
-    (32, "Importar bitácora de eventos (XML)", "SEG_BITACORA_IMPORT"),
+    (32, "Deserializar bitácora de eventos (XML)", "SEG_BITACORA_IMPORT"),
 };
 // Familias según G04: un tipo de usuario por rol del negocio, más dos familias de seguridad.
 var familias = new List<(int Id, string Nombre)>

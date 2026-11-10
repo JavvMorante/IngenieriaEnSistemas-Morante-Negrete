@@ -31,7 +31,6 @@
         },
         "frameworks": {
           "net48": {
-            "framework": "net48",
             "targetAlias": "net48",
             "projectReferences": {
               "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Servicios_60MN\\Servicios_60MN.csproj": {
@@ -50,13 +49,12 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.400"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net48": {
-          "framework": "net48",
           "targetAlias": "net48",
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -87,7 +85,6 @@
         },
         "frameworks": {
           "net48": {
-            "framework": "net48",
             "targetAlias": "net48",
             "projectReferences": {}
           }
@@ -102,13 +99,12 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.400"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net48": {
-          "framework": "net48",
           "targetAlias": "net48",
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -139,7 +135,6 @@
         },
         "frameworks": {
           "net48": {
-            "framework": "net48",
             "targetAlias": "net48",
             "projectReferences": {
               "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Interfaces_60MN\\Interfaces_60MN.csproj": {
@@ -158,13 +153,12 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.400"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net48": {
-          "framework": "net48",
           "targetAlias": "net48",
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314\\RuntimeIdentifierGraph.json"
         }
       }
     }

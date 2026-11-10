@@ -58,7 +58,7 @@ namespace BLL_60MN
         }
 
         // =====================================================================
-        // Exportar / importar la bitácora en XML (serialización)
+        // Exportar (serializar) y deserializar la bitácora en XML
         // =====================================================================
 
         private readonly SerializadorBitacora_60MN serializador = new SerializadorBitacora_60MN();
@@ -94,57 +94,32 @@ namespace BLL_60MN
         }
 
         /// <summary>
-        /// Lee y valida un XML de bitácora sin modificar nada (vista previa). Las
-        /// descripciones se muestran desencriptadas solo a quien puede consultar la bitácora.
+        /// Deserializar XML: lee un XML de bitácora exportado y lo devuelve para mostrarlo en
+        /// pantalla, sin modificar la base. Si el archivo fue alterado o no lo generó este
+        /// sistema (firmas, catálogo, fechas), se rechaza completo y no se muestra nada.
+        /// Las descripciones se ven desencriptadas solo si el usuario puede consultar la bitácora.
         /// </summary>
-        public ResumenArchivoBitacora_60MN AnalizarArchivo(string ruta)
+        public ResumenArchivoBitacora_60MN Deserializar(string ruta)
         {
-            SesionActual_60MN.RequiereAlgunPermiso(CodigosPatente_60MN.BitacoraExportar, CodigosPatente_60MN.BitacoraImportar);
+            SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.BitacoraDeserializar);
             if (string.IsNullOrWhiteSpace(ruta))
                 throw new NegocioException_60MN("Seleccione el archivo XML.");
             bool puedeVerDescripciones = Servicios_60MN.Sesion.SessionManager_60MN.Instancia.TienePermiso(CodigosPatente_60MN.BitacoraEventos);
-            return serializador.Analizar(ruta, puedeVerDescripciones);
-        }
 
-        /// <summary>
-        /// Importa los eventos nuevos del archivo. Se vuelve a leer y validar el archivo
-        /// (no se confía en la vista previa) y debe ser exactamente el mismo que se
-        /// previsualizó (mismo SHA-256): si cambió en el medio, se rechaza.
-        /// </summary>
-        public ResultadoImportacionBitacora_60MN Importar(string ruta, string hashPrevisualizado)
-        {
-            SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.BitacoraImportar);
-            ExigirBitacoraIntegra("importar");
-
-            ResumenArchivoBitacora_60MN resumen = serializador.Analizar(ruta, desencriptarDescripciones: false);
-            if (!string.Equals(resumen.HashSha256, hashPrevisualizado, StringComparison.OrdinalIgnoreCase))
-                resumen.Errores.Add("El archivo cambió después de la vista previa.");
+            ResumenArchivoBitacora_60MN resumen = serializador.Analizar(ruta, puedeVerDescripciones);
             if (!resumen.Valido)
             {
-                Registrar(EventoSistema_60MN.BitacoraImportacionRechazada,
-                    $"Importación de bitácora rechazada: {Path.GetFileName(ruta)} (SHA-256 {resumen.HashSha256}). " +
+                Registrar(EventoSistema_60MN.BitacoraDeserializacionRechazada,
+                    $"XML de bitácora rechazado al deserializar: {resumen.NombreArchivo} (SHA-256 {resumen.HashSha256}). " +
                     string.Join(" ", resumen.Errores.Take(5)));
-                throw new NegocioException_60MN("El archivo fue rechazado y no se importó ningún evento:\n- " +
+                throw new NegocioException_60MN("El archivo fue rechazado y no se puede mostrar:\n- " +
                                                  string.Join("\n- ", resumen.Errores));
             }
 
-            ResultadoImportacionBitacora_60MN resultado = serializador.Importar(resumen);
-            // El evento de la importación queda registrado en la misma bitácora que se acaba de completar.
-            Registrar(EventoSistema_60MN.BitacoraImportada,
-                $"Bitácora importada desde {resumen.NombreArchivo} (SHA-256 {resumen.HashSha256}), exportada por " +
-                $"{resumen.ExportadoPor} el {resumen.Exportado:dd/MM/yyyy HH:mm}: {resultado.Importados} evento(s) nuevo(s), " +
-                $"{resultado.Duplicados} ya existente(s) omitido(s).");
-            return resultado;
-        }
-
-        /// <summary>Registra un intento rechazado en la vista previa (archivo alterado o inválido).</summary>
-        public void RegistrarRechazo(ResumenArchivoBitacora_60MN resumen)
-        {
-            SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.BitacoraImportar);
-            if (resumen.Valido) return;
-            Registrar(EventoSistema_60MN.BitacoraImportacionRechazada,
-                $"Archivo de bitácora rechazado en la vista previa: {resumen.NombreArchivo} (SHA-256 {resumen.HashSha256}). " +
-                string.Join(" ", resumen.Errores.Take(5)));
+            Registrar(EventoSistema_60MN.BitacoraDeserializada,
+                $"XML de bitácora deserializado: {resumen.NombreArchivo} (SHA-256 {resumen.HashSha256}), exportado por " +
+                $"{resumen.ExportadoPor} el {resumen.Exportado:dd/MM/yyyy HH:mm}, {resumen.Cantidad} evento(s).");
+            return resumen;
         }
 
         private void ExigirBitacoraIntegra(string operacion)

@@ -57,3 +57,17 @@ C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-Ing
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\o48\Seguridad_60MN.pdb
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\g48\Seguridad_60MN.dll
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\g48\Seguridad_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\vo\Seguridad_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\vo\Seguridad_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outcli\Seguridad_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outcli\Seguridad_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\PruebaStock\out\Seguridad_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\PruebaStock\out\Seguridad_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\Capturas\out\Seguridad_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\Capturas\out\Seguridad_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outbit\Seguridad_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outbit\Seguridad_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\a2112e39-dae8-4a44-acee-be9f8d08be42\scratchpad\out\Seguridad_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\a2112e39-dae8-4a44-acee-be9f8d08be42\scratchpad\out\Seguridad_60MN.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\0f3c29d1-39a5-4629-9e39-f79eeee6148f\scratchpad\build_icono\Seguridad_60MN.dll
+C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\0f3c29d1-39a5-4629-9e39-f79eeee6148f\scratchpad\build_icono\Seguridad_60MN.pdb

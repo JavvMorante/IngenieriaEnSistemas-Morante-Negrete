@@ -46,8 +46,7 @@ namespace VetCare
             this.btnBuscar = new System.Windows.Forms.Button();
             this.btnLimpiar = new System.Windows.Forms.Button();
             this.btnExportarXml = new System.Windows.Forms.Button();
-            this.btnImportarXml = new System.Windows.Forms.Button();
-            this.btnVerXml = new System.Windows.Forms.Button();
+            this.btnDeserializarXml = new System.Windows.Forms.Button();
             this.dgvEventos = new System.Windows.Forms.DataGridView();
             this.colFecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUsuario = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -208,25 +207,15 @@ namespace VetCare
             this.btnExportarXml.Text = "Exportar XML...";
             this.btnExportarXml.UseVisualStyleBackColor = true;
             //
-            // btnImportarXml
+            // btnDeserializarXml
             //
-            this.btnImportarXml.Location = new System.Drawing.Point(926, 90);
-            this.btnImportarXml.Name = "btnImportarXml";
-            this.btnImportarXml.Size = new System.Drawing.Size(162, 34);
-            this.btnImportarXml.TabIndex = 16;
-            this.btnImportarXml.Tag = "SEG_BITACORA_IMPORT";
-            this.btnImportarXml.Text = "Importar XML...";
-            this.btnImportarXml.UseVisualStyleBackColor = true;
-            //
-            // btnVerXml
-            //
-            this.btnVerXml.Location = new System.Drawing.Point(926, 10);
-            this.btnVerXml.Name = "btnVerXml";
-            this.btnVerXml.Size = new System.Drawing.Size(162, 34);
-            this.btnVerXml.TabIndex = 17;
-            this.btnVerXml.Tag = "SEG_BITACORA_EXPORT|SEG_BITACORA_IMPORT";
-            this.btnVerXml.Text = "Ver XML...";
-            this.btnVerXml.UseVisualStyleBackColor = true;
+            this.btnDeserializarXml.Location = new System.Drawing.Point(926, 90);
+            this.btnDeserializarXml.Name = "btnDeserializarXml";
+            this.btnDeserializarXml.Size = new System.Drawing.Size(162, 34);
+            this.btnDeserializarXml.TabIndex = 16;
+            this.btnDeserializarXml.Tag = "SEG_BITACORA_IMPORT";
+            this.btnDeserializarXml.Text = "Deserializar XML...";
+            this.btnDeserializarXml.UseVisualStyleBackColor = true;
             // 
             // dgvEventos
             // 
@@ -342,8 +331,7 @@ namespace VetCare
             this.Controls.Add(this.lblResultados);
             this.Controls.Add(this.lblDetalleUsuario);
             this.Controls.Add(this.dgvEventos);
-            this.Controls.Add(this.btnVerXml);
-            this.Controls.Add(this.btnImportarXml);
+            this.Controls.Add(this.btnDeserializarXml);
             this.Controls.Add(this.btnExportarXml);
             this.Controls.Add(this.btnLimpiar);
             this.Controls.Add(this.btnBuscar);
@@ -368,8 +356,7 @@ namespace VetCare
             this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
             this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
             this.btnExportarXml.Click += new System.EventHandler(this.btnExportarXml_Click);
-            this.btnImportarXml.Click += new System.EventHandler(this.btnImportarXml_Click);
-            this.btnVerXml.Click += new System.EventHandler(this.btnVerXml_Click);
+            this.btnDeserializarXml.Click += new System.EventHandler(this.btnDeserializarXml_Click);
             this.dgvEventos.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvEventos_DataBindingComplete);
             this.dgvEventos.SelectionChanged += new System.EventHandler(this.dgvEventos_SelectionChanged);
             ((System.ComponentModel.ISupportInitialize)(this.dgvEventos)).EndInit();
@@ -396,8 +383,7 @@ namespace VetCare
         private Button btnBuscar;
         private Button btnLimpiar;
         private Button btnExportarXml;
-        private Button btnImportarXml;
-        private Button btnVerXml;
+        private Button btnDeserializarXml;
         private DataGridView dgvEventos;
         private DataGridViewTextBoxColumn colFecha;
         private DataGridViewTextBoxColumn colUsuario;

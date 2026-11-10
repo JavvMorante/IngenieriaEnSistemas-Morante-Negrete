@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GeneradorScriptBD_60MN")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2d8d4032e797da78bbfc7e418c9fc65b846c119b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb34fef49c40be2b01d00884e26467aaf12b3d35")]
 [assembly: System.Reflection.AssemblyProductAttribute("GeneradorScriptBD_60MN")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GeneradorScriptBD_60MN")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

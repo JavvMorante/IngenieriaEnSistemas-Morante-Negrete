@@ -8,7 +8,15 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Ícono del ejecutable (explorador de archivos, barra de tareas y acceso directo). -->
+    <ApplicationIcon>Recursos\VetCare.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- El mismo ícono, embebido, para la barra de título de cada ventana (FormBase_60MN). -->
+    <EmbeddedResource Include="Recursos\VetCare.ico" LogicalName="VetCare.ico" />
+    <None Include="Recursos\VetCare_logo.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- ConfigurationManager (lectura de App.config) es parte de .NET Framework. -->

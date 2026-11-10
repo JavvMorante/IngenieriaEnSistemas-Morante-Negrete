@@ -25,6 +25,27 @@ namespace VetCare
         public FormBase_60MN()
         {
             Font = new Font("Segoe UI", 9F);
+            if (IconoVetCare != null)
+                Icon = IconoVetCare;
+        }
+
+        /// <summary>
+        /// Ícono de VetCare (Recursos/VetCare.ico, embebido en el ejecutable) para la barra de título
+        /// de todas las ventanas. Se carga una sola vez; en el diseñador o si falta queda el de Windows.
+        /// </summary>
+        private static readonly Icon? IconoVetCare = CargarIcono();
+
+        private static Icon? CargarIcono()
+        {
+            try
+            {
+                using Stream? recurso = typeof(FormBase_60MN).Assembly.GetManifestResourceStream("VetCare.ico");
+                return recurso == null ? null : new Icon(recurso);
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
         }
 
         protected override void OnLoad(EventArgs e)

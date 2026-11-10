@@ -56,9 +56,9 @@ namespace VetCare
                 "familias ni un cambio que deje al sistema sin un administrador operativo.",
                 "FrmFamiliasPatentes_60MN"),
             new TemaAyuda_60MN("bitacoraEventos", "Bitácora de eventos",
-                "ADMIN > Bitácora de eventos: filtre por fechas, criticidad, módulo, evento y usuario. Exportar XML guarda los eventos firmados; " +
-                "Importar XML los valida (firmas, catálogo, duplicados) y los agrega todos o ninguno.",
-                "FrmBitacoraEventos_60MN", "FrmVisorXmlBitacora_60MN"),
+                "ADMIN > Bitácora de eventos: filtre por fechas, criticidad, módulo, evento y usuario. Exportar XML guarda los eventos firmados; Deserializar XML " +
+                "abre un XML exportado y muestra sus eventos en una grilla (si el archivo fue alterado, lo rechaza).",
+                "FrmBitacoraEventos_60MN", "FrmDeserializarBitacora_60MN"),
             new TemaAyuda_60MN("bitacoraCambios", "Bitácora de cambios",
                 "ADMIN > Bitácora de cambios: historial de versiones de cada producto. Puede comparar dos versiones y restaurar una anterior.",
                 "FrmBitacoraCambios_60MN", "FrmCompararVersiones_60MN"),

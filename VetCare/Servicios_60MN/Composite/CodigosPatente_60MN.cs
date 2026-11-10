@@ -17,7 +17,7 @@ namespace Servicios_60MN.Composite
         public const string BitacoraEventos = "SEG_BITACORA_EVENTOS";  // CUS09
         public const string BitacoraCambios = "SEG_BITACORA_CAMBIOS";  // CUS10
         public const string BitacoraExportar = "SEG_BITACORA_EXPORT";  // CUS09: exportar la bitácora a XML
-        public const string BitacoraImportar = "SEG_BITACORA_IMPORT";  // CUS09: importar la bitácora desde XML
+        public const string BitacoraDeserializar = "SEG_BITACORA_IMPORT";  // CUS09: deserializar (ver en pantalla) un XML de bitácora
         public const string Backup = "SEG_BACKUP";                     // CUS12 (respaldar)
         public const string Restore = "SEG_RESTORE";                   // CUS12 (restaurar)
         public const string Integridad = "SEG_INTEGRIDAD";             // CUS13
@@ -55,7 +55,7 @@ namespace Servicios_60MN.Composite
         public static readonly string[] Todas =
         {
             UsuarioAlta, UsuarioModificar, UsuarioBaja, RolesPermisos, UsuarioDesbloquear,
-            BitacoraEventos, BitacoraCambios, BitacoraExportar, BitacoraImportar, Backup, Restore, Integridad,
+            BitacoraEventos, BitacoraCambios, BitacoraExportar, BitacoraDeserializar, Backup, Restore, Integridad,
             ClienteAlta, ClienteModificar, ClienteConsultar, Mascota,
             HistoriaClinicaAlta, HistoriaClinicaConsultar, HistoriaClinicaModificar,
             AtencionRegistrar, Carrito, InformeAtencion,

@@ -29,7 +29,9 @@ namespace Seguridad_60MN.Auditoria
         UsuarioCreado, UsuarioModificado, UsuarioBaja, UsuarioReactivado, UsuarioDesbloqueado, ClaveCambiada, ClaveBlanqueada, IdiomaCambiado,
         RolCreado, RolModificado, RolEliminado, PermisosUsuarioModificados,
         BitacoraEventosConsultada, BitacoraCambiosConsultada,
-        BitacoraExportada, BitacoraImportada, BitacoraImportacionRechazada,
+        BitacoraExportada, BitacoraDeserializada, BitacoraDeserializacionRechazada,
+        // Ya no se generan (la importación se reemplazó por Deserializar XML): quedan para leer los eventos viejos.
+        BitacoraImportada, BitacoraImportacionRechazada,
         IntegridadVerificada, IntegridadFallida, DigitosRecalculados,
         // PN2 - Gestión de Stock: CUN08 Administrar Existencias, CUN09 Movimiento de Stock, CUN10 Configurar Margen
         ProductoCreado, ProductoModificado, ProductoBaja, ProductoVersionRestaurada, MovimientoStock, AlertaReposicion,
@@ -101,11 +103,12 @@ namespace Seguridad_60MN.Auditoria
                 EventoSistema_60MN.PermisosUsuarioModificados);
 
             Agregar(ModuloSistema_60MN.Bitacora, 5, EventoSistema_60MN.BitacoraEventosConsultada, EventoSistema_60MN.BitacoraCambiosConsultada);
-            // Exportar e importar la bitácora (XML). Importar es más crítico: agrega registros de afuera a la
-            // tabla de auditoría; un archivo rechazado (firma inválida, alterado, etc.) es el caso más grave.
-            Agregar(ModuloSistema_60MN.Bitacora, 1, EventoSistema_60MN.BitacoraImportacionRechazada);
+            // Exportar (serializar) y deserializar la bitácora en XML. Deserializar solo muestra el archivo en
+            // pantalla; un archivo rechazado (firma inválida, alterado, etc.) es el caso más grave.
+            Agregar(ModuloSistema_60MN.Bitacora, 1, EventoSistema_60MN.BitacoraDeserializacionRechazada, EventoSistema_60MN.BitacoraImportacionRechazada);
             Agregar(ModuloSistema_60MN.Bitacora, 2, EventoSistema_60MN.BitacoraImportada);
             Agregar(ModuloSistema_60MN.Bitacora, 4, EventoSistema_60MN.BitacoraExportada);
+            Agregar(ModuloSistema_60MN.Bitacora, 5, EventoSistema_60MN.BitacoraDeserializada);
 
             Agregar(ModuloSistema_60MN.Integridad, 1, EventoSistema_60MN.IntegridadFallida, EventoSistema_60MN.DigitosRecalculados);
             Agregar(ModuloSistema_60MN.Integridad, 4, EventoSistema_60MN.IntegridadVerificada);

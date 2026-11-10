@@ -6,8 +6,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using Microsoft.Data.SqlClient;
-using Seguridad_60MN.Configuracion;
 using Seguridad_60MN.Criptografia;
 using Seguridad_60MN.Integridad;
 
@@ -55,7 +53,7 @@ namespace Seguridad_60MN.Auditoria
     /// <summary>Un evento de la bitácora dentro del XML.</summary>
     public sealed class EventoBitacoraXml_60MN
     {
-        /// <summary>BitacoraID en la base de origen. Solo informativo: al importar se asigna un Id nuevo.</summary>
+        /// <summary>BitacoraID en la base de origen. Solo informativo (se muestra al deserializar).</summary>
         [XmlAttribute("idOriginal")]
         public int IdOriginal { get; set; }
 
@@ -90,7 +88,7 @@ namespace Seguridad_60MN.Auditoria
 
         public string NombreArchivo => Path.GetFileName(Ruta);
 
-        /// <summary>SHA-256 del archivo completo: identifica exactamente qué archivo se exportó o importó.</summary>
+        /// <summary>SHA-256 del archivo completo: identifica exactamente qué archivo se exportó o se deserializó.</summary>
         public string HashSha256 { get; set; } = string.Empty;
 
         /// <summary>Contenido del archivo, para mostrar el XML en pantalla.</summary>
@@ -113,16 +111,10 @@ namespace Seguridad_60MN.Auditoria
         /// <summary>Firma general del archivo correcta.</summary>
         public bool FirmaValida { get; set; }
 
-        /// <summary>Eventos que todavía no están en la bitácora (los que se importarían).</summary>
-        public int Nuevos { get; set; }
-
-        /// <summary>Eventos que ya existen en la bitácora (se omiten al importar).</summary>
-        public int Duplicados { get; set; }
-
         /// <summary>Eventos del archivo; la descripción se completa desencriptada solo si se pide.</summary>
         public List<RegistroBitacora_60MN> Eventos { get; set; } = new List<RegistroBitacora_60MN>();
 
-        /// <summary>Motivos de rechazo. Vacío = el archivo es válido y se puede importar.</summary>
+        /// <summary>Motivos de rechazo. Vacío = el archivo es válido y se puede mostrar.</summary>
         public List<string> Errores { get; set; } = new List<string>();
 
         public bool Valido => Errores.Count == 0;
@@ -130,20 +122,13 @@ namespace Seguridad_60MN.Auditoria
         internal ArchivoBitacora_60MN Archivo { get; set; }
     }
 
-    /// <summary>Resultado de una importación.</summary>
-    public sealed class ResultadoImportacionBitacora_60MN
-    {
-        public int Importados { get; set; }
-
-        public int Duplicados { get; set; }
-    }
-
     // =========================================================================
-    // Serialización, validación e importación
+    // Serialización (exportar) y deserialización (leer y validar)
     // =========================================================================
 
     /// <summary>
-    /// Exportación e importación de la Bitácora de Eventos en XML.
+    /// Exportación (serialización) de la Bitácora de Eventos a XML y deserialización de
+    /// un XML exportado para consultarlo en pantalla. Deserializar no modifica la base.
     ///
     /// Medidas de seguridad:
     ///  1. Confidencialidad: la descripción se exporta cifrada (AES-256), nunca en claro.
@@ -154,14 +139,12 @@ namespace Seguridad_60MN.Auditoria
     ///     laughs"), con tamaño máximo de archivo y de eventos.
     ///  4. Validación de contenido: módulo, evento y criticidad deben coincidir con el
     ///     catálogo; fechas no futuras; longitudes dentro de las columnas.
-    ///  5. Importación todo-o-nada en una transacción, sin duplicar eventos que ya
-    ///     existen, y con DVH/DVV recalculados por el mismo camino que Registrar Evento.
-    ///  6. Solo se exporta o importa si la tabla Bitacora está íntegra (DVH/DVV), para no
-    ///     "firmar" ni mezclar datos sobre una bitácora adulterada.
+    ///  5. Solo se exporta si la tabla Bitacora está íntegra (DVH/DVV), para no "firmar"
+    ///     una bitácora adulterada.
     /// </summary>
     public sealed class SerializadorBitacora_60MN
     {
-        /// <summary>Tamaño máximo del archivo a importar.</summary>
+        /// <summary>Tamaño máximo del archivo a deserializar.</summary>
         public const long TamanioMaximoBytes = 20L * 1024 * 1024;
 
         /// <summary>Cantidad máxima de eventos por archivo.</summary>
@@ -241,9 +224,9 @@ namespace Seguridad_60MN.Auditoria
         // --------------------------- Leer y validar ---------------------------
 
         /// <summary>
-        /// Lee el archivo de forma segura, verifica firmas y contenido, y cuenta cuántos
-        /// eventos son nuevos y cuántos ya existen. No modifica la base. Si el archivo no
-        /// se puede leer, el resumen vuelve con el motivo en Errores (no lanza excepción).
+        /// Deserializa el archivo de forma segura y verifica firmas y contenido. No modifica
+        /// la base. Si el archivo no se puede leer, el resumen vuelve con el motivo en
+        /// Errores (no lanza excepción).
         /// </summary>
         public ResumenArchivoBitacora_60MN Analizar(string ruta, bool desencriptarDescripciones)
         {
@@ -306,13 +289,6 @@ namespace Seguridad_60MN.Auditoria
                         ? GestorBitacora_60MN.DesencriptarSeguro(e.Descripcion)
                         : "(cifrada)"
                 });
-
-            if (resumen.Valido)
-            {
-                HashSet<string> existentes = ClavesExistentes(archivo.Eventos);
-                resumen.Duplicados = archivo.Eventos.Count(e => existentes.Contains(Clave(e)));
-                resumen.Nuevos = archivo.Eventos.Count - resumen.Duplicados;
-            }
             return resumen;
         }
 
@@ -416,71 +392,6 @@ namespace Seguridad_60MN.Auditoria
             }
         }
 
-        // ------------------------------- Importar -------------------------------
-
-        /// <summary>
-        /// Importa los eventos nuevos de un archivo ya analizado y válido. Todo-o-nada:
-        /// si falla un INSERT no queda ningún evento a medias. Después se calcula el DVH
-        /// de cada fila nueva y el DVV de la tabla.
-        /// </summary>
-        public ResultadoImportacionBitacora_60MN Importar(ResumenArchivoBitacora_60MN resumen)
-        {
-            if (!resumen.Valido || resumen.Archivo == null)
-                throw new InvalidOperationException("El archivo no es válido y no se puede importar.");
-
-            ArchivoBitacora_60MN archivo = resumen.Archivo;
-            HashSet<string> existentes = ClavesExistentes(archivo.Eventos);
-            List<EventoBitacoraXml_60MN> nuevos = archivo.Eventos.Where(e => existentes.Add(Clave(e))).ToList();
-            ResultadoImportacionBitacora_60MN resultado = new ResultadoImportacionBitacora_60MN
-            {
-                Duplicados = archivo.Eventos.Count - nuevos.Count
-            };
-            if (nuevos.Count == 0)
-                return resultado;
-
-            const string sql = @"
-INSERT INTO Bitacora (UsuarioID, Usuario, FechaHora, Modulo, Evento, Criticidad, Descripcion)
-VALUES (CASE WHEN EXISTS (SELECT 1 FROM Usuario WHERE UsuarioID = @usuarioId) THEN @usuarioId END,
-        @usuario, @fecha, @modulo, @evento, @criticidad, @descripcion);
-SELECT CAST(SCOPE_IDENTITY() AS int);";
-
-            List<int> idsNuevos = new List<int>();
-            using (SqlConnection con = ConexionSeguridad_60MN.Abrir())
-            using (SqlTransaction transaccion = con.BeginTransaction())
-            {
-                try
-                {
-                    foreach (EventoBitacoraXml_60MN e in nuevos)
-                    {
-                        using SqlCommand com = new SqlCommand(sql, con, transaccion);
-                        // UsuarioID: se conserva solo si ese usuario existe en esta base (si no, queda el nombre).
-                        com.Parameters.Add("@usuarioId", System.Data.SqlDbType.Int).Value = (object)e.UsuarioId ?? DBNull.Value;
-                        com.Parameters.AddWithValue("@usuario", e.Usuario);
-                        com.Parameters.Add("@fecha", System.Data.SqlDbType.DateTime2).Value = e.FechaHora;
-                        com.Parameters.AddWithValue("@modulo", e.Modulo);
-                        com.Parameters.AddWithValue("@evento", e.Evento);
-                        com.Parameters.AddWithValue("@criticidad", e.Criticidad);
-                        // La descripción ya viene cifrada: se guarda tal cual, sin pasar nunca por texto plano.
-                        com.Parameters.AddWithValue("@descripcion", e.Descripcion);
-                        idsNuevos.Add((int)com.ExecuteScalar());
-                    }
-                    transaccion.Commit();
-                }
-                catch
-                {
-                    transaccion.Rollback();
-                    throw;
-                }
-            }
-
-            // Igual que Registrar Evento: DVH de cada fila nueva y DVV de la tabla.
-            foreach (int id in idsNuevos)
-                dv.ActualizarFila(TablaDV_60MN.Bitacora, id);
-
-            resultado.Importados = idsNuevos.Count;
-            return resultado;
-        }
-
         // ------------------------------- Firmas -------------------------------
 
         private string FirmarEvento(EventoBitacoraXml_60MN e) =>
@@ -507,33 +418,6 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
             {
                 return false;
             }
-        }
-
-        // ---------------------------- Duplicados ----------------------------
-
-        /// <summary>
-        /// Un evento ya existe si hay una fila con la misma fecha, usuario, evento y
-        /// descripción cifrada (el texto cifrado es único porque cada cifrado usa un IV al azar).
-        /// </summary>
-        private static string Clave(EventoBitacoraXml_60MN e) => Clave(e.FechaHora, e.Usuario, e.Evento, e.Descripcion);
-
-        private static string Clave(DateTime fecha, string usuario, string evento, string descripcion) =>
-            $"{fecha:yyyy-MM-ddTHH:mm:ss}|{usuario}|{evento}|{descripcion}";
-
-        private static HashSet<string> ClavesExistentes(List<EventoBitacoraXml_60MN> eventos)
-        {
-            HashSet<string> claves = new HashSet<string>(StringComparer.Ordinal);
-            if (eventos.Count == 0) return claves;
-
-            const string sql = "SELECT FechaHora, Usuario, Evento, Descripcion FROM Bitacora WHERE FechaHora BETWEEN @desde AND @hasta";
-            using SqlConnection con = ConexionSeguridad_60MN.Abrir();
-            using SqlCommand com = new SqlCommand(sql, con);
-            com.Parameters.Add("@desde", System.Data.SqlDbType.DateTime2).Value = eventos.Min(e => e.FechaHora);
-            com.Parameters.Add("@hasta", System.Data.SqlDbType.DateTime2).Value = eventos.Max(e => e.FechaHora);
-            using SqlDataReader lector = com.ExecuteReader();
-            while (lector.Read())
-                claves.Add(Clave(lector.GetDateTime(0), lector.GetString(1), lector.GetString(2), lector.GetString(3)));
-            return claves;
         }
 
         private static DateTime SinFraccion(DateTime fecha) =>
