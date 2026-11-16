@@ -98,11 +98,8 @@ C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-Ing
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outcli\VetCare.exe.config
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outcli\VetCare.exe
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outcli\VetCare.pdb
-C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net48\VetCare.Stock.FrmConfiguracionStock_60MN.resources
-C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net48\VetCare.Stock.FrmMovimientoStock_60MN.resources
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net48\VetCare.Stock.FrmProductos_60MN.resources
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net48\VetCare.Stock.FrmProducto_60MN.resources
-C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net48\VetCare.Stock.FrmReporteExistencias_60MN.resources
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\Capturas\out\UsuarioEmergencia_60MN.xml
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\Capturas\out\VetCare.exe.config
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\Capturas\out\VetCare.exe
@@ -122,3 +119,11 @@ C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-Ing
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\0f3c29d1-39a5-4629-9e39-f79eeee6148f\scratchpad\build_icono\VetCare.exe
 C:\Users\jmora\AppData\Local\Temp\claude\C--Users-jmora-Desktop-RepoFacultad-IngenieriaEnSistemas-Morante-Negrete-VetCare\0f3c29d1-39a5-4629-9e39-f79eeee6148f\scratchpad\build_icono\VetCare.pdb
 C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete\VetCare\VetCare\obj\Debug\net48\VetCare.Seguridad.FrmDeserializarBitacora_60MN.resources
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\b8da0db7-cb16-463f-9509-a2ee81444566\scratchpad\build\UsuarioEmergencia_60MN.xml
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\b8da0db7-cb16-463f-9509-a2ee81444566\scratchpad\build\VetCare.exe.config
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\b8da0db7-cb16-463f-9509-a2ee81444566\scratchpad\build\VetCare.exe
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\b8da0db7-cb16-463f-9509-a2ee81444566\scratchpad\build\VetCare.pdb
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outapp\UsuarioEmergencia_60MN.xml
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outapp\VetCare.exe.config
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outapp\VetCare.exe
+C:\Users\jmora\AppData\Local\Temp\claude\b5619f7ebde27f10\996d1d27-2086-4ddd-873c-6618c7781391\scratchpad\outapp\VetCare.pdb

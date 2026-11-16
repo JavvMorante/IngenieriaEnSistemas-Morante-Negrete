@@ -55,7 +55,8 @@ namespace VetCare
             btnModificar = new Button();
             btnDarBaja = new Button();
             btnReactivar = new Button();
-            btnMovimiento = new Button();
+            cboFiltroStock = new ComboBox();
+            btnHistorial = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvProductos).BeginInit();
             SuspendLayout();
             //
@@ -100,13 +101,13 @@ namespace VetCare
             cboCategoria.FormattingEnabled = true;
             cboCategoria.Location = new Point(430, 52);
             cboCategoria.Name = "cboCategoria";
-            cboCategoria.Size = new Size(200, 28);
+            cboCategoria.Size = new Size(180, 28);
             cboCategoria.TabIndex = 4;
             //
             // chkInactivos
             //
             chkInactivos.AutoSize = true;
-            chkInactivos.Location = new Point(650, 55);
+            chkInactivos.Location = new Point(624, 55);
             chkInactivos.Name = "chkInactivos";
             chkInactivos.Size = new Size(183, 24);
             chkInactivos.TabIndex = 5;
@@ -115,13 +116,23 @@ namespace VetCare
             //
             // btnBuscar
             //
-            btnBuscar.Location = new Point(850, 50);
+            btnBuscar.Location = new Point(942, 50);
             btnBuscar.Name = "btnBuscar";
             btnBuscar.Size = new Size(110, 34);
             btnBuscar.TabIndex = 6;
             btnBuscar.Text = "Buscar";
             btnBuscar.UseVisualStyleBackColor = true;
             btnBuscar.Click += btnBuscar_Click;
+            //
+            // cboFiltroStock
+            //
+            cboFiltroStock.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboFiltroStock.FormattingEnabled = true;
+            cboFiltroStock.Location = new Point(812, 52);
+            cboFiltroStock.Name = "cboFiltroStock";
+            cboFiltroStock.Size = new Size(124, 28);
+            cboFiltroStock.TabIndex = 6;
+            cboFiltroStock.SelectedIndexChanged += cboFiltroStock_SelectedIndexChanged;
             //
             // dgvProductos
             //
@@ -259,14 +270,14 @@ namespace VetCare
             lblAlertas.ForeColor = Color.Firebrick;
             lblAlertas.Location = new Point(12, 506);
             lblAlertas.Name = "lblAlertas";
-            lblAlertas.Size = new Size(390, 42);
+            lblAlertas.Size = new Size(440, 42);
             lblAlertas.TextAlign = ContentAlignment.MiddleLeft;
             lblAlertas.TabIndex = 8;
             //
             // btnNuevo
             //
             btnNuevo.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnNuevo.Location = new Point(458, 510);
+            btnNuevo.Location = new Point(594, 510);
             btnNuevo.Name = "btnNuevo";
             btnNuevo.Size = new Size(130, 34);
             btnNuevo.TabIndex = 9;
@@ -278,7 +289,7 @@ namespace VetCare
             // btnModificar
             //
             btnModificar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnModificar.Location = new Point(594, 510);
+            btnModificar.Location = new Point(730, 510);
             btnModificar.Name = "btnModificar";
             btnModificar.Size = new Size(130, 34);
             btnModificar.TabIndex = 10;
@@ -290,7 +301,7 @@ namespace VetCare
             // btnDarBaja
             //
             btnDarBaja.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnDarBaja.Location = new Point(730, 510);
+            btnDarBaja.Location = new Point(866, 510);
             btnDarBaja.Name = "btnDarBaja";
             btnDarBaja.Size = new Size(130, 34);
             btnDarBaja.TabIndex = 11;
@@ -302,7 +313,7 @@ namespace VetCare
             // btnReactivar
             //
             btnReactivar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnReactivar.Location = new Point(866, 510);
+            btnReactivar.Location = new Point(1002, 510);
             btnReactivar.Name = "btnReactivar";
             btnReactivar.Size = new Size(130, 34);
             btnReactivar.TabIndex = 12;
@@ -311,17 +322,17 @@ namespace VetCare
             btnReactivar.UseVisualStyleBackColor = true;
             btnReactivar.Click += btnReactivar_Click;
             //
-            // btnMovimiento
+            // btnHistorial
             //
-            btnMovimiento.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnMovimiento.Location = new Point(1002, 510);
-            btnMovimiento.Name = "btnMovimiento";
-            btnMovimiento.Size = new Size(136, 34);
-            btnMovimiento.TabIndex = 13;
-            btnMovimiento.Tag = "STK_MOVIMIENTO";
-            btnMovimiento.Text = "Movimiento";
-            btnMovimiento.UseVisualStyleBackColor = true;
-            btnMovimiento.Click += btnMovimiento_Click;
+            btnHistorial.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnHistorial.Location = new Point(458, 510);
+            btnHistorial.Name = "btnHistorial";
+            btnHistorial.Size = new Size(130, 34);
+            btnHistorial.TabIndex = 14;
+            btnHistorial.Tag = "SEG_BITACORA_CAMBIOS";
+            btnHistorial.Text = "Historial de precios";
+            btnHistorial.UseVisualStyleBackColor = true;
+            btnHistorial.Click += btnHistorial_Click;
             //
             // FrmProductos_60MN
             //
@@ -329,13 +340,14 @@ namespace VetCare
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1150, 556);
-            Controls.Add(btnMovimiento);
+            Controls.Add(btnHistorial);
             Controls.Add(btnReactivar);
             Controls.Add(btnDarBaja);
             Controls.Add(btnModificar);
             Controls.Add(btnNuevo);
             Controls.Add(lblAlertas);
             Controls.Add(dgvProductos);
+            Controls.Add(cboFiltroStock);
             Controls.Add(btnBuscar);
             Controls.Add(chkInactivos);
             Controls.Add(cboCategoria);
@@ -378,6 +390,7 @@ namespace VetCare
         private Button btnModificar;
         private Button btnDarBaja;
         private Button btnReactivar;
-        private Button btnMovimiento;
+        private ComboBox cboFiltroStock;
+        private Button btnHistorial;
     }
 }

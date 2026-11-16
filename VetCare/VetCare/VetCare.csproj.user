@@ -1,6 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Compile Update="Compras\FrmAprobarOrden_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Compras\FrmCotizacion_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Compras\FrmOrdenCompra_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Compras\FrmPagoProveedor_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Compras\FrmRecepcion_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Compras\FrmSolicitudReposicion_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="FrmMenuPrincipal_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -38,6 +56,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Reportes\FrmReporteAtenciones_60MN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Reportes\FrmReporteCompras_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Reportes\FrmReporteInteligente_60MN.cs">
@@ -82,12 +103,6 @@
     <Compile Update="Seguridad\FrmUsuario_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Stock\FrmConfiguracionStock_60MN.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Stock\FrmMovimientoStock_60MN.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="Stock\FrmProductos_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,9 +113,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Stock\FrmProveedor_60MN.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Stock\FrmReporteExistencias_60MN.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Utilidades\FormBase_60MN.cs">

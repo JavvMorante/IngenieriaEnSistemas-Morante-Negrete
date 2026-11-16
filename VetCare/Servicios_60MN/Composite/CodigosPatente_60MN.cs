@@ -4,7 +4,7 @@ namespace Servicios_60MN.Composite
     /// Códigos de las patentes del sistema. Son los mismos valores que la
     /// columna Patente.Codigo y que la propiedad Tag de cada ítem del menú
     /// principal y de cada botón (se ocultan si el usuario no tiene la patente).
-    /// Numeración de casos de uso del Trabajo de Diploma V2.4.
+    /// Numeración de casos de uso del Trabajo de Diploma V2.5.
     /// </summary>
     public static class CodigosPatente_60MN
     {
@@ -34,16 +34,19 @@ namespace Servicios_60MN.Composite
         public const string Carrito = "VEN_CARRITO";                   // CUN05 Registrar Medicación en Carrito (y ventas registradas)
         public const string InformeAtencion = "ATN_INFORME";           // CUN06 Emitir Informe de Atención
 
-        // PN2 - Gestión de Stock
-        public const string ProductoAlta = "STK_PROD_ALTA";            // CUN08 Administrar Existencias (alta)
-        public const string ProductoModificar = "STK_PROD_MODIF";      // CUN08 Administrar Existencias (modificación)
-        public const string MovimientoStock = "STK_MOVIMIENTO";        // CUN09 Registrar Movimiento de Stock
-        public const string ConfiguracionStock = "STK_CONFIG";         // CUN10 Configurar Margen y Alerta de Stock Mínimo
-        public const string Proveedores = "MAE_PROVEEDORES";           // CUN11 Gestionar Proveedores
-        public const string ReporteExistencias = "STK_REPORTE";        // CUN12 Generar Reporte de Existencias
+        // PN2 - Reposición de Medicamentos e Insumos (Trabajo de Diploma V2.5)
+        public const string Proveedores = "MAE_PROVEEDORES";           // CUN08 Gestionar Proveedores
+        public const string ProductoAlta = "STK_PROD_ALTA";            // CUN09 Administrar Productos (alta)
+        public const string ProductoModificar = "STK_PROD_MODIF";      // CUN09 Administrar Productos (modificación, baja y reactivación)
+        public const string SolicitudReposicion = "CMP_SOLICITUD";     // CUN10 Generar Solicitud de Reposición
+        public const string OrdenCompra = "CMP_ORDEN";                 // CUN11 Registrar Orden de Compra
+        public const string AprobarOrden = "CMP_APROBAR";              // CUN12 Aprobar Orden de Compra
+        public const string PagoProveedor = "CMP_PAGO";                // CUN13 Registrar Pago al Proveedor
+        public const string Recepcion = "CMP_RECEPCION";               // CUN14 Registrar Recepción de Mercadería
+        public const string ReporteCompras = "REP_COMPRAS";            // CUN15 Generar Reporte de Compras
 
-        // Reportes que cruzan los dos procesos: CUN07 Reporte de Atenciones y CUN13 Reporte Inteligente.
-        // El sistema no factura: no hay patentes de facturación, despacho ni compras.
+        // Reportes que cruzan los dos procesos: CUN07 Reporte de Atenciones y CUN16 Reporte Inteligente.
+        // El sistema no factura: no hay patentes de facturación ni despacho.
         public const string Reportes = "REP_REPORTES";
 
         /// <summary>
@@ -59,8 +62,8 @@ namespace Servicios_60MN.Composite
             ClienteAlta, ClienteModificar, ClienteConsultar, Mascota,
             HistoriaClinicaAlta, HistoriaClinicaConsultar, HistoriaClinicaModificar,
             AtencionRegistrar, Carrito, InformeAtencion,
-            ProductoAlta, ProductoModificar, ConfiguracionStock, MovimientoStock, ReporteExistencias,
-            Proveedores, Reportes
+            ProductoAlta, ProductoModificar, Proveedores, Reportes,
+            SolicitudReposicion, OrdenCompra, AprobarOrden, PagoProveedor, Recepcion, ReporteCompras
         };
     }
 }

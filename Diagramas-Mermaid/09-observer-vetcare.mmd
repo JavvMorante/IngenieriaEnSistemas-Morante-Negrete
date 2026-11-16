@@ -1,0 +1,45 @@
+classDiagram
+    class IObservadorIdioma_60MN {
+        <<interface>>
+        +ActualizarIdioma(idioma)
+    }
+    class GestorIdioma_60MN {
+        <<Sujeto · Singleton>>
+        -List observadores
+        -Dictionary traducciones
+        +IdiomaActual IIdioma_60MN
+        +Suscribir(observador)
+        +Desuscribir(observador)
+        +CambiarIdioma(idioma, traducciones)
+        -Notificar()
+        +Traducir(clave, porDefecto) string
+    }
+    class FormBase_60MN {
+        <<Observador concreto>>
+        #OnLoad(e) se suscribe
+        #OnFormClosed(e) se desuscribe
+        +ActualizarIdioma(idioma)
+        #AlCambiarIdioma() virtual
+    }
+    class TraductorFormularios_60MN {
+        <<static>>
+        +Traducir(formulario)
+        +T(clave, porDefecto) string
+    }
+    class FrmMenuPrincipal_60MN
+    class FrmProducto_60MN
+    class FrmCambiarIdioma_60MN
+    GestorIdioma_60MN o-- "0..*" IObservadorIdioma_60MN : observadores
+    IObservadorIdioma_60MN <|.. FormBase_60MN
+    FormBase_60MN <|-- FrmMenuPrincipal_60MN
+    FormBase_60MN <|-- FrmProducto_60MN
+    FormBase_60MN <|-- FrmCambiarIdioma_60MN
+    FormBase_60MN ..> TraductorFormularios_60MN
+    FrmCambiarIdioma_60MN ..> GestorIdioma_60MN : CambiarIdioma()
+    style IObservadorIdioma_60MN fill:#eef1f4,stroke:#44566b,stroke-width:3px
+    style GestorIdioma_60MN fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style FormBase_60MN fill:#fbeedb,stroke:#9a6a16,stroke-width:3px
+    style TraductorFormularios_60MN fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style FrmMenuPrincipal_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style FrmProducto_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style FrmCambiarIdioma_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px

@@ -1,0 +1,26 @@
+classDiagram
+    direction LR
+    class Component {
+        <<interface>>
+        +operacion()
+        +agregarHijo(c)
+        +quitarHijo(c)
+        +obtenerHijos()
+    }
+    class Leaf {
+        +operacion() hace el trabajo
+    }
+    class Composite {
+        -hijos
+        +operacion() delega en los hijos
+        +agregarHijo(c)
+    }
+    class Client
+    Component <|.. Leaf
+    Component <|.. Composite
+    Composite o-- "0..*" Component : hijos
+    Client ..> Component : trata igual a hoja y compuesto
+    style Component fill:#eef1f4,stroke:#44566b,stroke-width:3px
+    style Leaf fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style Composite fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px
+    style Client fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px

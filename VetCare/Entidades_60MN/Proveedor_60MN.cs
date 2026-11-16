@@ -2,7 +2,7 @@ using Interfaces_60MN;
 
 namespace Entidades_60MN
 {
-    /// <summary>Proveedor de productos (CUN11 Gestionar Proveedores).</summary>
+    /// <summary>Proveedor de productos (CUN08 Gestionar Proveedores).</summary>
     public class Proveedor_60MN : IEntity_60MN
     {
         public int Id { get; set; }

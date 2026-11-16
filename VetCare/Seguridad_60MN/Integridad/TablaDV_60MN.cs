@@ -42,6 +42,13 @@ namespace Seguridad_60MN.Integridad
         public const string Proveedor = "Proveedor";
         public const string VentaEncabezado = "VentaEncabezado";
         public const string VentaDetalle = "VentaDetalle";
+        public const string SolicitudReposicion = "SolicitudReposicion";
+        public const string SolicitudReposicionDetalle = "SolicitudReposicionDetalle";
+        public const string OrdenCompra = "OrdenCompra";
+        public const string OrdenCompraDetalle = "OrdenCompraDetalle";
+        public const string PagoProveedor = "PagoProveedor";
+        public const string Recepcion = "Recepcion";
+        public const string RecepcionDetalle = "RecepcionDetalle";
 
         /// <summary>Tablas del modelo de permisos Usuario - Familia - Patente.</summary>
         public static readonly string[] TablasDePermisos =
@@ -68,7 +75,7 @@ namespace Seguridad_60MN.Integridad
                 "BitacoraID", "UsuarioID", "Usuario", "FechaHora", "Modulo", "Evento", "Criticidad", "Descripcion"),
             new TablaDV_60MN(Productos, new[] { "ProductoID" },
                 "ProductoID", "Codigo", "Nombre", "CategoriaID", "ProveedorID", "StockActual", "StockMinimo",
-                "PrecioCosto", "PrecioVenta", "FechaVencimiento", "Lote", "Activo"),
+                "PrecioCosto", "PrecioVenta", "Margen", "FechaVencimiento", "Lote", "Activo"),
             new TablaDV_60MN(MovimientoStock, new[] { "MovimientoID" },
                 "MovimientoID", "ProductoID", "Tipo", "Cantidad", "StockAnterior", "StockResultante",
                 "Motivo", "FechaHora", "UsuarioID"),
@@ -87,6 +94,23 @@ namespace Seguridad_60MN.Integridad
                 "VentaID", "ClienteID", "AtencionID", "FechaHora", "UsuarioID", "Total"),
             new TablaDV_60MN(VentaDetalle, new[] { "VentaDetalleID" },
                 "VentaDetalleID", "VentaID", "ProductoID", "Cantidad", "PrecioUnitario", "Subtotal", "MovimientoID"),
+            new TablaDV_60MN(SolicitudReposicion, new[] { "SolicitudID" },
+                "SolicitudID", "FechaHora", "UsuarioID", "Estado", "Observaciones"),
+            new TablaDV_60MN(SolicitudReposicionDetalle, new[] { "SolicitudDetalleID" },
+                "SolicitudDetalleID", "SolicitudID", "ProductoID", "StockActual", "StockMinimo", "CantidadPedida"),
+            new TablaDV_60MN(OrdenCompra, new[] { "OrdenCompraID" },
+                "OrdenCompraID", "SolicitudID", "ProveedorID", "FechaHora", "NroCotizacion", "PlazoEntregaDias",
+                "CondicionPago", "MotivoEleccion", "Advertencias", "Total", "Estado", "UsuarioID", "AprobadaPor",
+                "FechaAprobacion", "MotivoRechazo"),
+            new TablaDV_60MN(OrdenCompraDetalle, new[] { "OrdenDetalleID" },
+                "OrdenDetalleID", "OrdenCompraID", "ProductoID", "Cantidad", "PrecioUnitario", "Subtotal", "CantidadRecibida"),
+            new TablaDV_60MN(PagoProveedor, new[] { "PagoID" },
+                "PagoID", "OrdenCompraID", "Banco", "NroComprobante", "FechaPago", "Importe", "Observaciones", "UsuarioID"),
+            new TablaDV_60MN(Recepcion, new[] { "RecepcionID" },
+                "RecepcionID", "OrdenCompraID", "NroRemito", "FechaHora", "UsuarioID", "Observaciones"),
+            new TablaDV_60MN(RecepcionDetalle, new[] { "RecepcionDetalleID" },
+                "RecepcionDetalleID", "RecepcionID", "ProductoID", "CantidadRecibida", "Lote", "FechaVencimiento",
+                "Observacion", "MovimientoID"),
         };
 
         public static TablaDV_60MN Obtener(string nombre)

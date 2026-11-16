@@ -9,7 +9,7 @@ namespace Entidades_60MN
         Ajuste
     }
 
-    /// <summary>Ingreso, egreso o ajuste de existencias de un producto (CUN14).</summary>
+    /// <summary>Ingreso (recepción CUN14), egreso (venta CUN05) o ajuste de existencias de un producto.</summary>
     public class MovimientoStock_60MN : IEntity_60MN
     {
         public int Id { get; set; }

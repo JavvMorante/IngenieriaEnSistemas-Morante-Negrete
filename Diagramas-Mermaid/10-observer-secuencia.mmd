@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant FC as FrmCambiarIdioma_60MN
+    participant B as IdiomaBLL_60MN
+    participant G as GestorIdioma_60MN
+    participant M as FrmMenuPrincipal_60MN
+    participant P as FrmProductos_60MN
+    Note over M,P: Ambos ya se suscribieron al abrirse (OnLoad)
+    U->>FC: Elige "Ingles" y acepta
+    FC->>B: CambiarYGuardar(idioma)
+    B->>B: Lee la tabla Traduccion
+    B->>G: CambiarIdioma(idioma, traducciones)
+    activate G
+    Note over G: Notificar() recorre una COPIA de la lista
+    G->>M: ActualizarIdioma(idioma)
+    M->>M: TraductorFormularios.Traducir(this)
+    G->>P: ActualizarIdioma(idioma)
+    P->>P: TraductorFormularios.Traducir(this)
+    deactivate G
+    G-->>B: ok
+    B-->>FC: ok
+    FC-->>U: Pantallas traducidas sin reiniciar

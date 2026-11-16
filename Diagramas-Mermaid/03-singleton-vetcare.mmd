@@ -1,0 +1,45 @@
+classDiagram
+    class SessionManager_60MN {
+        <<Singleton>>
+        -static SessionManager_60MN instancia
+        -static object candado
+        -SessionManager_60MN()
+        +static Instancia SessionManager_60MN
+        +Usuario IUsuario_60MN
+        +EstaLogueado bool
+        +EsEmergencia bool
+        +Login(usuario, esEmergencia)
+        +Logout()
+        +TienePermiso(codigoPatente) bool
+    }
+    class GestorIdioma_60MN {
+        <<Singleton>>
+        -static GestorIdioma_60MN instancia
+        -static object candado
+        -GestorIdioma_60MN()
+        +static Instancia GestorIdioma_60MN
+        +IdiomaActual IIdioma_60MN
+        +CambiarIdioma(idioma, traducciones)
+        +Traducir(clave, porDefecto) string
+    }
+    class SesionActual_60MN {
+        <<static>>
+        +UsuarioId int
+        +NombreUsuario string
+        +RequierePermiso(codigoPatente)
+    }
+    class ProductoBLL_60MN {
+        +Modificar(producto)
+    }
+    class FrmLogin_60MN
+    class FormBase_60MN
+    SesionActual_60MN ..> SessionManager_60MN : Instancia
+    ProductoBLL_60MN ..> SesionActual_60MN
+    FrmLogin_60MN ..> SessionManager_60MN : Instancia
+    FormBase_60MN ..> GestorIdioma_60MN : Instancia
+    style SessionManager_60MN fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style GestorIdioma_60MN fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style SesionActual_60MN fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style ProductoBLL_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style FrmLogin_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style FormBase_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px

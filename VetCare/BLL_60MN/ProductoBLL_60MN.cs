@@ -8,7 +8,7 @@ using Servicios_60MN.Sesion;
 
 namespace BLL_60MN
 {
-    /// <summary>CUN11 (flujo 4.1): ya existe un producto con el mismo nombre y lote.</summary>
+    /// <summary>CUN09: ya existe un producto con el mismo nombre y lote.</summary>
     public class ProductoDuplicadoException_60MN : NegocioException_60MN
     {
         public Producto_60MN Existente { get; }
@@ -21,7 +21,7 @@ namespace BLL_60MN
     }
 
     /// <summary>
-    /// CUN11 / CUN12: uno o más datos del producto son inválidos. Errores va por campo
+    /// CUN09: uno o más datos del producto son inválidos. Errores va por campo
     /// (nombre de la propiedad de Producto_60MN → motivo) para marcarlos en la GUI.
     /// </summary>
     public class DatosProductoInvalidosException_60MN : NegocioException_60MN
@@ -35,7 +35,11 @@ namespace BLL_60MN
         }
     }
 
-    /// <summary>CUN11 Registrar Producto y CUN12 Modificar Producto.</summary>
+    /// <summary>
+    /// CUN09 Administrar Productos (alta, modificación, baja y reactivación). El margen es un dato
+    /// del producto: la categoría (o el margen general) solo lo propone en el alta. El stock no se
+    /// edita acá: arranca en 0 y solo cambia por ventas (CUN05) y recepciones de mercadería (CUN14).
+    /// </summary>
     public class ProductoBLL_60MN
     {
         // Largos máximos (la GUI los usa como MaxLength); menores que las columnas de Productos.
@@ -43,6 +47,8 @@ namespace BLL_60MN
         public const int LargoLote = 20;
         /// <summary>Signos que admite el nombre de un producto, además de letras, números y espacios.</summary>
         public const string SignosNombre = Validaciones_60MN.SignosProducto;
+        /// <summary>Margen máximo admitido (%).</summary>
+        public const decimal MargenMaximo = 1000m;
 
         private readonly ProductoDAL_60MN mapper = new ProductoDAL_60MN();
         private readonly CatalogoStockDAL_60MN catalogo = new CatalogoStockDAL_60MN();
@@ -54,7 +60,7 @@ namespace BLL_60MN
         public List<Categoria_60MN> ListarCategorias() => catalogo.ListarCategorias();
 
         /// <summary>
-        /// Proveedores activos para el alta y la modificación de productos (CUN11: los dados de
+        /// Proveedores activos para el alta y la modificación de productos (CUN09: los dados de
         /// baja no se ofrecen). ademasId agrega el proveedor actual del producto que se modifica.
         /// </summary>
         public List<Proveedor_60MN> ListarProveedores(int? ademasId = null) => catalogo.ListarProveedores(soloActivos: true, ademasId);
@@ -64,7 +70,8 @@ namespace BLL_60MN
 
         public List<Producto_60MN> Buscar(string? texto, int? categoriaId, bool incluirInactivos)
         {
-            if (!new[] { CodigosPatente_60MN.ProductoAlta, CodigosPatente_60MN.ProductoModificar, CodigosPatente_60MN.MovimientoStock }
+            if (!new[] { CodigosPatente_60MN.ProductoAlta, CodigosPatente_60MN.ProductoModificar,
+                         CodigosPatente_60MN.SolicitudReposicion, CodigosPatente_60MN.OrdenCompra, CodigosPatente_60MN.Recepcion }
                     .Any(SessionManager_60MN.Instancia.TienePermiso))
                 throw new NegocioException_60MN("No tiene permiso para consultar productos.");
             return mapper.Buscar(texto, categoriaId, incluirInactivos);
@@ -74,10 +81,11 @@ namespace BLL_60MN
 
         public int ContarAlertasActivas() => alertas.ContarAlertasActivas();
 
-        /// <summary>Margen aplicable: el particular de la categoría o, si no tiene, el margen general (CUN11 paso 5).</summary>
-        /// <summary>Stock mínimo que se propone al registrar un producto (parametrizado en CUN13).</summary>
+
+        /// <summary>Stock mínimo que se propone al registrar un producto (Configuracion.StockMinimoSugerido).</summary>
         public int ObtenerStockMinimoSugerido() => catalogo.ObtenerStockMinimoSugerido();
 
+        /// <summary>Margen que se propone en el alta: el de la categoría o, si no tiene, el margen general.</summary>
         public decimal ObtenerMargen(int categoriaId)
         {
             Categoria_60MN? categoria = catalogo.ListarCategorias().FirstOrDefault(c => c.Id == categoriaId);
@@ -87,12 +95,17 @@ namespace BLL_60MN
         public static decimal CalcularPrecioVenta(decimal precioCosto, decimal margen) =>
             Math.Round(precioCosto * (1 + margen / 100m), 2, MidpointRounding.AwayFromZero);
 
-        /// <summary>CUN11. Devuelve true si el alta disparó la alerta de reposición (flujo 4.3).</summary>
-        public bool Registrar(Producto_60MN producto)
+        /// <summary>
+        /// CUN09 alta. El stock inicial es 0. Si el precio de venta queda por debajo del costo pide
+        /// confirmación (confirmado = true para seguir). Devuelve true si el alta disparó la alerta de reposición.
+        /// </summary>
+        public bool Registrar(Producto_60MN producto, bool confirmado = false)
         {
             SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.ProductoAlta);
             Normalizar(producto);
+            producto.StockActual = 0;
             Validar(producto, esAlta: true);
+            ConfirmarPrecioBajoCosto(producto, confirmado);
             ProveedorActivo(producto.ProveedorId);
 
             Producto_60MN? duplicado = mapper.ObtenerPorNombreYLote(producto.Nombre, producto.Lote);
@@ -108,12 +121,13 @@ namespace BLL_60MN
             return EvaluarAlerta(producto);
         }
 
-        /// <summary>CUN12. El stock actual no se modifica acá (flujo 5.1): se ajusta con CUN14.</summary>
-        public bool Modificar(Producto_60MN producto)
+        /// <summary>CUN09 modificación. El stock actual no se modifica acá: solo por ventas y recepciones.</summary>
+        public bool Modificar(Producto_60MN producto, bool confirmado = false)
         {
             SesionActual_60MN.RequierePermiso(CodigosPatente_60MN.ProductoModificar);
             Normalizar(producto);
             Validar(producto, esAlta: false);
+            ConfirmarPrecioBajoCosto(producto, confirmado);
 
             Producto_60MN actual = mapper.ObtenerPorId(producto.Id) ?? throw new NegocioException_60MN("El producto ya no existe.");
             if (!actual.Activo)
@@ -174,6 +188,7 @@ namespace BLL_60MN
             actual.StockMinimo = version.StockMinimo;
             actual.PrecioCosto = version.PrecioCosto;
             actual.PrecioVenta = version.PrecioVenta;
+            actual.Margen = version.Margen;
             actual.FechaVencimiento = version.FechaVencimiento;
             actual.Lote = version.Lote;
             if (mapper.ObtenerPorNombreYLote(actual.Nombre, actual.Lote, actual.Id) != null)
@@ -205,6 +220,14 @@ namespace BLL_60MN
 
         private static int UsuarioParaAuditoria => SesionActual_60MN.UsuarioId ?? 0;
 
+        /// <summary>CUN09: vender por debajo del costo es posible, pero se confirma.</summary>
+        private static void ConfirmarPrecioBajoCosto(Producto_60MN p, bool confirmado)
+        {
+            if (!confirmado && p.PrecioVenta < p.PrecioCosto)
+                throw new ConfirmacionRequeridaException_60MN(
+                    $"El precio de venta ($ {p.PrecioVenta:N2}) es menor que el precio de costo ($ {p.PrecioCosto:N2}). ¿Desea guardarlo igual?");
+        }
+
         private void ProveedorActivo(int proveedorId)
         {
             Proveedor_60MN proveedor = proveedores.ObtenerPorId(proveedorId)
@@ -232,7 +255,7 @@ namespace BLL_60MN
             {
                 Nombre = producto.Nombre, Lote = producto.Lote, CategoriaId = producto.CategoriaId, ProveedorId = producto.ProveedorId,
                 StockActual = producto.StockActual, StockMinimo = producto.StockMinimo, PrecioCosto = producto.PrecioCosto,
-                PrecioVenta = producto.PrecioVenta, FechaVencimiento = producto.FechaVencimiento
+                PrecioVenta = producto.PrecioVenta, Margen = producto.Margen, FechaVencimiento = producto.FechaVencimiento
             };
             Normalizar(copia);
             return ErroresProducto(copia, esAlta);
@@ -276,6 +299,8 @@ namespace BLL_60MN
                 errores[nameof(Producto_60MN.CategoriaId)] = "Seleccione una categoría.";
             if (p.ProveedorId <= 0)
                 errores[nameof(Producto_60MN.ProveedorId)] = "Seleccione un proveedor.";
+            if (p.Margen < 0 || p.Margen > MargenMaximo)
+                errores[nameof(Producto_60MN.Margen)] = $"El margen debe estar entre 0 y {MargenMaximo} %.";
             if (esAlta && p.StockActual < 0)
                 errores[nameof(Producto_60MN.StockActual)] = "El stock actual no puede ser negativo.";
             if (p.StockMinimo < 0)
@@ -284,7 +309,7 @@ namespace BLL_60MN
                 errores[nameof(Producto_60MN.PrecioCosto)] = "El precio de costo debe ser mayor a cero.";
             if (p.PrecioVenta <= 0)
                 errores[nameof(Producto_60MN.PrecioVenta)] = "El precio de venta debe ser mayor a cero.";
-            // CUN11 4.2: no se da de alta un producto ya vencido.
+            // CUN09: no se da de alta un producto ya vencido.
             if (esAlta && p.FechaVencimiento.Date < DateTime.Today)
                 errores[nameof(Producto_60MN.FechaVencimiento)] = "La fecha de vencimiento es anterior a la fecha actual: no se puede registrar el producto.";
             return errores;

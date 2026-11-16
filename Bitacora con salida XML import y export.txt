@@ -1,0 +1,62 @@
+Primero reviso cómo está hoy la bitácora, la pantalla y las piezas de seguridad que voy a reutilizar.
+
+Restored test config and ran phase 1
+Las pruebas pasan, pero detecté que el caso "evento quitado" rompía el XML en vez de eliminar un evento completo (mi corte quedaba en el </Evento> interno). Voy a corregirlo para quitar un evento entero bien formado y verificar que la firma del archivo lo detecta.
+
+Fixed removed-event test and reran phase 1
+Phase 2: recreate the DB (bitácora empty) and import the exported file:
+
+Recreate DB and run import phase 2
+Importación real verificada. Ahora la regresión completa y capturas de las pantallas (bitácora con los botones nuevos, visor con un archivo válido y con uno alterado):
+
+Ejecutó 2 comandos
+Path escaping in sed got messy; I'll use the Edit tool directly:
+
+Editó un archivo, ejecutó un comando, leyó 3 archivos
+Las pantallas se ven bien. Corro la regresión completa (CUs de pacientes y backup) y dejo la base limpia:
+
+Ran full regression and reset DB
+Voy a agregar la sección al README, aclarando que la única "falla" es la aserción mal planteada de la prueba de backup ya comentada (la búsqueda posterior al restore registra el DNI buscado), no una regresión real.
+
+Editado README_VetCare_60MN.md
+Ya podés exportar e importar la bitácora en XML desde ADMIN > Bitácora de eventos, y ver el XML en pantalla. Probé todo con la base y los archivos reales: exporté, intenté importar archivos alterados, recreé la base y reimporté. No hice commit.
+
+Cómo se usa
+En la pantalla aparecen tres botones nuevos, a la derecha de Buscar:
+
+Botón	Qué hace	Quién lo ve
+Ver XML...	Abre un .xml, verifica sus firmas y lo muestra. No importa nada.	Quien pueda exportar o importar
+Exportar XML...	Exporta exactamente lo que muestra la grilla (los filtros de tu última búsqueda) y después te ofrece ver el XML generado.	Patente SEG_BITACORA_EXPORT (familia Auditoría)
+Importar XML...	Muestra una vista previa con el resultado de la validación. "Importar eventos" se habilita solo si el archivo es válido y trae eventos nuevos.	Patente SEG_BITACORA_IMPORT (familia Administrador)
+Cómo se muestra el XML (pantalla nueva FrmVisorXmlBitacora_60MN):
+
+Arriba: el estado, en verde (✔ válido) o en rojo (✖ rechazado). Debajo, quién lo exportó y cuándo, la versión, la cantidad de eventos, el período, cuántos son nuevos y cuántos ya existían, y el SHA-256 del archivo.
+Si fue rechazado: la lista de motivos en rojo (por ejemplo, "Evento 1: la firma no coincide").
+Pestaña "XML": el texto exacto del archivo, con las descripciones cifradas.
+Pestaña "Eventos del archivo": los mismos eventos en una grilla. La descripción aparece en claro solo si el usuario puede consultar la bitácora; si no, dice "(cifrada)".
+Dónde está en el código
+Las clases que se serializan son ArchivoBitacora_60MN (la raíz <BitacoraVetCare>) y EventoBitacoraXml_60MN, y la serialización la hace XmlSerializer. También agregué en GestorBitacora_60MN un ConsultarCifrado: la consulta normal desencripta la descripción, y si la exportación la usara, el XML saldría en claro.
+
+Por qué es la forma más segura (para la defensa)
+Confidencialidad. La descripción viaja cifrada con AES-256, tal cual está en la base. Exportar en claro anularía el cifrado reversible del T03.2. El atributo cifrado="true" es obligatorio: un archivo que declare false se rechaza.
+Integridad y autenticidad. Hay una firma HMAC-SHA256 por evento (como un DVH) y otra del archivo que encadena las de todos los eventos (como un DVV). Usan la misma clave de los dígitos verificadores. Se detecta cualquier cambio:
+un campo editado;
+un evento agregado, quitado o reordenado, aunque se corrija el atributo cantidad;
+un archivo generado por otro sistema.
+Las firmas se comparan en tiempo constante.
+
+Lectura segura del XML. La DTD está prohibida y no se resuelven entidades externas, lo que bloquea ataques XXE y "billion laughs" (lo probé con un archivo que intenta leer win.ini). Además hay un límite de 20 MB y 20.000 eventos.
+Validación del contenido. El evento tiene que existir en el catálogo, y su módulo y criticidad tienen que coincidir con él. Las fechas no pueden ser futuras, las longitudes tienen que entrar en las columnas y la descripción tiene que poder desencriptarse con la clave del sistema.
+Importación todo o nada. Se hace en una transacción, sin duplicados: el texto cifrado es único porque cada cifrado usa un IV al azar, así que reimportar no duplica nada. El BitacoraID lo asigna la base y el original queda como idOriginal, solo informativo. El UsuarioID se conserva solo si ese usuario existe en esta base. Después se recalculan DVH y DVV por el mismo camino que Registrar Evento.
+Protección entre la vista previa y la importación. Al confirmar, la BLL vuelve a leer y validar el archivo, que tiene que tener el mismo SHA-256 que se previsualizó. Si alguien lo cambió en el medio, se rechaza.
+No se exporta ni importa sobre una bitácora adulterada. Si la tabla tiene inconsistencias de DVH/DVV, la operación se bloquea. Firmar datos adulterados les daría apariencia de válidos.
+Auditoría de la propia operación. Se registran tres eventos nuevos, con el nombre del archivo y su SHA-256:
+Evento	Criticidad
+BitacoraExportada	4
+BitacoraImportada	2
+BitacoraImportacionRechazada (alguien intentó meter un archivo alterado)	1, la más crítica
+En tu escala, 1 es lo más crítico, por eso importar quedó más alto que exportar. La importación queda registrada en la misma bitácora que acaba de completar.
+
+Una limitación que conviene aclarar si te preguntan: el archivo solo se puede importar en una instalación con las mismas claves (VETCARE_CLAVE_CRIPTO y VETCARE_CLAVE_DV). Es deliberado: es un formato de archivo y restauración del propio sistema, no un informe para terceros. Para un tercero corresponde un informe legible aparte, en PDF o CSV.
+
+Agregué las patentes 31 y 32 al script, las traducciones al inglés y la sección en el README. Regeneré el script BDScript/VetCareBD_60MN.sql, lo apliqué y la base quedó limpia.

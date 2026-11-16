@@ -14,13 +14,14 @@ namespace Seguridad_60MN.Auditoria
         Integridad,
         Stock,
         Pacientes,
-        Backup
+        Backup,
+        Compras
     }
 
     /// <summary>
     /// Eventos tipificados que registra el caso de uso transversal Registrar Evento.
     /// Se guardan por nombre: no cambiar los nombres existentes (las bitácoras exportadas a XML los referencian).
-    /// Numeración de casos de uso del Trabajo de Diploma V2.4.
+    /// Numeración de casos de uso del Trabajo de Diploma V2.5.
     /// </summary>
     public enum EventoSistema_60MN
     {
@@ -33,11 +34,13 @@ namespace Seguridad_60MN.Auditoria
         // Ya no se generan (la importación se reemplazó por Deserializar XML): quedan para leer los eventos viejos.
         BitacoraImportada, BitacoraImportacionRechazada,
         IntegridadVerificada, IntegridadFallida, DigitosRecalculados,
-        // PN2 - Gestión de Stock: CUN08 Administrar Existencias, CUN09 Movimiento de Stock, CUN10 Configurar Margen
+        // PN2: CUN09 Administrar Productos. MovimientoStock (movimiento manual) ya no se genera desde V2.5
+        // (el stock cambia por ventas y recepciones): queda para leer los eventos viejos.
         ProductoCreado, ProductoModificado, ProductoBaja, ProductoVersionRestaurada, MovimientoStock, AlertaReposicion,
-        // CUN10, CUN12 Reporte de Existencias y CUN13 Reporte Inteligente
+        // CUN16 Reporte Inteligente. ConfiguracionStockModificada y ReporteExistenciasGenerado ya no se generan
+        // desde V2.5 (se quitaron Configurar Margen y el Reporte de Existencias): quedan para los eventos viejos.
         ConfiguracionStockModificada, ReporteExistenciasGenerado, ReporteInteligenteGenerado,
-        // CUN11 Gestionar Proveedores
+        // CUN08 Gestionar Proveedores
         ProveedorRegistrado, ProveedorModificado, ProveedorBaja,
         // PN1 - Gestión de Pacientes: CUN01 Gestionar Clientes y CUN02 Gestionar Mascotas
         ClienteRegistrado, ClienteModificado, ClienteBaja, ClienteReactivado, ClientesConsultados,
@@ -48,7 +51,12 @@ namespace Seguridad_60MN.Auditoria
         // CUN06 Emitir Informe de Atención y CUN07 Reporte de Atenciones
         AtencionRegistrada, MedicacionEntregada, InformeAtencionEmitido, VentaRegistrada, VentasConsultadas, ReporteAtencionesGenerado,
         // CUS12 Gestión de Backup
-        BackupRealizado, RestoreIniciado, RestoreRealizado
+        BackupRealizado, RestoreIniciado, RestoreRealizado,
+        // PN2 V2.5 - Reposición de Medicamentos e Insumos: CUN10 Solicitud, CUN11 Orden de Compra, CUN12 Aprobación,
+        // CUN13 Pago al Proveedor, CUN14 Recepción de Mercadería y CUN15 Reporte de Compras
+        SolicitudReposicionGenerada, OrdenCompraRegistrada, OrdenCompraCorregida, OrdenCompraAnulada,
+        OrdenCompraAprobada, OrdenCompraRechazada, OrdenCompraEnviada, PagoProveedorRegistrado,
+        MercaderiaRecibida, ReporteComprasGenerado
     }
 
     public sealed class DefinicionEvento_60MN
@@ -113,14 +121,14 @@ namespace Seguridad_60MN.Auditoria
             Agregar(ModuloSistema_60MN.Integridad, 1, EventoSistema_60MN.IntegridadFallida, EventoSistema_60MN.DigitosRecalculados);
             Agregar(ModuloSistema_60MN.Integridad, 4, EventoSistema_60MN.IntegridadVerificada);
 
-            // PN2: CUN08 Administrar Existencias, CUN09 Movimiento de Stock, CUN10 Configurar Margen y Alerta,
-            // CUN11 Gestionar Proveedores, CUN12 Reporte de Existencias y CUN13 Reporte Inteligente.
+            // PN2: CUN08 Gestionar Proveedores, CUN09 Administrar Productos y CUN16 Reporte Inteligente (más los
+            // eventos de V2.4 que ya no se generan: movimiento manual, configuración de stock y reporte de existencias).
             Agregar(ModuloSistema_60MN.Stock, 3, EventoSistema_60MN.ProductoBaja, EventoSistema_60MN.ProductoVersionRestaurada,
                 EventoSistema_60MN.AlertaReposicion);
             Agregar(ModuloSistema_60MN.Stock, 4, EventoSistema_60MN.ProductoCreado, EventoSistema_60MN.ProductoModificado,
                 EventoSistema_60MN.MovimientoStock);
             Agregar(ModuloSistema_60MN.Stock, 3, EventoSistema_60MN.ConfiguracionStockModificada);
-            // CUN11 Gestionar Proveedores: la baja es más crítica porque deja de ofrecerse en el alta de productos.
+            // CUN08 Gestionar Proveedores: la baja es más crítica porque deja de ofrecerse en el alta de productos.
             Agregar(ModuloSistema_60MN.Stock, 4, EventoSistema_60MN.ProveedorRegistrado, EventoSistema_60MN.ProveedorModificado);
             Agregar(ModuloSistema_60MN.Stock, 3, EventoSistema_60MN.ProveedorBaja);
             Agregar(ModuloSistema_60MN.Stock, 5, EventoSistema_60MN.ReporteExistenciasGenerado,
@@ -143,6 +151,16 @@ namespace Seguridad_60MN.Auditoria
 
             Agregar(ModuloSistema_60MN.Backup, 1, EventoSistema_60MN.RestoreIniciado, EventoSistema_60MN.RestoreRealizado);
             Agregar(ModuloSistema_60MN.Backup, 2, EventoSistema_60MN.BackupRealizado);
+
+            // PN2 V2.5 Compras. Aprobar o rechazar una orden y registrar un pago comprometen dinero: van
+            // con criticidad 2, como las altas de usuarios. Anular una orden, 3 (como las bajas).
+            // Solicitud, orden, envío y recepción son la operatoria normal (4) y el reporte es informativo (5).
+            Agregar(ModuloSistema_60MN.Compras, 2, EventoSistema_60MN.OrdenCompraAprobada, EventoSistema_60MN.OrdenCompraRechazada,
+                EventoSistema_60MN.PagoProveedorRegistrado);
+            Agregar(ModuloSistema_60MN.Compras, 3, EventoSistema_60MN.OrdenCompraAnulada);
+            Agregar(ModuloSistema_60MN.Compras, 4, EventoSistema_60MN.SolicitudReposicionGenerada, EventoSistema_60MN.OrdenCompraRegistrada,
+                EventoSistema_60MN.OrdenCompraCorregida, EventoSistema_60MN.OrdenCompraEnviada, EventoSistema_60MN.MercaderiaRecibida);
+            Agregar(ModuloSistema_60MN.Compras, 5, EventoSistema_60MN.ReporteComprasGenerado);
 
             foreach (EventoSistema_60MN evento in Enum.GetValues(typeof(EventoSistema_60MN)))
                 if (!resultado.ContainsKey(evento))

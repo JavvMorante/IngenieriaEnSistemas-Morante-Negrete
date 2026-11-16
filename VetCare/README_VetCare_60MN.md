@@ -74,7 +74,7 @@ Manual de usuario de los dos procesos: https://claude.ai/artifact/4M31Q78g2iPzFQ
 
 ## Bitácora de eventos: serializar / deserializar XML
 ADMIN > Bitácora de eventos → botones **Exportar XML...** (serializa; `SEG_BITACORA_EXPORT`, familia Auditoría) y
-**Deserializar XML...** (`SEG_BITACORA_IMPORT`, familia Administrador).
+**Visualizar** (deserializa; `SEG_BITACORA_IMPORT`, familia Administrador).
 - Recorrido: `FrmBitacoraEventos_60MN` → `BitacoraBLL_60MN` (permiso, integridad, eventos) →
   `Seguridad_60MN/Auditoria/SerializadorBitacora_60MN` (XmlSerializer, firmas, validación).
 - El XML (`ArchivoBitacora_60MN` / `EventoBitacoraXml_60MN`) lleva la descripción **cifrada** (AES, igual que en la base),
@@ -176,9 +176,10 @@ y por pantalla de seguridad) están en `Utilidades/TemasAyuda_60MN.cs`: el espa�
 - El español es el idioma **base**: sus textos son los del diseñador, por eso solo el inglés tiene filas en `Traduccion`.
 - Para agregar un idioma: una fila en `Idioma` y sus filas en `Traduccion` (sin tocar el código).
 - **El idioma es por usuario** (`Usuario.IdiomaID`, protegido por el DVH): cada usuario tiene guardado su último idioma.
-  - El Login abre siempre en español (`Program.cs` → `AplicarBase`) y vuelve a español al cerrar la sesión.
-  - Al ingresar (`FrmLogin_60MN` → `IdiomaBLL_60MN.AplicarIdiomaAlIngresar`): si eligió un idioma en el combo del Login,
-    se guarda como el suyo; si no, se le aplica su último idioma. El usuario de emergencia usa siempre español.
+  - El Login abre siempre en español (`Program.cs` → `AplicarBase`), no tiene selector de idioma y vuelve a español al
+    cerrar la sesión.
+  - Al ingresar (`FrmLogin_60MN` → `IdiomaBLL_60MN.AplicarIdiomaAlIngresar`) se le aplica su último idioma.
+    El usuario de emergencia usa siempre español.
   - USUARIO > Cambiar idioma (`CambiarIdiomaUsuario`) guarda la elección contra el usuario y registra `IdiomaCambiado`.
 - Limitación: los mensajes de las reglas de negocio (excepciones de la BLL) y las etiquetas que arman datos en tiempo
   de ejecución siguen en español; los textos fijos de pantallas, menú, grillas y mensajes generales sí se traducen.

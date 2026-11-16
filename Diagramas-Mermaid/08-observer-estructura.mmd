@@ -1,0 +1,26 @@
+classDiagram
+    class Subject {
+        -List~Observer~ observadores
+        +suscribir(o)
+        +desuscribir(o)
+        +notificar()
+        +cambiarEstado()
+    }
+    class Observer {
+        <<interface>>
+        +actualizar(estado)
+    }
+    class ObservadorConcretoA {
+        +actualizar(estado)
+    }
+    class ObservadorConcretoB {
+        +actualizar(estado)
+    }
+    Subject o-- "0..*" Observer : observadores
+    Observer <|.. ObservadorConcretoA
+    Observer <|.. ObservadorConcretoB
+    note for Subject "Al cambiar de estado recorre la lista\ny llama a actualizar en cada observador."
+    style Subject fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style Observer fill:#eef1f4,stroke:#44566b,stroke-width:3px
+    style ObservadorConcretoA fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style ObservadorConcretoB fill:#fbeedb,stroke:#9a6a16,stroke-width:2px

@@ -1,0 +1,14 @@
+flowchart LR
+    START(["INSERT / UPDATE / DELETE sobre la tabla Productos"]) --> T["Se dispara automaticamente<br/><b>TR_Productos_BitacoraCambios</b><br/>AFTER INSERT, UPDATE, DELETE"]
+    T --> Q1{"Hay filas en<br/>inserted o deleted?"}
+    Q1 -- No --> F1(["RETURN · el UPDATE no afecto ninguna fila"])
+    Q1 -- Si --> Q2{"Es un UPDATE que solo<br/>recalcula el DVH?"}
+    Q2 -- Si --> F2(["RETURN · no es un cambio de negocio"])
+    Q2 -- No --> SIGUE(["Continua: registrar el cambio<br/>(ver diagrama siguiente)"])
+    style START fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style T fill:#fae9e9,stroke:#993333,stroke-width:3px
+    style Q1 fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style Q2 fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style F1 fill:#f2f2f2,stroke:#777,stroke-width:2px
+    style F2 fill:#f2f2f2,stroke:#777,stroke-width:2px
+    style SIGUE fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px

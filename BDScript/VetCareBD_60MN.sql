@@ -10,10 +10,11 @@
    ATENCIÓN: si la base ya existe, se ELIMINA y se vuelve a crear.
 
    Usuarios iniciales:
-     admin     / Admin1234      (familia Administrador)
-     operario  / Operario1234   (familia Operario de stock + patente individual Configurar margen)
-     vendedor  / Vendedor1234   (familia Vendedor: CUN01 a CUN04 y CUN09)
-     veterinario / Veterinario1234 (familia Veterinario: CUN03, CUN05 a CUN10)
+     admin     / Admin1234      (familia Administrador: el gerente; aprueba órdenes de compra)
+     operario  / Operario1234   (familia Encargado de depósito: CUN09, CUN10 y CUN14)
+     compras   / Compras1234    (familia Analista de compras: CUN08, CUN11, CUN13 y CUN15)
+     vendedor  / Vendedor1234   (familia Vendedor: CUN01, CUN02 y CUN05)
+     veterinario / Veterinario1234 (familia Veterinario: CUN03 a CUN07 y CUN16)
    Usuario de emergencia (archivo UsuarioEmergencia_60MN.xml, no está en la base):
      emergencia / Emergencia1234
    ===================================================================== */
@@ -176,17 +177,19 @@ CREATE TABLE DVV (
 GO
 
 /* ---------------------------------------------------------------------
-   STOCK E INSUMOS (PN4)
+   REPOSICIÓN DE MEDICAMENTOS E INSUMOS (RFN2: CUN08 a CUN16)
    --------------------------------------------------------------------- */
 
+-- Categoria.Margen y Configuracion.MargenGeneral solo proponen el margen al dar de alta un
+-- producto (CUN09); el margen vigente es el de cada producto (Productos.Margen).
 CREATE TABLE Categoria (
     CategoriaID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Categoria PRIMARY KEY,
     Nombre       VARCHAR(80)       NOT NULL CONSTRAINT UX_Categoria_Nombre UNIQUE,
-    Margen       DECIMAL(6,2)      NULL      -- margen particular (%); NULL = usa el margen general
+    Margen       DECIMAL(6,2)      NULL      -- margen propuesto (%); NULL = usa el margen general
 );
 GO
 
--- CUN11 Gestionar Proveedores. El CUIT se guarda con sus 11 dígitos (sin guiones) y no se modifica;
+-- CUN08 Gestionar Proveedores. El CUIT se guarda con sus 11 dígitos (sin guiones) y no se modifica;
 -- la baja es lógica (Activo = 0) y los productos conservan su proveedor.
 CREATE TABLE Proveedor (
     ProveedorID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Proveedor PRIMARY KEY,
@@ -217,6 +220,7 @@ CREATE TABLE Productos (
     StockMinimo          INT               NOT NULL CONSTRAINT CK_Productos_StockMinimo CHECK (StockMinimo >= 0),
     PrecioCosto          DECIMAL(12,2)     NOT NULL CONSTRAINT CK_Productos_Costo CHECK (PrecioCosto >= 0),
     PrecioVenta          DECIMAL(12,2)     NOT NULL CONSTRAINT CK_Productos_Venta CHECK (PrecioVenta >= 0),
+    Margen               DECIMAL(6,2)      NOT NULL CONSTRAINT CK_Productos_Margen CHECK (Margen >= 0),
     FechaVencimiento     DATE              NOT NULL,
     Lote                 VARCHAR(40)       NOT NULL,
     Activo               BIT               NOT NULL CONSTRAINT DF_Productos_Activo DEFAULT (1),
@@ -238,6 +242,7 @@ CREATE TABLE Productos_C (
     StockMinimo       INT               NOT NULL,
     PrecioCosto       DECIMAL(12,2)     NOT NULL,
     PrecioVenta       DECIMAL(12,2)     NOT NULL,
+    Margen            DECIMAL(6,2)      NOT NULL,
     FechaVencimiento  DATE              NOT NULL,
     Lote              VARCHAR(40)       NOT NULL,
     ActivoProducto    BIT               NOT NULL,
@@ -268,7 +273,8 @@ CREATE TABLE AlertaReposicion (
     AlertaID    INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_AlertaReposicion PRIMARY KEY,
     ProductoID  INT               NOT NULL CONSTRAINT FK_AlertaReposicion_Producto REFERENCES Productos (ProductoID),
     FechaHora   DATETIME2(0)      NOT NULL CONSTRAINT DF_AlertaReposicion_FechaHora DEFAULT (SYSDATETIME()),
-    Activa      BIT               NOT NULL CONSTRAINT DF_AlertaReposicion_Activa DEFAULT (1)
+    Activa      BIT               NOT NULL CONSTRAINT DF_AlertaReposicion_Activa DEFAULT (1),
+    Atendida    BIT               NOT NULL CONSTRAINT DF_AlertaReposicion_Atendida DEFAULT (0)  -- incluida en una solicitud (CUN10)
 );
 GO
 
@@ -386,6 +392,122 @@ CREATE INDEX IX_VentaDetalle_Venta ON VentaDetalle (VentaID);
 GO
 
 /* ---------------------------------------------------------------------
+   COMPRAS (RFN2: CUN10 a CUN15)
+   Solicitud de reposición -> orden de compra -> aprobación -> pago -> recepción.
+   --------------------------------------------------------------------- */
+
+-- CUN10 Generar Solicitud de Reposición (encargado de depósito).
+CREATE TABLE SolicitudReposicion (
+    SolicitudID    INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_SolicitudReposicion PRIMARY KEY,
+    Numero         AS ('SR-' + RIGHT('00000' + CAST(SolicitudID AS VARCHAR(10)), 5)) PERSISTED,
+    FechaHora      DATETIME2(0)      NOT NULL,
+    UsuarioID      INT               NOT NULL CONSTRAINT FK_SolicitudReposicion_Usuario REFERENCES Usuario (UsuarioID),
+    Estado         VARCHAR(20)       NOT NULL CONSTRAINT CK_SolicitudReposicion_Estado
+                                     CHECK (Estado IN ('PENDIENTE', 'EN_COMPRA', 'CERRADA', 'ANULADA')),
+    Observaciones  VARCHAR(400)      NULL,
+    DVH            CHAR(64)          NULL
+);
+GO
+
+CREATE TABLE SolicitudReposicionDetalle (
+    SolicitudDetalleID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_SolicitudReposicionDetalle PRIMARY KEY,
+    SolicitudID         INT               NOT NULL CONSTRAINT FK_SolicitudDetalle_Solicitud REFERENCES SolicitudReposicion (SolicitudID),
+    ProductoID          INT               NOT NULL CONSTRAINT FK_SolicitudDetalle_Producto REFERENCES Productos (ProductoID),
+    StockActual         INT               NOT NULL,  -- foto del stock al generar la solicitud
+    StockMinimo         INT               NOT NULL,
+    CantidadPedida      INT               NOT NULL CONSTRAINT CK_SolicitudDetalle_Cantidad CHECK (CantidadPedida > 0),
+    DVH                 CHAR(64)          NULL,
+    CONSTRAINT UX_SolicitudDetalle_Producto UNIQUE (SolicitudID, ProductoID)
+);
+GO
+
+-- CUN11 Registrar Orden de Compra (analista) y CUN12 Aprobar Orden de Compra (gerente).
+-- Advertencias: avisos calculados al registrar (precio > 20 % del costo actual) que el gerente ve al aprobar.
+CREATE TABLE OrdenCompra (
+    OrdenCompraID     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_OrdenCompra PRIMARY KEY,
+    Numero            AS ('OC-' + RIGHT('00000' + CAST(OrdenCompraID AS VARCHAR(10)), 5)) PERSISTED,
+    SolicitudID       INT               NOT NULL CONSTRAINT FK_OrdenCompra_Solicitud REFERENCES SolicitudReposicion (SolicitudID),
+    ProveedorID       INT               NOT NULL CONSTRAINT FK_OrdenCompra_Proveedor REFERENCES Proveedor (ProveedorID),
+    FechaHora         DATETIME2(0)      NOT NULL,
+    NroCotizacion     VARCHAR(30)       NOT NULL,
+    PlazoEntregaDias  INT               NOT NULL CONSTRAINT CK_OrdenCompra_Plazo CHECK (PlazoEntregaDias >= 0),
+    CondicionPago     VARCHAR(60)       NOT NULL,
+    MotivoEleccion    VARCHAR(300)      NULL,
+    Advertencias      VARCHAR(400)      NULL,
+    Total             DECIMAL(12,2)     NOT NULL CONSTRAINT CK_OrdenCompra_Total CHECK (Total > 0),
+    Estado            VARCHAR(20)       NOT NULL CONSTRAINT CK_OrdenCompra_Estado
+                                        CHECK (Estado IN ('PENDIENTE_APROBACION', 'APROBADA', 'RECHAZADA', 'ENVIADA',
+                                                          'PAGADA', 'RECIBIDA_PARCIAL', 'CERRADA', 'ANULADA')),
+    UsuarioID         INT               NOT NULL CONSTRAINT FK_OrdenCompra_Usuario REFERENCES Usuario (UsuarioID),
+    AprobadaPor       INT               NULL     CONSTRAINT FK_OrdenCompra_Aprobador REFERENCES Usuario (UsuarioID),
+    FechaAprobacion   DATETIME2(0)      NULL,
+    MotivoRechazo     VARCHAR(300)      NULL,
+    DVH               CHAR(64)          NULL
+);
+CREATE INDEX IX_OrdenCompra_Estado ON OrdenCompra (Estado, FechaHora);
+CREATE INDEX IX_OrdenCompra_Solicitud ON OrdenCompra (SolicitudID);
+GO
+
+CREATE TABLE OrdenCompraDetalle (
+    OrdenDetalleID    INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_OrdenCompraDetalle PRIMARY KEY,
+    OrdenCompraID     INT               NOT NULL CONSTRAINT FK_OrdenDetalle_Orden REFERENCES OrdenCompra (OrdenCompraID),
+    ProductoID        INT               NOT NULL CONSTRAINT FK_OrdenDetalle_Producto REFERENCES Productos (ProductoID),
+    Cantidad          INT               NOT NULL CONSTRAINT CK_OrdenDetalle_Cantidad CHECK (Cantidad > 0),
+    PrecioUnitario    DECIMAL(12,2)     NOT NULL CONSTRAINT CK_OrdenDetalle_Precio CHECK (PrecioUnitario > 0),
+    Subtotal          DECIMAL(12,2)     NOT NULL,
+    CantidadRecibida  INT               NOT NULL CONSTRAINT DF_OrdenDetalle_Recibida DEFAULT (0),
+    DVH               CHAR(64)          NULL,
+    CONSTRAINT UX_OrdenDetalle_Producto UNIQUE (OrdenCompraID, ProductoID),
+    CONSTRAINT CK_OrdenDetalle_Recibida CHECK (CantidadRecibida BETWEEN 0 AND Cantidad)
+);
+GO
+
+-- CUN13 Registrar Pago al Proveedor: el pago se hace en el home banking; aquí solo se registra el comprobante.
+CREATE TABLE PagoProveedor (
+    PagoID          INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_PagoProveedor PRIMARY KEY,
+    OrdenCompraID   INT               NOT NULL CONSTRAINT FK_PagoProveedor_Orden REFERENCES OrdenCompra (OrdenCompraID)
+                                      CONSTRAINT UX_PagoProveedor_Orden UNIQUE,
+    Banco           VARCHAR(60)       NOT NULL,
+    NroComprobante  VARCHAR(40)       NOT NULL,
+    FechaPago       DATE              NOT NULL,
+    Importe         DECIMAL(12,2)     NOT NULL CONSTRAINT CK_PagoProveedor_Importe CHECK (Importe > 0),
+    Observaciones   VARCHAR(300)      NULL,      -- motivo cuando el importe difiere del total de la orden
+    UsuarioID       INT               NOT NULL CONSTRAINT FK_PagoProveedor_Usuario REFERENCES Usuario (UsuarioID),
+    DVH             CHAR(64)          NULL,
+    CONSTRAINT UX_PagoProveedor_Comprobante UNIQUE (Banco, NroComprobante)
+);
+GO
+
+-- CUN14 Registrar Recepción de Mercadería. El remito no se repite para el mismo proveedor
+-- (el proveedor está en la orden: se valida en la BLL).
+CREATE TABLE Recepcion (
+    RecepcionID     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Recepcion PRIMARY KEY,
+    OrdenCompraID   INT               NOT NULL CONSTRAINT FK_Recepcion_Orden REFERENCES OrdenCompra (OrdenCompraID),
+    NroRemito       VARCHAR(30)       NOT NULL,
+    FechaHora       DATETIME2(0)      NOT NULL,
+    UsuarioID       INT               NOT NULL CONSTRAINT FK_Recepcion_Usuario REFERENCES Usuario (UsuarioID),
+    Observaciones   VARCHAR(400)      NULL,
+    DVH             CHAR(64)          NULL
+);
+CREATE INDEX IX_Recepcion_Orden ON Recepcion (OrdenCompraID);
+GO
+
+-- Cada producto recibido genera un movimiento INGRESO en la misma transacción.
+CREATE TABLE RecepcionDetalle (
+    RecepcionDetalleID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_RecepcionDetalle PRIMARY KEY,
+    RecepcionID         INT               NOT NULL CONSTRAINT FK_RecepcionDetalle_Recepcion REFERENCES Recepcion (RecepcionID),
+    ProductoID          INT               NOT NULL CONSTRAINT FK_RecepcionDetalle_Producto REFERENCES Productos (ProductoID),
+    CantidadRecibida    INT               NOT NULL CONSTRAINT CK_RecepcionDetalle_Cantidad CHECK (CantidadRecibida >= 0),
+    Lote                VARCHAR(40)       NOT NULL,
+    FechaVencimiento    DATE              NOT NULL,
+    Observacion         VARCHAR(200)      NULL,
+    MovimientoID        INT               NULL     CONSTRAINT FK_RecepcionDetalle_Movimiento REFERENCES MovimientoStock (MovimientoID),
+    DVH                 CHAR(64)          NULL
+);
+CREATE INDEX IX_RecepcionDetalle_Recepcion ON RecepcionDetalle (RecepcionID);
+GO
+
+/* ---------------------------------------------------------------------
    TRIGGER DE LA BITÁCORA DE CAMBIOS (T06B)
    Ante cada alta, modificación o eliminación en Productos:
      - pone Act = 0 en las versiones anteriores del producto en Productos_C
@@ -407,15 +529,15 @@ BEGIN
 
     IF @hayInsertados = 1 AND @hayEliminados = 1
        AND NOT (UPDATE(Nombre) OR UPDATE(CategoriaID) OR UPDATE(ProveedorID) OR UPDATE(StockActual)
-                OR UPDATE(StockMinimo) OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta)
+                OR UPDATE(StockMinimo) OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta) OR UPDATE(Margen)
                 OR UPDATE(FechaVencimiento) OR UPDATE(Lote) OR UPDATE(Activo))
         RETURN;
 
-    -- Cambio exclusivo de existencias (CUN14): se registra como MOVIMIENTO.
+    -- Cambio de existencias (venta CUN05, o recepción CUN14 que además actualiza lote y vencimiento): MOVIMIENTO.
     DECLARE @soloStock BIT = 0;
     IF UPDATE(StockActual)
        AND NOT (UPDATE(Nombre) OR UPDATE(CategoriaID) OR UPDATE(ProveedorID) OR UPDATE(StockMinimo)
-                OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta) OR UPDATE(FechaVencimiento) OR UPDATE(Lote))
+                OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta) OR UPDATE(Margen))
         SET @soloStock = 1;
 
     UPDATE c
@@ -426,10 +548,10 @@ BEGIN
 
     IF @hayInsertados = 1
         INSERT INTO Productos_C (ProductoID, Codigo, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo,
-                                 PrecioCosto, PrecioVenta, FechaVencimiento, Lote, ActivoProducto,
+                                 PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, ActivoProducto,
                                  Operacion, FechaHora, UsuarioID, Act)
         SELECT i.ProductoID, i.Codigo, i.Nombre, i.CategoriaID, i.ProveedorID, i.StockActual, i.StockMinimo,
-               i.PrecioCosto, i.PrecioVenta, i.FechaVencimiento, i.Lote, i.Activo,
+               i.PrecioCosto, i.PrecioVenta, i.Margen, i.FechaVencimiento, i.Lote, i.Activo,
                CASE
                    WHEN d.ProductoID IS NULL THEN 'ALTA'
                    WHEN d.Activo = 1 AND i.Activo = 0 THEN 'BAJA'
@@ -444,17 +566,16 @@ BEGIN
           LEFT JOIN deleted d ON d.ProductoID = i.ProductoID;
     ELSE
         INSERT INTO Productos_C (ProductoID, Codigo, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo,
-                                 PrecioCosto, PrecioVenta, FechaVencimiento, Lote, ActivoProducto,
+                                 PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, ActivoProducto,
                                  Operacion, FechaHora, UsuarioID, Act)
         SELECT d.ProductoID, d.Codigo, d.Nombre, d.CategoriaID, d.ProveedorID, d.StockActual, d.StockMinimo,
-               d.PrecioCosto, d.PrecioVenta, d.FechaVencimiento, d.Lote, d.Activo,
+               d.PrecioCosto, d.PrecioVenta, d.Margen, d.FechaVencimiento, d.Lote, d.Activo,
                'ELIMINACION', SYSDATETIME(), CAST(SESSION_CONTEXT(N'UsuarioID') AS INT), 1
           FROM deleted d;
 END
 GO
 
--- Activo: registra las versiones de cada producto (postcondición de CUN11, CUN12 y CUN14)
--- aunque la pantalla de la Bitácora de cambios (CUS10) siga deshabilitada.
+-- Activo: registra las versiones de cada producto (postcondición de CUN09 y CUN14) para CUS10.
 
 /* ---------------------------------------------------------------------
    MULTI-IDIOMA (patrón Observer en la GUI)
@@ -579,7 +700,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'ayuda.perfiles.titulo', N'Profiles (families and patents)'),
 (2, 'ayuda.perfiles.texto', N'ADMIN > Profiles: each family is a set of patents and may include other families. The system does not allow cycles between families nor a change that leaves it without an operational administrator.'),
 (2, 'ayuda.bitacoraEventos.titulo', N'Event log'),
-(2, 'ayuda.bitacoraEventos.texto', N'ADMIN > Event log: filter by dates, criticality, module, event and user. Export XML saves the signed events; Import XML validates them (signatures, catalog, duplicates) and adds all of them or none.'),
+(2, 'ayuda.bitacoraEventos.texto', N'ADMIN > Event log: filter by dates, criticality, module, event and user. Export XML saves the signed events; View opens an exported XML and shows its events in a grid (an altered file is rejected).'),
 (2, 'ayuda.bitacoraCambios.titulo', N'Change log'),
 (2, 'ayuda.bitacoraCambios.texto', N'ADMIN > Change log: version history of each product. You can compare two versions and restore a previous one.'),
 (2, 'ayuda.integridad.titulo', N'Check digits'),
@@ -603,7 +724,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'ayuda.reporteAtenciones.titulo', N'CUN07 Generate Consultations Report'),
 (2, 'ayuda.reporteAtenciones.texto', N'REPORTS > Consultations report: choose the period and, optionally, the veterinarian and the species. It shows the consultations and the totals by professional; it can be printed (or PDF) and exported to CSV.'),
 (2, 'ayuda.productos.titulo', N'CUN08 Manage Stock Items'),
-(2, 'ayuda.productos.texto', N'MASTER DATA > Products: search, register and modify products. The sale price is proposed with the category margin. Stock is not edited directly: it is adjusted with a stock movement.'),
+(2, 'ayuda.productos.texto', N'MASTER DATA > Products: search, register and modify products. The sale price is proposed with the category margin. Stock is not edited directly: it is adjusted with a stock movement. If there are products with a low stock alert, the screen opens showing only those (Low stock alert filter). Price history shows the product versions and lets you go back to an earlier one.'),
 (2, 'ayuda.movimientos.titulo', N'CUN09 Register Stock Movement'),
 (2, 'ayuda.movimientos.texto', N'STOCK > Stock movements: register receipts, issues, adjustments or the write-off of an expired batch, always with a reason. If stock reaches the minimum or falls below it, a replenishment alert is raised.'),
 (2, 'ayuda.configuracion.titulo', N'CUN10 Configure Margin and Minimum Stock Alert'),
@@ -668,7 +789,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 -- Productos
 (2, 'FrmProductos_60MN', N'Products'), (2, 'FrmProductos_60MN.lblTitulo', N'Products and supplies (Stock)'),
 (2, 'lblBuscar', N'Search'), (2, 'chkInactivos', N'Include deactivated'), (2, 'btnNuevo', N'New product'),
-(2, 'btnMovimiento', N'Movement'),
+(2, 'btnMovimiento', N'Movement'), (2, 'btnHistorial', N'Price history'), (2, 'msg.EnAlertaStock', N'Low stock alert'),
 (2, 'FrmProducto_60MN', N'Product'), (2, 'FrmProducto_60MN.lblNombre', N'Name *'), (2, 'FrmProducto_60MN.lblCategoria', N'Category *'),
 (2, 'lblProveedor', N'Supplier *'), (2, 'lblStockActual', N'Current stock *'), (2, 'lblStockMinimo', N'Minimum stock *'),
 (2, 'lblPrecioCosto', N'Cost price *'), (2, 'lblPrecioVenta', N'Sale price *'), (2, 'btnUsarSugerido', N'Use suggested'),
@@ -754,14 +875,12 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'lblAdvertencia', N'Restoring replaces the whole database: changes made after the backup (including the event log) are lost and the session is closed at the end. Only VetCareBD_60MN backups are accepted.'),
 (2, 'FrmBackupRestore_60MN.btnRestaurar', N'Restore database'), (2, 'msg.ArchivoAGenerar', N'File to generate'),
 (2, 'msg.ElegirCarpetaBackup', N'Backup destination folder'),
--- Bitácora de eventos: exportar / importar XML
-(2, 'btnExportarXml', N'Export XML...'), (2, 'btnImportarXml', N'Import XML...'), (2, 'btnVerXml', N'View XML...'),
-(2, 'FrmVisorXmlBitacora_60MN', N'Event log in XML'), (2, 'tpXml', N'XML'), (2, 'tpEventos', N'File events'),
-(2, 'FrmVisorXmlBitacora_60MN.btnImportar', N'Import events'),
-(2, 'msg.XmlValido', N'Valid file: HMAC-SHA256 signatures are correct and the content was verified.'),
-(2, 'msg.XmlRechazado', N'Rejected file: it cannot be imported.'), (2, 'msg.XmlExportadoPor', N'Exported by'),
-(2, 'msg.XmlVersion', N'Version'), (2, 'msg.XmlCifrado', N'Encrypted descriptions'), (2, 'msg.Si', N'Yes'), (2, 'msg.No', N'No'),
-(2, 'msg.XmlEventos', N'Events'), (2, 'msg.XmlRango', N'Period'), (2, 'msg.XmlNuevos', N'New'), (2, 'msg.XmlDuplicados', N'Already present'),
+-- Bitácora de eventos: exportar / deserializar XML
+(2, 'btnExportarXml', N'Export XML...'), (2, 'btnDeserializarXml', N'View'),
+(2, 'FrmDeserializarBitacora_60MN', N'View event log XML'), (2, 'FrmDeserializarBitacora_60MN.lblTitulo', N'Deserialized event log'), (2, 'btnSalir', N'Exit'),
+(2, 'msg.XmlExportadoPor', N'Exported by'),
+(2, 'msg.Si', N'Yes'), (2, 'msg.No', N'No'),
+(2, 'msg.XmlEventos', N'Events'),
 -- Textos que arma el código (bitácora, historia clínica, login) y Reporte inteligente
 (2, 'msg.Criticidad1', N'1 - Very high'),
 (2, 'msg.Criticidad2', N'2 - High'),
@@ -819,31 +938,35 @@ INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (19, N'Registrar med
 INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (20, N'Emitir informe de atención', N'ATN_INFORME', '1C5D04188A41A72C522619942A513367D3C336ED360D5AD580601F38450F4DCD');
 INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (21, N'Registrar producto', N'STK_PROD_ALTA', '385D7DF7E8506884F563853DF9AD7CEDF9AB60B41D55C84949A5540ADA378037');
 INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (22, N'Modificar producto', N'STK_PROD_MODIF', 'D47501FFE4AE5F1136DF10435049D515DE696E617A02537E6D833FA8C350620D');
-INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (23, N'Configurar margen y alerta de stock mínimo', N'STK_CONFIG', 'CB3B6493ED2D414EB871D1C4DE4BE8A73DD33B47A1771A9179EE1963B65CD9DA');
-INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (24, N'Registrar movimiento de stock', N'STK_MOVIMIENTO', '59E5B6C1F5580E92639017AB081508FD9ACE6EE402C957BF4EA53A97E5C5327E');
-INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (25, N'Generar reporte de existencias', N'STK_REPORTE', 'D531941AEB488BAD5AB0E08EE97825CCBC3759695A81668D3FBDC4198B3A4B7D');
 INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (26, N'Gestionar proveedores', N'MAE_PROVEEDORES', '428291CB9C34F15895B3002A104EEB0A3647A2AFB61281D3FB2D8D19A2E98789');
 INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (30, N'Reportes de atenciones e inteligente', N'REP_REPORTES', '0513DDA1C55050DE3FE43F14698BF127B3A85F363E63E0D36B14DD01FE6FC463');
 INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (31, N'Exportar bitácora de eventos (XML)', N'SEG_BITACORA_EXPORT', '96BF17B39F493E5F059B1939E391E6AC7C20444970C3EA39289E696180ACF6A2');
-INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (32, N'Importar bitácora de eventos (XML)', N'SEG_BITACORA_IMPORT', '2BA370E416600577DC7A90005A5A06D5ED06106AFEFEC9FA7DEFC5703A9333F7');
+INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (32, N'Deserializar bitácora de eventos (XML)', N'SEG_BITACORA_IMPORT', '9EE8BD19304F40CA4332ADB9BA58A2BCC91C42555E3B3B4B0626CEBD5B0F406E');
+INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (33, N'Generar solicitud de reposición', N'CMP_SOLICITUD', '8478BD4CC35858FBB2C680C309398602678347AA1844C453459136BD7E9DA1CB');
+INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (34, N'Registrar orden de compra', N'CMP_ORDEN', '36E18164C461DC8E2B9850FE035AC60D23F07A78F1A24DF373F4BB10824C2D46');
+INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (35, N'Aprobar orden de compra', N'CMP_APROBAR', '2590B24E7F074E7A0A2465D267CF1FDFCE5C8CCC5CEEBA766579CDE32295547B');
+INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (36, N'Registrar pago al proveedor', N'CMP_PAGO', '3B7E86FE77F705A0FD3611C1BA99A2E68A3ADA03746E22B5CD0BCF287958E8E6');
+INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (37, N'Registrar recepción de mercadería', N'CMP_RECEPCION', 'BFF3EBB9DEF338CACE47BBB548DA8F7D6F4F78C4F96C97B7445AD97248612B6E');
+INSERT INTO Patente (PatenteID, Nombre, Codigo, DVH) VALUES (38, N'Generar reporte de compras', N'REP_COMPRAS', 'BB3B4576053DC418610552A190247411367710ED770C63FAE0C77619CC82477F');
 SET IDENTITY_INSERT Patente OFF;
 
 SET IDENTITY_INSERT Familia ON;
 INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (1, N'Administrador', '4236F25C0643A0CE7457BBF3E34E6A16AB3931FC03C6FFC9C496C94A3DE13564');
 INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (2, N'Gestión de Usuarios', '89E2A52D6A39A527603F46F8905D18F1958A9D56E14660B471B3AE3A30D79F7C');
 INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (3, N'Auditoría', '31494F81786CDEBC84406735CFD1F49DD40FBACC2F547A68CF2451A76F20635F');
-INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (4, N'Operario de stock', '90E76A6FC4994643F01C76E6FC905FF846D0119EE9204EC151D8D05DC8455AD5');
+INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (4, N'Encargado de depósito', '0FD251B2D42D62EF3F305FA295D1C098292EF7B2AFC81395E81BE66FBAF815D4');
 INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (5, N'Vendedor', '0650DDCB4AA970B6D55EEE018500A880768B2D715ECBF9F2189906168D5BC186');
 INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (6, N'Veterinario', 'CA5E346E26E9EAE4563416091AC7832E4024C11BEBFA28F8632E08180D8274A6');
+INSERT INTO Familia (FamiliaID, Nombre, DVH) VALUES (7, N'Analista de compras', 'D914EFDE70B0A6667FE1DD081448A064A14B927C0B0948952EED12529ADBD2A7');
 SET IDENTITY_INSERT Familia OFF;
 
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 4, 'EFA56CA206719F3AD5536742F050CA48D5A9D889D76284D2D79ED572010E61C8');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 9, '9C193D36F4223E11A575D9A483B1549729D16B18D81154BEA0EBD79A1AEA839E');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 10, '49783CD3927D10F44BA87B752698C152B6C9862360E82B5831163AA3D97CC8D7');
-INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 23, 'F605A2FD23E0389E0031B6A017FBBEAEFB4889EFF3F2EE20B8DDC149616C8CB7');
-INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 26, '465CF84D5339D0688052D96AA13EE6CF4255CE0A34852C6791328274ACE2AE26');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 30, '7F0BA9B7239D60193E34E6E313648889D98D4BA69A982B5B0A2B2C7529BC4F1C');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 32, '89E42F53FD9071C68B727EDC6E7CA2812B5143BAB5152242B0A260CD269646A6');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 35, 'EB8D8F4B49CE3DFC4873CBB6F4496D4A301E9E3EA0147A9BDA8D48DA901B7B4B');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (1, 38, 'B9D6EE9413B68662C514ABD8F1391C47BCDEFF5451C77FF7170D3175220027BF');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (2, 1, '75552B08D0E0493C69BB75B221AF305A7D6D7000DEFAB6C73DA0DB6F3740CA1E');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (2, 2, 'E9743ABF50693F514F2138D468B0F043875F88A48B887A57BCCF36555C0034F1');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (2, 3, 'F208A336557A8A4DDABF10C983EB2357068975E845D1BF9C17E47EE81BF109D1');
@@ -854,9 +977,8 @@ INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (3, 8, 'C8913C97B1
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (3, 31, '7D17D66E423087081E05B98D41137DC6BC5F08F06B642F6BBA2BCA0523148E2D');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (4, 21, '8EB6997128829D9843838925484D25BC204A623978D8883C9DB2CF1E20EC995D');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (4, 22, '4A85AFC9633FA5D1BDD4B7BF03F191D9D6FADB9BE46B6A7F4D02546784710A64');
-INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (4, 24, 'BB20BEE58A5B1EC87FFEAAB63AC1153050DA98637D224D68E25F38EE9C19C87B');
-INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (4, 25, '083A495B2D085EF00546DC7CE53426CC72249F9917C509A45C7F81D817B761EF');
-INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (4, 26, '4881B37C480D3E584DA2A42D008C704D0193F459A3AA6453620B8255E2718B58');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (4, 33, 'BFD3D9BB01236F4942D4EE9F2CFBFF9035F996122D1FD0C31A84257FC2C26835');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (4, 37, '0371DEA29DD8E687A67B97520F56643C0125D5C4317E92852BAAB5E9DE443DD0');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (5, 11, 'AB36D4B952B558F264EB703BCA5FC8DE4BC45F46FC0FD9CDC3E0F16A98AC3E07');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (5, 12, 'B109DF5AAB31A4617A5F80BC43D2E494322EF5A6CD4191B5002DA2EF5760FE4C');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (5, 13, '66AFEB1DC6C9006D6344D812EB131FFE89D447DECE83370F6968AA3C347263BC');
@@ -870,29 +992,36 @@ INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (6, 18, 'A2A5F52B9
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (6, 19, '700F6DA1C589F31A0079BE0C533F8FAE251EDC8E2A3FDAA22AA10DD378880CBD');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (6, 20, 'F03107CF26DECB55348C6C1088B5953DEA0BA46A658946463847365A7DE03CEB');
 INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (6, 30, 'E346E821BD8FAC341A642710F2E0C61637A5AF8CC45AB63D393013966E1151E7');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (7, 26, 'D24476A469FD0B25BB8ECE4F76EAE4024488C03F85EF2A2A8C7DDE336798E871');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (7, 34, '9062A06643733192A22F0FFD72EDE9B772EA2F3F974EE3F47FA17DE36E1DB49B');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (7, 36, 'C8AEBE2D3E655435F535BEEB7B455156DEC6BB5BA6528002545730615632FA5A');
+INSERT INTO FamiliaPatente (FamiliaID, PatenteID, DVH) VALUES (7, 38, '94F24FFD96085B050B388324F436211CF4BD2B58F5E1937B6605B3FA3CF2D237');
 INSERT INTO FamiliaFamilia (FamiliaPadreID, FamiliaHijaID, DVH) VALUES (1, 2, 'CB4235A38D71766EE931064D369A34262391A1AB19175AECDF86C33ACFDEDC0B');
 INSERT INTO FamiliaFamilia (FamiliaPadreID, FamiliaHijaID, DVH) VALUES (1, 3, 'DFBFD56D72390C4C5449D60ABBA865CF536212E8BF1549D229C0EDBE7E64A8D3');
 INSERT INTO FamiliaFamilia (FamiliaPadreID, FamiliaHijaID, DVH) VALUES (1, 4, 'A89F60F5A85FEC6AF3111681D0A1EB2AF8265992322DADCBA7726AD1DD4C9A1E');
 INSERT INTO FamiliaFamilia (FamiliaPadreID, FamiliaHijaID, DVH) VALUES (1, 5, 'E8830CD3829711FF83A0B6089E43FDD6EE52B35D17222578436988885DA74FAF');
 INSERT INTO FamiliaFamilia (FamiliaPadreID, FamiliaHijaID, DVH) VALUES (1, 6, '2D4FE081D1F545E217182455E99B93758D46B368F6019D75E34D2DE189AA8711');
+INSERT INTO FamiliaFamilia (FamiliaPadreID, FamiliaHijaID, DVH) VALUES (1, 7, '53DB2C7453F3EFE5A28BA4614F978D7F130BFBC888F24B2C31E30CE5DE8A0D12');
 GO
 
 SET IDENTITY_INSERT Usuario ON;
 INSERT INTO Usuario (UsuarioID, Usuario, Clave, Nombre, Apellido, DNI, Email, Activo, Bloqueado, IntentosFallidos, PrimerIngreso, EnSesion, DVH)
-     VALUES (1, N'admin', N'ma7/zo5+YW0k+MS0PPewyg==.Lv96YbrruRxT4JksRe2TQI1xbYqjJg4BCjkQjIf+9SA=', N'Mariano', N'Núñez', N'MYYMYQO8+CE/GjYcDPpJ9w==.2QmRejKUN+hylboe7oshrg==', N's6OA15E0WToM3SGrzfQBuQ==.YyD9rhynGHGQO5DsqoOHCH69fwFNGzd7v6enG2gaE2Q=', 1, 0, 0, 0, 0, '8003327C20BC4F7BD074DF392D23A335BD4F2D815DF31ECFCA7DA74BE42B371A');
+     VALUES (1, N'admin', N'aMin50RLGB3vGrUu/w9beQ==.uDMvgFnRZd0Ur34LDjJSfYfRu8juhAI7kr0Oqj6R0qQ=', N'Mariano', N'Núñez', N'G4u2FLAVR2IRMseNBSDpJg==.HlBTzmkpi75vq7+5gFdu0A==', N'GBHizKH7uw7bOeMNW61Tpw==.syiBIv1YWOz3wlNqy9iee5if9JpN/kzQaaqJNHB4vBU=', 1, 0, 0, 0, 0, '54240800A2A413BAA889104D3CB668C8E26691E0E90C3608AD7312BD6870E3C0');
 INSERT INTO Usuario (UsuarioID, Usuario, Clave, Nombre, Apellido, DNI, Email, Activo, Bloqueado, IntentosFallidos, PrimerIngreso, EnSesion, DVH)
-     VALUES (2, N'operario', N'g9hcAlyd4r3n7ztPy/kskw==.MyZRAAzcW0YaA9KNOy2K0DlvC+m0cOiem9d5hPRL9ao=', N'Sofía', N'Ramírez', N'GEx5pFrEMoCTIoKlRlNaXQ==.bcl7UtY+rkNXlNzdBdXNWw==', N'PQoNS5itwB+allPfzbOlhA==.lyLWs9qbfypF4rKLFCQW2l6kv+QFLUgvqH8HfN/O8+8=', 1, 0, 0, 0, 0, 'B00A5A05511CE6289F97FB3B3EE73AEFA107CAC84570FB9E0B1093CC18DF7631');
+     VALUES (2, N'operario', N'0WujMA0FwhKujUk65esQCQ==.J9fpTyZ+7RW5bXuTpgXL3Rj1MRzKLC8c7XbZJ8yhE3o=', N'Sofía', N'Ramírez', N'UK5byykC0mSX1sbo2CfeIw==.Keg8Cgwy1p8mJqoHNDB6Lw==', N'90XIB5sgQiV2iOulXb5tBg==.+JtmUpQueuMDLZHeqSakqjo10MkYL3V+YlED5a5bJkU=', 1, 0, 0, 0, 0, 'D225ED76D70C5815F2018EC2C952E0F38F9DD6B95B68843A23FC6B701CE356D5');
 INSERT INTO Usuario (UsuarioID, Usuario, Clave, Nombre, Apellido, DNI, Email, Activo, Bloqueado, IntentosFallidos, PrimerIngreso, EnSesion, DVH)
-     VALUES (3, N'vendedor', N'CX6z5aqtyKx5kIHOLJT0xQ==.fH+ldvaZuAnvHysbvUDE01I/D7SCH+NhssBuYj7Dw8s=', N'Lucas', N'González', N'zPO/0hfnMXAMCf6ecn69jw==.BIA1wJGaC3FtD6J2n2RTGw==', N'BiGiSM+8HwNy9LuKdAhTtw==.l4dBI2fhF8wplh2gb1aWjTt/V7h6hlvxk3zgNyRkVWc=', 1, 0, 0, 0, 0, 'EC5B83C2DB3B7F5AAFECDD9713DB5D0B932E574223DAEA61407DC82DAD2C6856');
+     VALUES (3, N'vendedor', N'QuXnUmR5l35aDIuz7gkX1Q==.vtWhHd6M5tuKVaGM7XIZk7RY97uEn2dGs65I3wy7jcY=', N'Lucas', N'González', N'LW5b4TzrBG0XxKmH7O3bCA==.Kj3F3H04XxlyIIQjGHN2JA==', N'STKpgjILe25e08FhjJXI2Q==.afG+PsVoquG2tWb77vo+5DNx48utuklBSBxL3huwwVQ=', 1, 0, 0, 0, 0, '2F21A5CAA2487399582C8DF5A456F81AA898812CF4D3782AEA1C482F219E1D65');
 INSERT INTO Usuario (UsuarioID, Usuario, Clave, Nombre, Apellido, DNI, Email, Activo, Bloqueado, IntentosFallidos, PrimerIngreso, EnSesion, DVH)
-     VALUES (4, N'veterinario', N'9ZSoxHabfmHKulPo+TtRqA==.SvuKYQPeu/KZ2dQMLxZMJ2IyY4hgt7qj1sa6n/kd5Fk=', N'Carla', N'Domínguez', N'137rx/BSGWI1gskai8Mv5w==.qG3iFHv83NQ1dJy3cd09tA==', N'sITiRO5bjCKOIWJpiixEwA==.dTb0HOW6mfrdsDQxp2Nln3O91OIVflKCsGFBaixhBao=', 1, 0, 0, 0, 0, 'AC29DC0FD0721DD05D173B2174FD66D413B8F155888B8F665C1F804C55027B96');
+     VALUES (4, N'veterinario', N'1/syuP1HkMLumkE4YomRaA==.ah7eAxPkAaXYAk1b+cuSwGm4C71G2c1xuLbvSQNLbF4=', N'Carla', N'Domínguez', N'63VSvGCKFkdRdI0CcQHI1Q==.4q5Zu1PyB9g/mSvkjiJ6Pg==', N'5YGFqRAafyjb44QCSw9oFQ==.JXvBCM058QPeDhFXtI9hkiDjes+zNm0rznQ6ncyDrJo=', 1, 0, 0, 0, 0, 'E8913E55D45E92EC95A5E093B2BDB883527DED42E6AF5E5ACC02377C7B575B1E');
+INSERT INTO Usuario (UsuarioID, Usuario, Clave, Nombre, Apellido, DNI, Email, Activo, Bloqueado, IntentosFallidos, PrimerIngreso, EnSesion, DVH)
+     VALUES (5, N'compras', N'3ktrpp5kV7dMOPg0xTuOuA==.fwSAmSf3beCu7S24XefmsYVXygkAXSgWiSrKwsws4Ic=', N'Martín', N'Herrera', N'T+GQ8Kn0f/JXQ5rmXaKHOw==.840NI9VzsNGpKO0TQfmSGw==', N'FkrMTjRb6W1Acl80dM5xhQ==.fKU/b2G2aD4MIgSmKeiW2buLTYhLblExg9uaONxQ6SI=', 1, 0, 0, 0, 0, 'D1B74B91D287B1FCACA727EAD1BE532E0C2C93F54C1F963284C6139E445234E3');
 SET IDENTITY_INSERT Usuario OFF;
 
 INSERT INTO UsuarioFamilia (UsuarioID, FamiliaID, DVH) VALUES (1, 1, 'FD8C07E3E37AF4D8DAC7026E65AD9E80CAB7897C5A534C9B66593B188AB3D40D');
 INSERT INTO UsuarioFamilia (UsuarioID, FamiliaID, DVH) VALUES (2, 4, '44046515A543E6A16DA7D5F618C735744C8FD2E8563D4DA78D9988513077233D');
 INSERT INTO UsuarioFamilia (UsuarioID, FamiliaID, DVH) VALUES (3, 5, 'FF99F9393125045555391EE5BD1D2A3AFC032178A3E33CD46C7B81D98C6C4AD7');
 INSERT INTO UsuarioFamilia (UsuarioID, FamiliaID, DVH) VALUES (4, 6, '886C98E99EE2225A09A3BF4B83ACE69EAED025A71CAC8561E003867F2F5F8EFB');
-INSERT INTO UsuarioPatente (UsuarioID, PatenteID, DVH) VALUES (2, 23, 'EFC7544E21CDAF4E30A5DB95A9842B9ADBEAA26CFC23703C185E138C1D935B29');
+INSERT INTO UsuarioFamilia (UsuarioID, FamiliaID, DVH) VALUES (5, 7, '2525F7C68BC2C6EE9F9896409085F2300AE13BE52C936CFAF39460E80B4E2129');
 GO
 
 SET IDENTITY_INSERT Categoria ON;
@@ -914,20 +1043,21 @@ SET IDENTITY_INSERT Proveedor OFF;
 
 INSERT INTO Configuracion (Clave, Valor) VALUES ('MargenGeneral', '30.00');
 INSERT INTO Configuracion (Clave, Valor) VALUES ('StockMinimoSugerido', '5');
+INSERT INTO Configuracion (Clave, Valor) VALUES ('TopeCompraMensual', '2000000.00');
 GO
 
--- Productos usados por el carrito de medicación (CUN09). El trigger de la bitácora de cambios está deshabilitado por ahora.
+-- Productos (CUN09). Margen: el de la categoría o, si no tiene, el margen general.
 SET IDENTITY_INSERT Productos ON;
-INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
-     VALUES (1, N'Amoxicilina 250 mg x 10 comp.', 1, 1, 40, 10, 1800.00, 2340.00, '2027-06-30', N'AMX-2401', 1, 1, '1B3238A9221411581B1BC516C4969703D0AF2F70EA44266CD9E379C9ACDA2DF7');
-INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
-     VALUES (2, N'Vacuna Séxtuple canina', 2, 3, 25, 8, 5200.00, 7020.00, '2027-03-31', N'VSX-118', 1, 1, '4456AA608B2D1490873B4BE1B8D8E2A416132E09ADE4997940695359173E78AD');
-INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
-     VALUES (3, N'Pipeta antipulgas perro 10-20 kg', 3, 2, 6, 10, 3100.00, 4030.00, '2028-01-31', N'PIP-7755', 1, 1, '72361458FB79327F6C5023D4816490C32118D51FC301E8D8EA719676FB1615B5');
-INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
-     VALUES (4, N'Alimento balanceado gato adulto 3 kg', 4, 2, 15, 5, 9800.00, 11760.00, '2027-11-30', N'ALG-3021', 1, 1, '893707FA49CC3415874FEB34EC4CE5049AE0F06D2570F5DD480B79937D55D788');
-INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
-     VALUES (5, N'Collar isabelino talle M', 5, 2, 12, 4, 2500.00, 3500.00, '2030-12-31', N'COL-M-01', 1, 1, 'E1956C0DDA91F0DCE3EAC70C05B020822C348ECC6F2C5CB790075F9BEF1FE1B2');
+INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
+     VALUES (1, N'Amoxicilina 250 mg x 10 comp.', 1, 1, 40, 10, 1800.00, 2340.00, 30.00, '2027-06-30', N'AMX-2401', 1, 1, '959155672648DC744BA72A002983FBEE92A3DEFAB4A11BFD9B3F9CE95059B268');
+INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
+     VALUES (2, N'Vacuna Séxtuple canina', 2, 3, 25, 8, 5200.00, 7020.00, 35.00, '2027-03-31', N'VSX-118', 1, 1, '1667376BFDD2EF68F2D126733E64881F281FA2CF76D42EB011FD37B152BAD7B8');
+INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
+     VALUES (3, N'Pipeta antipulgas perro 10-20 kg', 3, 2, 6, 10, 3100.00, 4030.00, 30.00, '2028-01-31', N'PIP-7755', 1, 1, '744DDF9EAF4D49FB336BF94FDC6F165C006E6CDCD3EB9E69BA9D96562CFEA663');
+INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
+     VALUES (4, N'Alimento balanceado gato adulto 3 kg', 4, 2, 15, 5, 9800.00, 11760.00, 20.00, '2027-11-30', N'ALG-3021', 1, 1, 'BDC46F39C482321E84A607A3B33AB0D5BBF31994E6890DB12B533F0B797CDF0E');
+INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)
+     VALUES (5, N'Collar isabelino talle M', 5, 2, 12, 4, 2500.00, 3500.00, 40.00, '2030-12-31', N'COL-M-01', 1, 1, '6CAF86DC5E029E153A8E9F4B1E14B6C1D8A18629FA00CEBA9126AC8393B3EB6B');
 SET IDENTITY_INSERT Productos OFF;
 
 -- La pipeta arranca por debajo del stock mínimo: alerta de reposición activa.
@@ -956,15 +1086,15 @@ INSERT INTO HistoriaClinica (HistoriaClinicaID, MascotaID, FechaApertura, PesoAc
 SET IDENTITY_INSERT HistoriaClinica OFF;
 GO
 
-INSERT INTO DVV (Tabla, DVV) VALUES ('Usuario', '9009845F0ADF3195CA062E656ACEDEE06C95698F2AB616A89EFDCE8F405F5170');
-INSERT INTO DVV (Tabla, DVV) VALUES ('Patente', '803B02DF9E6C09B84DED9D05BA30EBED85835DD122F95D23B90F7F45AC7AE334');
-INSERT INTO DVV (Tabla, DVV) VALUES ('Familia', '6491A6587F7A15AE80FF44616D89F38DCCF327F2E30DF66F408CFEC910F0ECC3');
-INSERT INTO DVV (Tabla, DVV) VALUES ('FamiliaPatente', 'FAF84C2898CF76C3CA257325891695D933EFB03DBD80A0BB584291ADCE46EB6D');
-INSERT INTO DVV (Tabla, DVV) VALUES ('FamiliaFamilia', '37CECA68568F37F4CFD3BD5530E1592273BBA7FBB87BAFFF31306053CDC43E43');
-INSERT INTO DVV (Tabla, DVV) VALUES ('UsuarioFamilia', 'EE144C71651E31BDB650EB9B893391259AD27055DD8EF3D06D228142BB946915');
-INSERT INTO DVV (Tabla, DVV) VALUES ('UsuarioPatente', '81664C382F035D276B96BC8DED42A6C602B2EFBC32EE55B107A1E4B4572EED07');
+INSERT INTO DVV (Tabla, DVV) VALUES ('Usuario', '7B23158D410D76B5DDC3BF88D05A4BC2BE20CC573554109B6EBA44A74E598987');
+INSERT INTO DVV (Tabla, DVV) VALUES ('Patente', 'DC9E64ED6ABB096DF47B380965AB9E15B15C9CE83CCD58230C5268A859795D1C');
+INSERT INTO DVV (Tabla, DVV) VALUES ('Familia', '5A59FF3009FCF700E232F174AA25A1852DE29112D1FB27485ECF7674C6E85ADD');
+INSERT INTO DVV (Tabla, DVV) VALUES ('FamiliaPatente', '8064E6E05F55DB431AA67A9CF438F1C251C3F07C6197211A01ACE4A33F5AAD68');
+INSERT INTO DVV (Tabla, DVV) VALUES ('FamiliaFamilia', '9A0B529D3131B429B64E71D5CE839FB4D9EB3774DBE61AB90875276991204D97');
+INSERT INTO DVV (Tabla, DVV) VALUES ('UsuarioFamilia', '19899FC28D62C58AF80A6F92FD1100261A9B08D5F41D4F4890FF04DF4A9ACB82');
+INSERT INTO DVV (Tabla, DVV) VALUES ('UsuarioPatente', '53B29D76BA8840AEA4F72EA935931F407CA0F891F0B912ABE09FE1BC96592A53');
 INSERT INTO DVV (Tabla, DVV) VALUES ('Bitacora', '1E1CEE03C9F3047366842C37A5B35E236FB6CE40AAEF9133ECA685921AC5145E');
-INSERT INTO DVV (Tabla, DVV) VALUES ('Productos', '91460DB02B8CB33F139A92011C09C686668DBAA7460A2B92448250E540DA1E09');
+INSERT INTO DVV (Tabla, DVV) VALUES ('Productos', '2E79D1E4F0BF1E770370ED5B5BEEF5E91739E85E6561FE159ADC718949B2E95F');
 INSERT INTO DVV (Tabla, DVV) VALUES ('MovimientoStock', '83BDDF37682E8B90799B49FB59A561480FB233BCEA73658518FC05E9627442F7');
 INSERT INTO DVV (Tabla, DVV) VALUES ('Cliente', '12B1D957863F9666323223B99638491A74B4ED603EF3287C68072D0EE4F56991');
 INSERT INTO DVV (Tabla, DVV) VALUES ('Mascota', '08381F714CDD809D75633C3A59C34D8C406B2BBA60180A706D7F311BE1FEC956');
@@ -973,6 +1103,13 @@ INSERT INTO DVV (Tabla, DVV) VALUES ('Atencion', '159BD053D5A6DA4FEE4E349E3DFAE3
 INSERT INTO DVV (Tabla, DVV) VALUES ('Proveedor', '562BD6B48753BCA4D19E7D1C19B88C1EFDCA923264F363B10EC02AC5F5E413DD');
 INSERT INTO DVV (Tabla, DVV) VALUES ('VentaEncabezado', '3D8A1546A48B4082256EECE07FE96F8CB38FBF07AB902CF839ED5F46E8F6FB2F');
 INSERT INTO DVV (Tabla, DVV) VALUES ('VentaDetalle', '61213FD3894AEEDF3EA4A9F07B96E522E44339290A362428E3A67E2A55783E11');
+INSERT INTO DVV (Tabla, DVV) VALUES ('SolicitudReposicion', '9304278EEC032DA32C46E704DBD92BB51E307000694BBE49883BD31048348ECB');
+INSERT INTO DVV (Tabla, DVV) VALUES ('SolicitudReposicionDetalle', '9623503542FF568C356D76C6821E3CAF2C3A2948821DD3C88C83D6FEAED0D53C');
+INSERT INTO DVV (Tabla, DVV) VALUES ('OrdenCompra', '94F1A5DC85E132259F69136855A31F4F2F91EC1A65C7BCE8A2FD3FB4AC81F981');
+INSERT INTO DVV (Tabla, DVV) VALUES ('OrdenCompraDetalle', '21FF4F7ADEB3260B4DC5E4A314B1D92247729FED858624D31657106B9827F841');
+INSERT INTO DVV (Tabla, DVV) VALUES ('PagoProveedor', '28377BFE1770C9FF3BE5EF24F2E92E9AECD5D724847FFC2A7E2E1D82B8291148');
+INSERT INTO DVV (Tabla, DVV) VALUES ('Recepcion', '84F9CEE824B33BEF39F1B80C9B55FA85EF2A3DDC77913F8B98DF0B887702AF6F');
+INSERT INTO DVV (Tabla, DVV) VALUES ('RecepcionDetalle', '1C97F249B4C59096DE8E932EBF989274EC9D71670C09FCD83673E12265BC9D79');
 GO
 
 PRINT 'VetCareBD_60MN creada correctamente.';

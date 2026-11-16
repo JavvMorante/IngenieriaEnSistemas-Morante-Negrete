@@ -10,61 +10,22 @@ namespace VetCare
     {
         private readonly UsuarioBLL_60MN usuarioBLL = new UsuarioBLL_60MN();
         private readonly IdiomaBLL_60MN idiomaBLL = new IdiomaBLL_60MN();
-        private bool cargandoIdiomas;
 
-        // True si el usuario eligió un idioma en el combo antes de ingresar: esa elección se guarda como su idioma.
-        private bool idiomaElegidoEnLogin;
-
+        /// <summary>El Login abre siempre en el idioma base (español) y no permite cambiarlo.</summary>
         public FrmLogin_60MN()
         {
             InitializeComponent();
         }
 
-        /// <summary>Carga los idiomas y selecciona el actual (el Login abre siempre en el idioma base, español).</summary>
-        private void FrmLogin_60MN_Load(object sender, EventArgs e)
-        {
-            try
-            {
-                cargandoIdiomas = true;
-                List<Idioma_60MN> idiomas = idiomaBLL.Listar();
-                cboIdioma.DataSource = idiomas;
-                int actual = Servicios_60MN.Idioma.GestorIdioma_60MN.Instancia.IdiomaActual?.Id ?? 0;
-                cboIdioma.SelectedIndex = Math.Max(0, idiomas.FindIndex(i => i.Id == actual));
-            }
-            catch (Exception ex)
-            {
-                lblMensaje.Text = ex.Message;
-            }
-            finally
-            {
-                cargandoIdiomas = false;
-            }
-        }
-
-        /// <summary>Cambio de idioma: se aplica en el momento a esta pantalla (Observer).</summary>
-        private void cboIdioma_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cargandoIdiomas || cboIdioma.SelectedItem is not Idioma_60MN idioma) return;
-            idiomaElegidoEnLogin = true;
-            try
-            {
-                idiomaBLL.Aplicar(idioma);
-            }
-            catch (Exception ex)
-            {
-                Mensajes_60MN.MostrarError(ex);
-            }
-        }
-
         /// <summary>
-        /// Al ingresar: si eligió un idioma en el combo, se guarda como SU idioma; si no, se
-        /// le aplica su último idioma guardado. Todas las pantallas se traducen solas (Observer).
+        /// Al ingresar se le aplica al usuario su último idioma guardado (USUARIO > Cambiar idioma).
+        /// Todas las pantallas se traducen solas (Observer).
         /// </summary>
         private void AplicarIdiomaDelUsuario()
         {
             try
             {
-                idiomaBLL.AplicarIdiomaAlIngresar(idiomaElegidoEnLogin ? cboIdioma.SelectedItem as Idioma_60MN : null);
+                idiomaBLL.AplicarIdiomaAlIngresar();
             }
             catch (Exception)
             {

@@ -9,7 +9,7 @@ namespace DAL_60MN
         Cuit
     }
 
-    /// <summary>Mapper de la tabla Proveedor (CUN11 Gestionar Proveedores).</summary>
+    /// <summary>Mapper de la tabla Proveedor (CUN08 Gestionar Proveedores).</summary>
     public class ProveedorDAL_60MN
     {
         private const string Select = @"

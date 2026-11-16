@@ -1,0 +1,46 @@
+classDiagram
+    class IPermiso_60MN {
+        <<interface>>
+        +Nombre string
+        +EsFamilia bool
+        +AgregarHijo(permiso)
+        +QuitarHijo(permiso)
+        +ObtenerHijos() IList
+        +TienePatente(codigo) bool
+    }
+    class Componente_60MN {
+        <<abstract>>
+        +Id int
+        +Nombre string
+        +ObtenerPatentes() IEnumerable
+        +ContieneFamilia(familiaId) bool
+        +Iguales(a, b) bool
+    }
+    class Familia_60MN {
+        -List hijos
+        +EsFamilia devuelve true
+        +AgregarHijo(permiso) valida ciclos
+        +TienePatente(codigo) pregunta a los hijos
+        +PatentesDirectas
+        +FamiliasDirectas
+    }
+    class Patente_60MN {
+        +Codigo string
+        +EsFamilia devuelve false
+        +AgregarHijo(permiso) lanza excepcion
+        +ObtenerHijos() lista vacia
+        +TienePatente(codigo) compara Codigo
+    }
+    class SessionManager_60MN {
+        +TienePermiso(codigoPatente) bool
+    }
+    IPermiso_60MN <|.. Componente_60MN
+    Componente_60MN <|-- Familia_60MN
+    Componente_60MN <|-- Patente_60MN
+    Familia_60MN o-- "0..*" IPermiso_60MN : hijos
+    SessionManager_60MN ..> IPermiso_60MN : Permisos del usuario
+    style IPermiso_60MN fill:#eef1f4,stroke:#44566b,stroke-width:3px
+    style Componente_60MN fill:#eef1f4,stroke:#44566b,stroke-width:3px
+    style Familia_60MN fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style Patente_60MN fill:#fbeedb,stroke:#9a6a16,stroke-width:3px
+    style SessionManager_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px

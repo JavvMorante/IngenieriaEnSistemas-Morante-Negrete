@@ -25,7 +25,7 @@ Menú horizontal: ADMIN, MAESTROS, PACIENTES, VENTAS, STOCK, REPORTES, USUARIO, 
 
 | Usuario | Menú visible |
 |---|---|
-| `admin` | **ADMIN:** Usuarios, Perfiles, Backup, Restore, Bitácora de eventos (Ver / Exportar / Importar XML), Bitácora de cambios, Dígitos verificadores, Configuración de stock<br>**MAESTROS:** Clientes, Mascotas, Productos, Proveedores<br>**PACIENTES:** Historias clínicas, Registrar atención<br>**VENTAS:** Carrito, Ventas registradas<br>**STOCK:** Movimientos de stock<br>**REPORTES:** Reporte de atenciones, Reporte de existencias, Reporte inteligente<br>**USUARIO** y **AYUDA** |
+| `admin` | **ADMIN:** Usuarios, Perfiles, Backup, Restore, Bitácora de eventos (Exportar / Deserializar XML), Bitácora de cambios, Dígitos verificadores, Configuración de stock<br>**MAESTROS:** Clientes, Mascotas, Productos, Proveedores<br>**PACIENTES:** Historias clínicas, Registrar atención<br>**VENTAS:** Carrito, Ventas registradas<br>**STOCK:** Movimientos de stock<br>**REPORTES:** Reporte de atenciones, Reporte de existencias, Reporte inteligente<br>**USUARIO** y **AYUDA** |
 | `operario` | **ADMIN:** Configuración de stock (por su patente individual `STK_CONFIG`)<br>**MAESTROS:** Productos, Proveedores<br>**STOCK:** Movimientos de stock<br>**REPORTES:** Reporte de existencias<br>**USUARIO** y **AYUDA** |
 | `vendedor` | **MAESTROS:** Clientes (registra, modifica y da de baja), Mascotas<br>**VENTAS:** Carrito, Ventas registradas<br>**USUARIO** y **AYUDA** |
 | `veterinario` | **MAESTROS:** Clientes (solo consulta; no ve los botones de alta y modificación)<br>**PACIENTES:** Historias clínicas, Registrar atención<br>**VENTAS:** Carrito, Ventas registradas<br>**REPORTES:** Reporte de atenciones, Reporte inteligente<br>**USUARIO** y **AYUDA** |
@@ -88,7 +88,7 @@ Patentes propias de la familia:
 | `SEG_ROLES` | Gestionar familias y permisos (define a un "administrador") | CUS04 |
 | `SEG_BACKUP` | Respaldar base de datos | CUS12 |
 | `SEG_RESTORE` | Restaurar base de datos | CUS12 |
-| `SEG_BITACORA_IMPORT` | Importar bitácora de eventos (XML) | CUS09 |
+| `SEG_BITACORA_IMPORT` | Deserializar bitácora de eventos (XML) | CUS09 |
 | `STK_CONFIG` | Configurar margen y alerta de stock mínimo | CUN10 |
 | `MAE_PROVEEDORES` | Gestionar proveedores | CUN11 |
 | `REP_REPORTES` | Reporte de atenciones y reporte inteligente | CUN07 y CUN13 |
@@ -96,8 +96,7 @@ Patentes propias de la familia:
 Además **incluye** las familias Gestión de Usuarios, Auditoría, Operario de stock, Vendedor y Veterinario
 (relación `FamiliaFamilia`, patrón Composite), por eso el administrador tiene todas las patentes.
 
-> El sistema **no factura**: las patentes `VEN_FACTURAR`, `VEN_DESPACHAR` y `COM_COMPRAS` se eliminaron
-> (en una base existente las quita `BDScript/Migracion_V24_60MN.sql`).
+> El sistema **no factura**: las patentes `VEN_FACTURAR`, `VEN_DESPACHAR` y `COM_COMPRAS` se eliminaron.
 
 ## 4. Usuario de emergencia
 

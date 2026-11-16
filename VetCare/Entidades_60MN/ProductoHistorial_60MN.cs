@@ -27,6 +27,8 @@ namespace Entidades_60MN
 
         public decimal PrecioVenta { get; set; }
 
+        public decimal Margen { get; set; }
+
         public DateTime FechaVencimiento { get; set; }
 
         public string Lote { get; set; } = string.Empty;

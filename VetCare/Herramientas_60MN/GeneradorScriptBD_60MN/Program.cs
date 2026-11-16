@@ -54,19 +54,23 @@ var patentes = new List<(int Id, string Nombre, string Codigo)>
     (18, "Registrar atención", "ATN_REGISTRAR"),
     (19, "Registrar medicación en carrito", "VEN_CARRITO"),
     (20, "Emitir informe de atención", "ATN_INFORME"),
-    // PN2 Gestión de Stock (CUN08 a CUN10 y CUN12)
+    // PN2 Reposición de Medicamentos e Insumos (V2.5): CUN08 a CUN15.
+    // Se quitaron 23 a 25 (configurar margen, movimiento de stock y reporte de existencias)
+    // y 27 a 29 (facturar, despachar, compras): sus números no se reutilizan.
     (21, "Registrar producto", "STK_PROD_ALTA"),
     (22, "Modificar producto", "STK_PROD_MODIF"),
-    (23, "Configurar margen y alerta de stock mínimo", "STK_CONFIG"),
-    (24, "Registrar movimiento de stock", "STK_MOVIMIENTO"),
-    (25, "Generar reporte de existencias", "STK_REPORTE"),
-    // CUN11 Gestionar Proveedores y reportes (CUN07 atenciones, CUN13 inteligente).
-    // El sistema no factura: las patentes 27 a 29 (facturar, despachar, compras) se quitaron.
     (26, "Gestionar proveedores", "MAE_PROVEEDORES"),
+    // Reportes de atenciones (CUN07) e inteligente (CUN16)
     (30, "Reportes de atenciones e inteligente", "REP_REPORTES"),
     // Bitácora de eventos: exportar (serializar) y deserializar en XML (patentes separadas)
     (31, "Exportar bitácora de eventos (XML)", "SEG_BITACORA_EXPORT"),
     (32, "Deserializar bitácora de eventos (XML)", "SEG_BITACORA_IMPORT"),
+    (33, "Generar solicitud de reposición", "CMP_SOLICITUD"),
+    (34, "Registrar orden de compra", "CMP_ORDEN"),
+    (35, "Aprobar orden de compra", "CMP_APROBAR"),
+    (36, "Registrar pago al proveedor", "CMP_PAGO"),
+    (37, "Registrar recepción de mercadería", "CMP_RECEPCION"),
+    (38, "Generar reporte de compras", "REP_COMPRAS"),
 };
 // Familias según G04: un tipo de usuario por rol del negocio, más dos familias de seguridad.
 var familias = new List<(int Id, string Nombre)>
@@ -74,27 +78,29 @@ var familias = new List<(int Id, string Nombre)>
     (1, "Administrador"),
     (2, "Gestión de Usuarios"),
     (3, "Auditoría"),
-    (4, "Operario de stock"),
+    (4, "Encargado de depósito"),
     (5, "Vendedor"),
     (6, "Veterinario"),
+    (7, "Analista de compras"),
 };
 var familiaPatente = new List<(int A, int B)>
 {
-    // Administrador (Gerente): perfiles, backup/restore, CUN10, proveedores y reportes
-    (1, 4), (1, 9), (1, 10), (1, 23), (1, 26), (1, 30),
+    // Administrador (Gerente): perfiles, backup/restore, reportes, aprobar órdenes (CUN12) y reporte de compras (CUN15)
+    (1, 4), (1, 9), (1, 10), (1, 30), (1, 35), (1, 38),
     (1, 32),                                        // Administrador: importar bitácora (XML)
     (2, 1), (2, 2), (2, 3), (2, 5),                 // Gestión de Usuarios
     (3, 6), (3, 7), (3, 8), (3, 31),                // Auditoría (incluye exportar bitácora a XML)
-    (4, 21), (4, 22), (4, 24), (4, 25), (4, 26),    // Operario de stock: CUN08, CUN09, CUN11 y CUN12
+    (4, 21), (4, 22), (4, 33), (4, 37),             // Encargado de depósito: CUN09, CUN10 y CUN14
     (5, 11), (5, 12), (5, 13), (5, 14), (5, 19),    // Vendedor: CUN01, CUN02 y CUN05 (carrito y ventas registradas)
-    (6, 13), (6, 15), (6, 16), (6, 17), (6, 18), (6, 19), (6, 20), (6, 30), // Veterinario: consulta de clientes, CUN03 a CUN07 y CUN13
+    (6, 13), (6, 15), (6, 16), (6, 17), (6, 18), (6, 19), (6, 20), (6, 30), // Veterinario: consulta de clientes, CUN03 a CUN07 y CUN16
+    (7, 26), (7, 34), (7, 36), (7, 38),             // Analista de compras: CUN08, CUN11, CUN13 y CUN15
 };
 var familiaFamilia = new List<(int A, int B)>
 {
-    (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), // Administrador = acceso total (G04): incluye todas las familias
+    (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), // Administrador = acceso total (G04): incluye todas las familias
 };
-var usuarioFamilia = new List<(int A, int B)> { (1, 1), (2, 4), (3, 5), (4, 6) };
-var usuarioPatente = new List<(int A, int B)> { (2, 23) }; // operario: patente individual CUN13 (Configurar margen)
+var usuarioFamilia = new List<(int A, int B)> { (1, 1), (2, 4), (3, 5), (4, 6), (5, 7) };
+var usuarioPatente = new List<(int A, int B)>(); // sin patentes individuales en los datos iniciales
 
 List<string> dvhPatente = new List<string>();
 sql.AppendLine("SET IDENTITY_INSERT Patente ON;");
@@ -132,6 +138,7 @@ var usuarios = new[]
     (Id: 2, Usuario: "operario", Clave: "Operario1234", Nombre: "Sofía", Apellido: "Ramírez", Dni: "32444555", Email: "sramirez@vetcare.local"),
     (Id: 3, Usuario: "vendedor", Clave: "Vendedor1234", Nombre: "Lucas", Apellido: "González", Dni: "35000111", Email: "lgonzalez@vetcare.local"),
     (Id: 4, Usuario: "veterinario", Clave: "Veterinario1234", Nombre: "Carla", Apellido: "Domínguez", Dni: "33222111", Email: "cdominguez@vetcare.local"),
+    (Id: 5, Usuario: "compras", Clave: "Compras1234", Nombre: "Martín", Apellido: "Herrera", Dni: "34666777", Email: "mherrera@vetcare.local"),
 };
 List<string> dvhUsuario = new List<string>();
 sql.AppendLine("SET IDENTITY_INSERT Usuario ON;");
@@ -179,7 +186,7 @@ foreach (var c in categorias)
     sql.AppendLine($"INSERT INTO Categoria (CategoriaID, Nombre, Margen) VALUES ({c.Id}, {Txt(c.Nombre)}, {(c.Margen.HasValue ? Dec(c.Margen.Value) : "NULL")});");
 sql.AppendLine("SET IDENTITY_INSERT Categoria OFF;");
 sql.AppendLine();
-// CUN11: CUIT de 11 dígitos con dígito verificador válido; teléfono solo con dígitos, como el del cliente.
+// CUN08: CUIT de 11 dígitos con dígito verificador válido; teléfono solo con dígitos, como el del cliente.
 var proveedores = new[]
 {
     (Id: 1, Razon: "Droguería Veterinaria del Sur S.A.", Cuit: "30712345671", Telefono: "1142445500", Email: (string?)"ventas@drogueriadelsur.com.ar", Direccion: "Av. Hipólito Yrigoyen 10250, Lomas de Zamora", Contacto: (string?)"Marcela Ríos"),
@@ -200,6 +207,8 @@ sql.AppendLine();
 const decimal margenGeneral = 30m;
 sql.AppendLine($"INSERT INTO Configuracion (Clave, Valor) VALUES ('MargenGeneral', '{Dec(margenGeneral)}');");
 sql.AppendLine("INSERT INTO Configuracion (Clave, Valor) VALUES ('StockMinimoSugerido', '5');");
+// CUN12: tope de compras aprobadas por mes; si se supera, el gerente confirma la aprobación.
+sql.AppendLine("INSERT INTO Configuracion (Clave, Valor) VALUES ('TopeCompraMensual', '2000000.00');");
 sql.AppendLine("GO");
 sql.AppendLine();
 
@@ -212,17 +221,18 @@ var productos = new[]
     (Id: 5, Nombre: "Collar isabelino talle M", Cat: 5, Prov: 2, Stock: 12, Min: 4, Costo: 2500m, Vto: new DateTime(2030, 12, 31), Lote: "COL-M-01"),
 };
 List<string> dvhProductos = new List<string>();
-sql.AppendLine("-- Productos usados por el carrito de medicación (CUN09). El trigger de la bitácora de cambios está deshabilitado por ahora.");
+sql.AppendLine("-- Productos (CUN09). Margen: el de la categoría o, si no tiene, el margen general.");
 sql.AppendLine("SET IDENTITY_INSERT Productos ON;");
 foreach (var p in productos)
 {
     decimal margen = categorias.First(c => c.Id == p.Cat).Margen ?? margenGeneral;
     decimal venta = Math.Round(p.Costo * (1 + margen / 100m), 2);
     string codigo = "PRD-" + p.Id.ToString("00000");
-    string dvh = dv.CalcularDVH(TablaDV_60MN.Productos, p.Id, codigo, p.Nombre, p.Cat, p.Prov, p.Stock, p.Min, p.Costo, venta, p.Vto, p.Lote, true);
+    // Orden de columnas = TablaDV_60MN.Productos
+    string dvh = dv.CalcularDVH(TablaDV_60MN.Productos, p.Id, codigo, p.Nombre, p.Cat, p.Prov, p.Stock, p.Min, p.Costo, venta, margen, p.Vto, p.Lote, true);
     dvhProductos.Add(dvh);
-    sql.AppendLine("INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)");
-    sql.AppendLine($"     VALUES ({p.Id}, {Txt(p.Nombre)}, {p.Cat}, {p.Prov}, {p.Stock}, {p.Min}, {Dec(p.Costo)}, {Dec(venta)}, '{p.Vto:yyyy-MM-dd}', {Txt(p.Lote)}, 1, 1, '{dvh}');");
+    sql.AppendLine("INSERT INTO Productos (ProductoID, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo, PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, Activo, UsuarioModificacion, DVH)");
+    sql.AppendLine($"     VALUES ({p.Id}, {Txt(p.Nombre)}, {p.Cat}, {p.Prov}, {p.Stock}, {p.Min}, {Dec(p.Costo)}, {Dec(venta)}, {Dec(margen)}, '{p.Vto:yyyy-MM-dd}', {Txt(p.Lote)}, 1, 1, '{dvh}');");
 }
 sql.AppendLine("SET IDENTITY_INSERT Productos OFF;");
 sql.AppendLine();
@@ -301,6 +311,10 @@ var dvvs = new List<(string Tabla, string Dvv)>
     (TablaDV_60MN.VentaEncabezado, dv.CalcularDVV(TablaDV_60MN.VentaEncabezado, Array.Empty<string>())),
     (TablaDV_60MN.VentaDetalle, dv.CalcularDVV(TablaDV_60MN.VentaDetalle, Array.Empty<string>())),
 };
+// Tablas de compras (CUN10 a CUN14): arrancan vacías.
+foreach (string tabla in new[] { TablaDV_60MN.SolicitudReposicion, TablaDV_60MN.SolicitudReposicionDetalle, TablaDV_60MN.OrdenCompra,
+                                 TablaDV_60MN.OrdenCompraDetalle, TablaDV_60MN.PagoProveedor, TablaDV_60MN.Recepcion, TablaDV_60MN.RecepcionDetalle })
+    dvvs.Add((tabla, dv.CalcularDVV(tabla, Array.Empty<string>())));
 foreach (var (tabla, dvv) in dvvs)
     sql.AppendLine($"INSERT INTO DVV (Tabla, DVV) VALUES ('{tabla}', '{dvv}');");
 sql.AppendLine("GO");

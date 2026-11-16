@@ -9,13 +9,19 @@ namespace VetCare
     /// </summary>
     internal static class ImpresionTexto_60MN
     {
+        /// <summary>Impresora de Windows que guarda el documento como archivo PDF.</summary>
+        public const string ImpresoraPdf = "Microsoft Print to PDF";
+
         /// <summary>Devuelve el nombre de la impresora usada, o null si el usuario canceló (CUN10 4.1).</summary>
-        public static string? Imprimir(IWin32Window propietario, string titulo, string texto)
+        /// <param name="impresora">Impresora que se propone en el diálogo (por ejemplo ImpresoraPdf), si está instalada.</param>
+        public static string? Imprimir(IWin32Window propietario, string titulo, string texto, string? impresora = null)
         {
             string[] lineas = texto.Replace("\r\n", "\n").Split('\n');
             int siguiente = 0;
             using Font fuente = new Font("Consolas", 9F);
             using PrintDocument documento = new PrintDocument { DocumentName = titulo };
+            if (impresora != null && PrinterSettings.InstalledPrinters.Cast<string>().Contains(impresora))
+                documento.PrinterSettings.PrinterName = impresora;
             documento.BeginPrint += (s, e) => siguiente = 0;
             documento.PrintPage += (s, e) =>
             {

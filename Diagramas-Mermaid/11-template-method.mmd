@@ -1,0 +1,23 @@
+classDiagram
+    class FormBase_60MN {
+        <<abstract · Clase base>>
+        +ActualizarIdioma(idioma) METODO PLANTILLA
+        #AlCambiarIdioma() virtual · HUECO
+    }
+    class FrmProductos_60MN {
+        #AlCambiarIdioma() traduce la barra de estado
+    }
+    class FrmLogin_60MN {
+        #AlCambiarIdioma() traduce mensajes propios
+    }
+    class FrmCliente_60MN {
+        no sobrescribe nada
+    }
+    FormBase_60MN <|-- FrmProductos_60MN
+    FormBase_60MN <|-- FrmLogin_60MN
+    FormBase_60MN <|-- FrmCliente_60MN
+    note for FormBase_60MN "ActualizarIdioma fija el algoritmo:\n1. si IsDisposed, salir\n2. traducir los controles del disenador\n3. llamar a AlCambiarIdioma()\nSolo el paso 3 lo define cada formulario."
+    style FormBase_60MN fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style FrmProductos_60MN fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style FrmLogin_60MN fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style FrmCliente_60MN fill:#eef1f4,stroke:#44566b,stroke-width:2px

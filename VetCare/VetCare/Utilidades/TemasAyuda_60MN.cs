@@ -40,7 +40,7 @@ namespace VetCare
         {
             new TemaAyuda_60MN(General, "VetCare: cómo usar el sistema",
                 "El menú principal muestra solo las opciones que permite su perfil. MAESTROS reúne clientes, mascotas, productos y proveedores; " +
-                "PACIENTES, las historias clínicas y las atenciones; VENTAS, el carrito; STOCK, los movimientos; REPORTES, los reportes. " +
+                "PACIENTES, las historias clínicas y las atenciones; VENTAS, el carrito; COMPRAS, la reposición de medicamentos e insumos; REPORTES, los reportes. " +
                 "Presione F1 en cualquier pantalla para ver su ayuda, o elija otro tema en este índice.",
                 "FrmMenuPrincipal_60MN"),
             new TemaAyuda_60MN("login", "Iniciar sesión y cambiar la contraseña",
@@ -56,11 +56,11 @@ namespace VetCare
                 "familias ni un cambio que deje al sistema sin un administrador operativo.",
                 "FrmFamiliasPatentes_60MN"),
             new TemaAyuda_60MN("bitacoraEventos", "Bitácora de eventos",
-                "ADMIN > Bitácora de eventos: filtre por fechas, criticidad, módulo, evento y usuario. Exportar XML guarda los eventos firmados; Deserializar XML " +
+                "ADMIN > Bitácora de eventos: filtre por fechas, criticidad, módulo, evento y usuario. Exportar XML guarda los eventos firmados; Visualizar " +
                 "abre un XML exportado y muestra sus eventos en una grilla (si el archivo fue alterado, lo rechaza).",
                 "FrmBitacoraEventos_60MN", "FrmDeserializarBitacora_60MN"),
             new TemaAyuda_60MN("bitacoraCambios", "Bitácora de cambios",
-                "ADMIN > Bitácora de cambios: historial de versiones de cada producto. Puede comparar dos versiones y restaurar una anterior.",
+                "ADMIN > Bitácora de cambios: historial de versiones de cada producto (altas, modificaciones y movimientos por ventas y recepciones). Puede comparar dos versiones y restaurar una anterior.",
                 "FrmBitacoraCambios_60MN", "FrmCompararVersiones_60MN"),
             new TemaAyuda_60MN("integridad", "Dígitos verificadores",
                 "ADMIN > Dígitos verificadores: verifica los DVH (uno por fila) y DVV (uno por tabla) de las tablas protegidas y muestra las " +
@@ -104,27 +104,40 @@ namespace VetCare
                 "REPORTES > Reporte de atenciones: elija el período y, si quiere, el veterinario y la especie. Muestra las atenciones y los " +
                 "totales por profesional; se imprime (o PDF) y se exporta a CSV.",
                 "FrmReporteAtenciones_60MN"),
-            new TemaAyuda_60MN("productos", "CUN08 Administrar Existencias",
-                "MAESTROS > Productos: busque, registre y modifique productos. El precio de venta se propone con el margen de la categoría. " +
-                "El stock no se edita directamente: se ajusta con un movimiento de stock.",
-                "FrmProductos_60MN", "FrmProducto_60MN"),
-            new TemaAyuda_60MN("movimientos", "CUN09 Registrar Movimiento de Stock",
-                "STOCK > Movimientos de stock: registre ingresos, egresos, ajustes o la baja de un lote vencido, siempre con un motivo. " +
-                "Si el stock queda en el mínimo o por debajo, se genera una alerta de reposición.",
-                "FrmMovimientoStock_60MN"),
-            new TemaAyuda_60MN("configuracion", "CUN10 Configurar Margen y Alerta de Stock Mínimo",
-                "ADMIN > Configuración de stock: margen de ganancia general, margen particular de cada categoría y stock mínimo sugerido " +
-                "para los productos nuevos.",
-                "FrmConfiguracionStock_60MN"),
-            new TemaAyuda_60MN("proveedores", "CUN11 Gestionar Proveedores",
+            new TemaAyuda_60MN("proveedores", "CUN08 Gestionar Proveedores",
                 "MAESTROS > Proveedores: busque por razón social o CUIT y vea los productos que provee cada uno. El CUIT se valida con su " +
-                "dígito verificador y no se modifica. Un proveedor dado de baja no se ofrece en el alta de productos.",
+                "dígito verificador y no se modifica. Un proveedor dado de baja no se ofrece en productos ni en cotizaciones.",
                 "FrmProveedores_60MN", "FrmProveedor_60MN"),
-            new TemaAyuda_60MN("reporteExistencias", "CUN12 Generar Reporte de Existencias",
-                "REPORTES > Reporte de existencias: stock actual, productos bajo el mínimo o próximos a vencer, filtrados por categoría y " +
-                "proveedor. Se imprime (o PDF) y se exporta a CSV.",
-                "FrmReporteExistencias_60MN"),
-            new TemaAyuda_60MN("reporteInteligente", "CUN13 Generar Reporte Inteligente",
+            new TemaAyuda_60MN("productos", "CUN09 Administrar Productos",
+                "MAESTROS > Productos: busque, registre y modifique productos. El margen es de cada producto (en el alta lo propone la " +
+                "categoría) y el precio de venta se calcula con él; Usar sugerido lo vuelve a aplicar. El stock no se edita: arranca en 0 " +
+                "y cambia con las ventas y la recepción de mercadería. Historial de precios muestra las versiones del producto.",
+                "FrmProductos_60MN", "FrmProducto_60MN"),
+            new TemaAyuda_60MN("solicitud", "CUN10 Generar Solicitud de Reposición",
+                "COMPRAS > Solicitud de reposición: muestra los productos en alerta de stock mínimo con una cantidad sugerida (el doble del " +
+                "mínimo menos el stock). Marque los que quiere pedir, ajuste A pedir, agregue otros con el buscador y envíe la solicitud.",
+                "FrmSolicitudReposicion_60MN"),
+            new TemaAyuda_60MN("ordenCompra", "CUN11 Registrar Orden de Compra",
+                "COMPRAS > Órdenes de compra: elija la solicitud, cargue la cotización de cada proveedor y compárelas (se marca la más " +
+                "barata). Si elige otra, indique el motivo. La orden queda pendiente de aprobación. En Mis órdenes corrija las rechazadas o anule una orden no pagada.",
+                "FrmOrdenCompra_60MN", "FrmCotizacion_60MN"),
+            new TemaAyuda_60MN("aprobarOrden", "CUN12 Aprobar Orden de Compra",
+                "COMPRAS > Aprobar órdenes: revise el detalle, el origen (solicitud y cotización) y las advertencias de precio. Apruebe o " +
+                "rechace con motivo. Quien registró la orden no puede aprobarla. Si se supera el tope mensual de compras, se pide confirmación.",
+                "FrmAprobarOrden_60MN"),
+            new TemaAyuda_60MN("pagoProveedor", "CUN13 Registrar Pago al Proveedor",
+                "COMPRAS > Pagos a proveedores: Enviar orden la imprime o guarda en PDF para mandarla al proveedor. El pago se hace en el " +
+                "home banking; aquí se registra banco, comprobante, fecha e importe. Un comprobante no se repite para el mismo banco.",
+                "FrmPagoProveedor_60MN"),
+            new TemaAyuda_60MN("recepcion", "CUN14 Registrar Recepción de Mercadería",
+                "COMPRAS > Recepción de mercadería: busque la orden pagada, ingrese el remito y lo recibido de cada producto con su lote y " +
+                "vencimiento. El stock sube con un movimiento de ingreso. Si falta mercadería la orden queda recibida parcial; al completarla se cierra.",
+                "FrmRecepcion_60MN"),
+            new TemaAyuda_60MN("reporteCompras", "CUN15 Generar Reporte de Compras",
+                "REPORTES > Reporte de compras: elija el período y, si quiere, el proveedor y el estado. Muestra cada orden con lo pagado y " +
+                "lo recibido, los totales por proveedor y los generales. Se imprime o se exporta a PDF.",
+                "FrmReporteCompras_60MN"),
+            new TemaAyuda_60MN("reporteInteligente", "CUN16 Generar Reporte Inteligente",
                 "REPORTES > Reporte inteligente: cruza la demanda de insumos por mes y categoría (stock) con los productos más entregados " +
                 "en atenciones (pacientes) para anticipar compras.",
                 "FrmReporteInteligente_60MN"),

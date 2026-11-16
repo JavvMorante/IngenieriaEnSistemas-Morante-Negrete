@@ -3,49 +3,12 @@ using Microsoft.Data.SqlClient;
 
 namespace DAL_60MN
 {
-    /// <summary>Mapper de MovimientoStock y AlertaReposicion (CUN14).</summary>
+    /// <summary>
+    /// Consulta de MovimientoStock y mapper de AlertaReposicion. Los movimientos se graban dentro de
+    /// la transacción de la venta (CUN05) o de la recepción de mercadería (CUN14).
+    /// </summary>
     public class MovimientoStockDAL_60MN
     {
-        /// <summary>
-        /// Registra el movimiento y actualiza el stock del producto en una sola
-        /// transacción. La actualización se condiciona al stock leído
-        /// (StockActual = @anterior) para no pisar un movimiento concurrente.
-        /// Devuelve el Id del movimiento, o 0 si el stock cambió mientras tanto.
-        /// </summary>
-        public int Registrar(MovimientoStock_60MN m, bool darDeBajaProducto)
-        {
-            using SqlConnection con = Conexion_60MN.Abrir();
-            using SqlTransaction tx = con.BeginTransaction();
-
-            string sqlProducto = darDeBajaProducto
-                ? "UPDATE Productos SET StockActual = @nuevo, Activo = 0, UsuarioModificacion = @usuario WHERE ProductoID = @id AND StockActual = @anterior"
-                : "UPDATE Productos SET StockActual = @nuevo, UsuarioModificacion = @usuario WHERE ProductoID = @id AND StockActual = @anterior";
-            using (SqlCommand producto = Conexion_60MN.Crear(sqlProducto, con, tx,
-                ("@nuevo", m.StockResultante), ("@usuario", m.UsuarioId), ("@id", m.ProductoId), ("@anterior", m.StockAnterior)))
-            {
-                if (producto.ExecuteNonQuery() == 0)
-                {
-                    tx.Rollback();
-                    return 0;
-                }
-            }
-
-            int id;
-            using (SqlCommand movimiento = Conexion_60MN.Crear(@"
-INSERT INTO MovimientoStock (ProductoID, Tipo, Cantidad, StockAnterior, StockResultante, Motivo, FechaHora, UsuarioID)
-VALUES (@producto, @tipo, @cantidad, @anterior, @resultante, @motivo, @fecha, @usuario);
-SELECT CAST(SCOPE_IDENTITY() AS int);", con, tx,
-                ("@producto", m.ProductoId), ("@tipo", m.Tipo.ToString().ToUpperInvariant()), ("@cantidad", m.Cantidad),
-                ("@anterior", m.StockAnterior), ("@resultante", m.StockResultante), ("@motivo", m.Motivo),
-                ("@fecha", m.FechaHora), ("@usuario", m.UsuarioId)))
-            {
-                id = Convert.ToInt32(movimiento.ExecuteScalar());
-            }
-
-            tx.Commit();
-            return id;
-        }
-
         public List<MovimientoStock_60MN> ListarPorProducto(int productoId)
         {
             return Conexion_60MN.EjecutarLista(@"

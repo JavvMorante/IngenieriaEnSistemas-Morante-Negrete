@@ -30,9 +30,6 @@ namespace VetCare
         {
             components = new System.ComponentModel.Container();
             lblTitulo = new Label();
-            pnlIdioma = new Panel();
-            lblIdioma = new Label();
-            cboIdioma = new ComboBox();
             lblSubtitulo = new Label();
             lblUsuario = new Label();
             txtUsuario = new TextBox();
@@ -42,7 +39,6 @@ namespace VetCare
             btnCancelar = new Button();
             lblMensaje = new Label();
             errorProvider = new ErrorProvider(components);
-            pnlIdioma.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             //
@@ -57,42 +53,11 @@ namespace VetCare
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "VetCare";
             //
-            // pnlIdioma
-            //
-            pnlIdioma.BackColor = Color.FromArgb(224, 240, 240);
-            pnlIdioma.BorderStyle = BorderStyle.FixedSingle;
-            pnlIdioma.Controls.Add(lblIdioma);
-            pnlIdioma.Controls.Add(cboIdioma);
-            pnlIdioma.Location = new Point(32, 66);
-            pnlIdioma.Name = "pnlIdioma";
-            pnlIdioma.Size = new Size(334, 48);
-            pnlIdioma.TabIndex = 1;
-            //
-            // lblIdioma
-            //
-            lblIdioma.AutoSize = true;
-            lblIdioma.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblIdioma.Location = new Point(8, 13);
-            lblIdioma.Name = "lblIdioma";
-            lblIdioma.Size = new Size(129, 20);
-            lblIdioma.TabIndex = 0;
-            lblIdioma.Text = "Cambio de idioma";
-            //
-            // cboIdioma
-            //
-            cboIdioma.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboIdioma.FormattingEnabled = true;
-            cboIdioma.Location = new Point(170, 9);
-            cboIdioma.Name = "cboIdioma";
-            cboIdioma.Size = new Size(152, 28);
-            cboIdioma.TabIndex = 1;
-            cboIdioma.SelectedIndexChanged += cboIdioma_SelectedIndexChanged;
-            //
             // lblSubtitulo
             //
             lblSubtitulo.AutoSize = true;
             lblSubtitulo.ForeColor = Color.DimGray;
-            lblSubtitulo.Location = new Point(32, 128);
+            lblSubtitulo.Location = new Point(32, 72);
             lblSubtitulo.Name = "lblSubtitulo";
             lblSubtitulo.Size = new Size(99, 20);
             lblSubtitulo.TabIndex = 2;
@@ -104,7 +69,7 @@ namespace VetCare
             lblUsuario.BackColor = Color.FromArgb(0, 102, 102);
             lblUsuario.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblUsuario.ForeColor = Color.White;
-            lblUsuario.Location = new Point(32, 163);
+            lblUsuario.Location = new Point(32, 107);
             lblUsuario.MinimumSize = new Size(96, 27);
             lblUsuario.Name = "lblUsuario";
             lblUsuario.Padding = new Padding(4, 3, 0, 0);
@@ -114,7 +79,7 @@ namespace VetCare
             //
             // txtUsuario
             //
-            txtUsuario.Location = new Point(136, 163);
+            txtUsuario.Location = new Point(136, 107);
             txtUsuario.MaxLength = 50;
             txtUsuario.Name = "txtUsuario";
             txtUsuario.Size = new Size(230, 27);
@@ -126,7 +91,7 @@ namespace VetCare
             lblClave.BackColor = Color.FromArgb(0, 102, 102);
             lblClave.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblClave.ForeColor = Color.White;
-            lblClave.Location = new Point(32, 200);
+            lblClave.Location = new Point(32, 144);
             lblClave.MinimumSize = new Size(96, 27);
             lblClave.Name = "lblClave";
             lblClave.Padding = new Padding(4, 3, 0, 0);
@@ -136,7 +101,7 @@ namespace VetCare
             //
             // txtClave
             //
-            txtClave.Location = new Point(136, 200);
+            txtClave.Location = new Point(136, 144);
             txtClave.MaxLength = 100;
             txtClave.Name = "txtClave";
             txtClave.Size = new Size(230, 27);
@@ -149,7 +114,7 @@ namespace VetCare
             btnAceptar.FlatStyle = FlatStyle.Flat;
             btnAceptar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnAceptar.ForeColor = Color.White;
-            btnAceptar.Location = new Point(136, 292);
+            btnAceptar.Location = new Point(136, 236);
             btnAceptar.Name = "btnAceptar";
             btnAceptar.Size = new Size(110, 34);
             btnAceptar.TabIndex = 7;
@@ -160,7 +125,7 @@ namespace VetCare
             // btnCancelar
             //
             btnCancelar.DialogResult = DialogResult.Cancel;
-            btnCancelar.Location = new Point(256, 292);
+            btnCancelar.Location = new Point(256, 236);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(110, 34);
             btnCancelar.TabIndex = 8;
@@ -170,7 +135,7 @@ namespace VetCare
             // lblMensaje
             //
             lblMensaje.ForeColor = Color.Firebrick;
-            lblMensaje.Location = new Point(32, 236);
+            lblMensaje.Location = new Point(32, 180);
             lblMensaje.Name = "lblMensaje";
             lblMensaje.Size = new Size(334, 48);
             lblMensaje.TabIndex = 9;
@@ -186,7 +151,7 @@ namespace VetCare
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancelar;
-            ClientSize = new Size(404, 346);
+            ClientSize = new Size(404, 290);
             Controls.Add(lblMensaje);
             Controls.Add(btnCancelar);
             Controls.Add(btnAceptar);
@@ -195,7 +160,6 @@ namespace VetCare
             Controls.Add(txtUsuario);
             Controls.Add(lblUsuario);
             Controls.Add(lblSubtitulo);
-            Controls.Add(pnlIdioma);
             Controls.Add(lblTitulo);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -203,9 +167,6 @@ namespace VetCare
             Name = "FrmLogin_60MN";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "VetCare - Iniciar sesión";
-            Load += FrmLogin_60MN_Load;
-            pnlIdioma.ResumeLayout(false);
-            pnlIdioma.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -214,9 +175,6 @@ namespace VetCare
         #endregion
 
         private Label lblTitulo;
-        private Panel pnlIdioma;
-        private Label lblIdioma;
-        private ComboBox cboIdioma;
         private Label lblSubtitulo;
         private Label lblUsuario;
         private TextBox txtUsuario;

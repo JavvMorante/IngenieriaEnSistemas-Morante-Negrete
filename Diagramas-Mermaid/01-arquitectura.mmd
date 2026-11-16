@@ -1,0 +1,23 @@
+flowchart TD
+    GUI["<b>VetCare</b><br/>GUI · Frm*_60MN"]
+    BLL["<b>BLL_60MN</b><br/>Reglas de negocio y autorizacion"]
+    DAL["<b>DAL_60MN</b><br/>Mappers · SQL parametrizado"]
+    BD[("<b>VetCareBD_60MN</b><br/>SQL Server")]
+    SERV["<b>Servicios_60MN</b><br/>Composite · Singleton · Observer"]
+    SEG["<b>Seguridad_60MN</b><br/>Hash · AES · Digitos verificadores"]
+    ENT["<b>Entidades_60MN</b><br/><b>Interfaces_60MN</b>"]
+    GUI --> BLL
+    BLL --> DAL
+    DAL --> BD
+    GUI -.-> SERV
+    BLL -.-> SERV
+    BLL -.-> SEG
+    DAL -.-> ENT
+    BLL -.-> ENT
+    style GUI fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style BLL fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px
+    style DAL fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style BD fill:#fae9e9,stroke:#993333,stroke-width:2px
+    style SERV fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style SEG fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style ENT fill:#eef1f4,stroke:#44566b,stroke-width:2px

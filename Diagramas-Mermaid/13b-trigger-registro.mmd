@@ -1,0 +1,24 @@
+flowchart LR
+    SIGUE(["Hay un cambio de negocio que registrar"]) --> ACT["<b>UPDATE Productos_C SET Act = 0</b><br/>en las versiones anteriores del producto"]
+    ACT --> Q3{"Hay filas<br/>en inserted?"}
+    Q3 -- No --> DEL["<b>INSERT INTO Productos_C</b><br/>desde deleted · operacion ELIMINACION"]
+    Q3 -- Si --> CASE{"Clasificar la operacion<br/>con un CASE"}
+    CASE -- "no existia en deleted" --> O1["ALTA"]
+    CASE -- "Activo 1 a 0" --> O2["BAJA"]
+    CASE -- "Activo 0 a 1" --> O3["REACTIVACION"]
+    CASE -- "solo cambio StockActual" --> O4["MOVIMIENTO"]
+    CASE -- "resto" --> O5["MODIFICACION"]
+    O1 --> INS
+    O2 --> INS
+    O3 --> INS
+    O4 --> INS
+    O5 --> INS["<b>INSERT INTO Productos_C</b><br/>version nueva con Act = 1<br/>fecha, hora y UsuarioID"]
+    INS --> FIN(["Historial actualizado · misma transaccion"])
+    DEL --> FIN
+    style SIGUE fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style ACT fill:#fbeedb,stroke:#9a6a16,stroke-width:3px
+    style Q3 fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style CASE fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style INS fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style DEL fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px
+    style FIN fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px

@@ -4,12 +4,15 @@ using Entidades_60MN;
 namespace VetCare
 {
     /// <summary>
-    /// Módulo de Stock: búsqueda de productos (CUN12 pasos 1-2) y acceso a
-    /// CUN11 Registrar Producto, CUN12 Modificar Producto y CUN14 Registrar Movimiento.
+    /// CUN09 Administrar Productos: búsqueda, alta, modificación, baja y reactivación de productos,
+    /// y el historial de versiones (CUS10). El stock cambia con ventas (CUN05) y recepciones (CUN14).
     /// </summary>
     public partial class FrmProductos_60MN : FormBase_60MN
     {
         private readonly ProductoBLL_60MN productoBLL = new ProductoBLL_60MN();
+
+        // Evita buscar mientras se cargan los combos.
+        private bool cargando;
 
         public FrmProductos_60MN()
         {
@@ -21,18 +24,51 @@ namespace VetCare
         private void FrmProductos_60MN_Load(object sender, EventArgs e)
         {
             Mensajes_60MN.AplicarPermisos(this);
+            cargando = true;
             try
             {
                 cboCategoria.Items.Add(OpcionCombo_60MN.Todos);
                 foreach (Categoria_60MN categoria in productoBLL.ListarCategorias())
                     cboCategoria.Items.Add(new OpcionCombo_60MN(categoria.Nombre, categoria.Id));
                 cboCategoria.SelectedIndex = 0;
+
+                // Si hay productos en alerta de reposición, la pantalla abre mostrando solo esos.
+                CargarFiltroStock(productoBLL.ContarAlertasActivas() > 0 ? 1 : 0);
             }
             catch (Exception ex)
             {
                 Mensajes_60MN.MostrarError(ex);
             }
+            finally
+            {
+                cargando = false;
+            }
             Buscar();
+        }
+
+        /// <summary>Opciones del filtro de stock: todos los productos o solo los que están en alerta de reposición.</summary>
+        private void CargarFiltroStock(int seleccionado)
+        {
+            cboFiltroStock.Items.Clear();
+            cboFiltroStock.Items.Add(new OpcionCombo_60MN(TraductorFormularios_60MN.T("msg.Todos", "(Todos)"), false));
+            cboFiltroStock.Items.Add(new OpcionCombo_60MN(TraductorFormularios_60MN.T("msg.EnAlertaStock", "En alerta de stock"), true));
+            cboFiltroStock.SelectedIndex = seleccionado;
+        }
+
+        protected override void AlCambiarIdioma()
+        {
+            if (cboFiltroStock.Items.Count == 0) return;
+            bool previo = cargando;
+            cargando = true;
+            CargarFiltroStock(Math.Max(cboFiltroStock.SelectedIndex, 0));
+            cargando = previo;
+        }
+
+        private bool SoloEnAlerta => OpcionCombo_60MN.ValorDe<bool>(cboFiltroStock) ?? false;
+
+        private void cboFiltroStock_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!cargando) Buscar();
         }
 
         private void btnBuscar_Click(object sender, EventArgs e) => Buscar();
@@ -42,6 +78,9 @@ namespace VetCare
             try
             {
                 List<Producto_60MN> productos = productoBLL.Buscar(txtBuscar.Text, OpcionCombo_60MN.ValorDe<int>(cboCategoria), chkInactivos.Checked);
+                // En alerta de reposición: activos con el stock en o debajo del mínimo.
+                if (SoloEnAlerta)
+                    productos = productos.Where(p => p.Activo && p.BajoStockMinimo).ToList();
                 dgvProductos.DataSource = productos;
                 if (seleccionarId.HasValue)
                     foreach (DataGridViewRow fila in dgvProductos.Rows)
@@ -80,7 +119,7 @@ namespace VetCare
             return null;
         }
 
-        // CUN11
+        // CUN09 alta
         private void btnNuevo_Click(object sender, EventArgs e)
         {
             using FrmProducto_60MN formulario = new FrmProducto_60MN();
@@ -88,7 +127,7 @@ namespace VetCare
                 Buscar(formulario.ProductoId);
         }
 
-        // CUN12
+        // CUN09 modificación
         private void btnModificar_Click(object sender, EventArgs e)
         {
             Producto_60MN? producto = Seleccionado();
@@ -131,12 +170,16 @@ namespace VetCare
             }
         }
 
-        // CUN14
-        private void btnMovimiento_Click(object sender, EventArgs e)
+
+        /// <summary>
+        /// CUS10 desde el maestro: historial de precios y datos del producto (Productos_C), con
+        /// comparar versiones y volver a una versión anterior.
+        /// </summary>
+        private void btnHistorial_Click(object sender, EventArgs e)
         {
             Producto_60MN? producto = Seleccionado();
             if (producto == null) return;
-            using FrmMovimientoStock_60MN formulario = new FrmMovimientoStock_60MN(producto.Id);
+            using FrmBitacoraCambios_60MN formulario = new FrmBitacoraCambios_60MN(producto.Codigo);
             formulario.ShowDialog(this);
             Buscar(producto.Id);
         }

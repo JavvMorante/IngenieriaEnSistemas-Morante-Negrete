@@ -214,7 +214,7 @@ namespace VetCare
             this.btnDeserializarXml.Size = new System.Drawing.Size(162, 34);
             this.btnDeserializarXml.TabIndex = 16;
             this.btnDeserializarXml.Tag = "SEG_BITACORA_IMPORT";
-            this.btnDeserializarXml.Text = "Deserializar XML...";
+            this.btnDeserializarXml.Text = "Visualizar";
             this.btnDeserializarXml.UseVisualStyleBackColor = true;
             // 
             // dgvEventos

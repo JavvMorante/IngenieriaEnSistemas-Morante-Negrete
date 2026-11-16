@@ -1,0 +1,46 @@
+classDiagram
+    class IEntity_60MN {
+        <<interface>>
+        +Id int
+    }
+    class ICrud_60MN {
+        <<interface generica de T>>
+        +Insertar(entidad) int
+        +Modificar(entidad)
+        +ListarTodos() IList
+        +ObtenerPorId(id) T
+    }
+    class Conexion_60MN {
+        <<static>>
+        +Abrir() SqlConnection
+        +EjecutarNonQuery(sql, parametros) int
+        +EjecutarEscalar(sql, parametros) object
+        +EjecutarLista(sql, mapear, parametros) List
+    }
+    class ProductoDAL_60MN {
+        <<Data Mapper>>
+        +Buscar(texto, categoria, inactivos)
+        +Insertar(producto, usuarioId) int
+        +Modificar(producto, usuarioId)
+        -Mapear(reader) Producto_60MN
+    }
+    class Producto_60MN {
+        +Id int
+        +Codigo string
+        +Nombre string
+        +PrecioVenta decimal
+    }
+    class ProductoBLL_60MN {
+        +Modificar(producto)
+    }
+    IEntity_60MN <|.. Producto_60MN
+    ICrud_60MN ..> IEntity_60MN : restringe T
+    ProductoDAL_60MN ..> Conexion_60MN : toda consulta pasa por aca
+    ProductoDAL_60MN ..> Producto_60MN : mapea filas a objetos
+    ProductoBLL_60MN --> ProductoDAL_60MN : mapper
+    style IEntity_60MN fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style ICrud_60MN fill:#eef1f4,stroke:#44566b,stroke-width:2px
+    style Conexion_60MN fill:#fae9e9,stroke:#993333,stroke-width:2px
+    style ProductoDAL_60MN fill:#fbeedb,stroke:#9a6a16,stroke-width:3px
+    style Producto_60MN fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px
+    style ProductoBLL_60MN fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px

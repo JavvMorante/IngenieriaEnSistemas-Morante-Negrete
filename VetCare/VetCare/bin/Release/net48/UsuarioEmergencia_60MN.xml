@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Usuario de emergencia de VetCare. NO editar: el DVH invalida el archivo ante cualquier cambio. -->
+<UsuarioEmergencia_60MN>
+  <Usuario>emergencia</Usuario>
+  <Nombre>Usuario</Nombre>
+  <Apellido>Emergencia</Apellido>
+  <ClaveHash>0LNYXHqutKHZSPvJpA3pcg==.5SAeq2sIts532y/xCpp+SM5QmKJ40XaWgUIJJ4su/rE=</ClaveHash>
+  <DVH>D1BDDEBEE24DB49FFF712EADC2150AAFB951E3CA62F40A31A93DDC4555DAA5B6</DVH>
+</UsuarioEmergencia_60MN>

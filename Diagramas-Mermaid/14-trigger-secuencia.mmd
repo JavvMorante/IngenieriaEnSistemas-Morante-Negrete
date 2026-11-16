@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    actor U as Operario de stock
+    participant F as FrmProducto_60MN
+    participant B as ProductoBLL_60MN
+    participant S as SesionActual_60MN
+    participant D as ProductoDAL_60MN
+    participant P as Tabla Productos
+    participant TR as TR_Productos_BitacoraCambios
+    participant H as Tabla Productos_C
+    U->>F: Cambia el precio y acepta
+    F->>B: Modificar(producto)
+    B->>S: RequierePermiso("STK_PROD_MODIF")
+    S-->>B: autorizado
+    B->>S: UsuarioId
+    S-->>B: 3
+    B->>D: Modificar(producto, usuarioId = 3)
+    D->>P: UPDATE Productos SET ..., UsuarioModificacion = 3
+    activate P
+    Note over P,TR: Misma transaccion: no se puede saltear
+    P->>TR: se dispara solo
+    activate TR
+    TR->>H: UPDATE Act = 0 en la version vigente anterior
+    TR->>H: INSERT version nueva, Act = 1, MODIFICACION, UsuarioID = 3
+    deactivate TR
+    deactivate P
+    P-->>D: filas afectadas
+    D-->>B: ok
+    B-->>F: ok
+    F-->>U: "Producto modificado correctamente"

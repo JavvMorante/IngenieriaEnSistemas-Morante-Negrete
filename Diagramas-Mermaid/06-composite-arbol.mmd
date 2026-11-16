@@ -1,0 +1,23 @@
+flowchart TD
+    U(["Usuario: admin"]) --> A
+    A["<b>Familia</b><br/>Administrador"]
+    A --> B["<b>Familia</b><br/>Gestion de Usuarios"]
+    A --> C["<b>Familia</b><br/>Operario de stock"]
+    A --> D["<b>Familia</b><br/>Vendedor"]
+    B --> P1["<b>Patente</b><br/>SEG_USU_ALTA"]
+    B --> P2["<b>Patente</b><br/>SEG_USU_MODIF"]
+    B --> P3["<b>Patente</b><br/>SEG_USU_BAJA"]
+    C --> P4["<b>Patente</b><br/>STK_MOVIMIENTO"]
+    C --> P5["<b>Patente</b><br/>STK_REPORTE"]
+    D --> P6["<b>Patente</b><br/>PAC_CLIENTE_ALTA"]
+    style U fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px
+    style A fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style B fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px
+    style C fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px
+    style D fill:#e7f0ea,stroke:#1c6b47,stroke-width:2px
+    style P1 fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style P2 fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style P3 fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style P4 fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style P5 fill:#fbeedb,stroke:#9a6a16,stroke-width:2px
+    style P6 fill:#fbeedb,stroke:#9a6a16,stroke-width:2px

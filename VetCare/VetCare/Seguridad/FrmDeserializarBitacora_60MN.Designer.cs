@@ -163,7 +163,7 @@ namespace VetCare
             Controls.Add(lblTitulo);
             MinimumSize = new Size(800, 450);
             Name = "FrmDeserializarBitacora_60MN";
-            Text = "Deserializar XML de bitácora";
+            Text = "Visualizar XML de bitácora";
             Load += FrmDeserializarBitacora_60MN_Load;
             ((System.ComponentModel.ISupportInitialize)dgvEventos).EndInit();
             ResumeLayout(false);

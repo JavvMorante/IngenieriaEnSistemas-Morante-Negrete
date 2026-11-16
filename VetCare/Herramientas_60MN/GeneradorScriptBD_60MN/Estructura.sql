@@ -10,10 +10,11 @@
    ATENCIÓN: si la base ya existe, se ELIMINA y se vuelve a crear.
 
    Usuarios iniciales:
-     admin     / Admin1234      (familia Administrador)
-     operario  / Operario1234   (familia Operario de stock + patente individual Configurar margen)
-     vendedor  / Vendedor1234   (familia Vendedor: CUN01 a CUN04 y CUN09)
-     veterinario / Veterinario1234 (familia Veterinario: CUN03, CUN05 a CUN10)
+     admin     / Admin1234      (familia Administrador: el gerente; aprueba órdenes de compra)
+     operario  / Operario1234   (familia Encargado de depósito: CUN09, CUN10 y CUN14)
+     compras   / Compras1234    (familia Analista de compras: CUN08, CUN11, CUN13 y CUN15)
+     vendedor  / Vendedor1234   (familia Vendedor: CUN01, CUN02 y CUN05)
+     veterinario / Veterinario1234 (familia Veterinario: CUN03 a CUN07 y CUN16)
    Usuario de emergencia (archivo UsuarioEmergencia_60MN.xml, no está en la base):
      emergencia / Emergencia1234
    ===================================================================== */
@@ -176,17 +177,19 @@ CREATE TABLE DVV (
 GO
 
 /* ---------------------------------------------------------------------
-   STOCK E INSUMOS (PN4)
+   REPOSICIÓN DE MEDICAMENTOS E INSUMOS (RFN2: CUN08 a CUN16)
    --------------------------------------------------------------------- */
 
+-- Categoria.Margen y Configuracion.MargenGeneral solo proponen el margen al dar de alta un
+-- producto (CUN09); el margen vigente es el de cada producto (Productos.Margen).
 CREATE TABLE Categoria (
     CategoriaID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Categoria PRIMARY KEY,
     Nombre       VARCHAR(80)       NOT NULL CONSTRAINT UX_Categoria_Nombre UNIQUE,
-    Margen       DECIMAL(6,2)      NULL      -- margen particular (%); NULL = usa el margen general
+    Margen       DECIMAL(6,2)      NULL      -- margen propuesto (%); NULL = usa el margen general
 );
 GO
 
--- CUN11 Gestionar Proveedores. El CUIT se guarda con sus 11 dígitos (sin guiones) y no se modifica;
+-- CUN08 Gestionar Proveedores. El CUIT se guarda con sus 11 dígitos (sin guiones) y no se modifica;
 -- la baja es lógica (Activo = 0) y los productos conservan su proveedor.
 CREATE TABLE Proveedor (
     ProveedorID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Proveedor PRIMARY KEY,
@@ -217,6 +220,7 @@ CREATE TABLE Productos (
     StockMinimo          INT               NOT NULL CONSTRAINT CK_Productos_StockMinimo CHECK (StockMinimo >= 0),
     PrecioCosto          DECIMAL(12,2)     NOT NULL CONSTRAINT CK_Productos_Costo CHECK (PrecioCosto >= 0),
     PrecioVenta          DECIMAL(12,2)     NOT NULL CONSTRAINT CK_Productos_Venta CHECK (PrecioVenta >= 0),
+    Margen               DECIMAL(6,2)      NOT NULL CONSTRAINT CK_Productos_Margen CHECK (Margen >= 0),
     FechaVencimiento     DATE              NOT NULL,
     Lote                 VARCHAR(40)       NOT NULL,
     Activo               BIT               NOT NULL CONSTRAINT DF_Productos_Activo DEFAULT (1),
@@ -238,6 +242,7 @@ CREATE TABLE Productos_C (
     StockMinimo       INT               NOT NULL,
     PrecioCosto       DECIMAL(12,2)     NOT NULL,
     PrecioVenta       DECIMAL(12,2)     NOT NULL,
+    Margen            DECIMAL(6,2)      NOT NULL,
     FechaVencimiento  DATE              NOT NULL,
     Lote              VARCHAR(40)       NOT NULL,
     ActivoProducto    BIT               NOT NULL,
@@ -268,7 +273,8 @@ CREATE TABLE AlertaReposicion (
     AlertaID    INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_AlertaReposicion PRIMARY KEY,
     ProductoID  INT               NOT NULL CONSTRAINT FK_AlertaReposicion_Producto REFERENCES Productos (ProductoID),
     FechaHora   DATETIME2(0)      NOT NULL CONSTRAINT DF_AlertaReposicion_FechaHora DEFAULT (SYSDATETIME()),
-    Activa      BIT               NOT NULL CONSTRAINT DF_AlertaReposicion_Activa DEFAULT (1)
+    Activa      BIT               NOT NULL CONSTRAINT DF_AlertaReposicion_Activa DEFAULT (1),
+    Atendida    BIT               NOT NULL CONSTRAINT DF_AlertaReposicion_Atendida DEFAULT (0)  -- incluida en una solicitud (CUN10)
 );
 GO
 
@@ -386,6 +392,122 @@ CREATE INDEX IX_VentaDetalle_Venta ON VentaDetalle (VentaID);
 GO
 
 /* ---------------------------------------------------------------------
+   COMPRAS (RFN2: CUN10 a CUN15)
+   Solicitud de reposición -> orden de compra -> aprobación -> pago -> recepción.
+   --------------------------------------------------------------------- */
+
+-- CUN10 Generar Solicitud de Reposición (encargado de depósito).
+CREATE TABLE SolicitudReposicion (
+    SolicitudID    INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_SolicitudReposicion PRIMARY KEY,
+    Numero         AS ('SR-' + RIGHT('00000' + CAST(SolicitudID AS VARCHAR(10)), 5)) PERSISTED,
+    FechaHora      DATETIME2(0)      NOT NULL,
+    UsuarioID      INT               NOT NULL CONSTRAINT FK_SolicitudReposicion_Usuario REFERENCES Usuario (UsuarioID),
+    Estado         VARCHAR(20)       NOT NULL CONSTRAINT CK_SolicitudReposicion_Estado
+                                     CHECK (Estado IN ('PENDIENTE', 'EN_COMPRA', 'CERRADA', 'ANULADA')),
+    Observaciones  VARCHAR(400)      NULL,
+    DVH            CHAR(64)          NULL
+);
+GO
+
+CREATE TABLE SolicitudReposicionDetalle (
+    SolicitudDetalleID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_SolicitudReposicionDetalle PRIMARY KEY,
+    SolicitudID         INT               NOT NULL CONSTRAINT FK_SolicitudDetalle_Solicitud REFERENCES SolicitudReposicion (SolicitudID),
+    ProductoID          INT               NOT NULL CONSTRAINT FK_SolicitudDetalle_Producto REFERENCES Productos (ProductoID),
+    StockActual         INT               NOT NULL,  -- foto del stock al generar la solicitud
+    StockMinimo         INT               NOT NULL,
+    CantidadPedida      INT               NOT NULL CONSTRAINT CK_SolicitudDetalle_Cantidad CHECK (CantidadPedida > 0),
+    DVH                 CHAR(64)          NULL,
+    CONSTRAINT UX_SolicitudDetalle_Producto UNIQUE (SolicitudID, ProductoID)
+);
+GO
+
+-- CUN11 Registrar Orden de Compra (analista) y CUN12 Aprobar Orden de Compra (gerente).
+-- Advertencias: avisos calculados al registrar (precio > 20 % del costo actual) que el gerente ve al aprobar.
+CREATE TABLE OrdenCompra (
+    OrdenCompraID     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_OrdenCompra PRIMARY KEY,
+    Numero            AS ('OC-' + RIGHT('00000' + CAST(OrdenCompraID AS VARCHAR(10)), 5)) PERSISTED,
+    SolicitudID       INT               NOT NULL CONSTRAINT FK_OrdenCompra_Solicitud REFERENCES SolicitudReposicion (SolicitudID),
+    ProveedorID       INT               NOT NULL CONSTRAINT FK_OrdenCompra_Proveedor REFERENCES Proveedor (ProveedorID),
+    FechaHora         DATETIME2(0)      NOT NULL,
+    NroCotizacion     VARCHAR(30)       NOT NULL,
+    PlazoEntregaDias  INT               NOT NULL CONSTRAINT CK_OrdenCompra_Plazo CHECK (PlazoEntregaDias >= 0),
+    CondicionPago     VARCHAR(60)       NOT NULL,
+    MotivoEleccion    VARCHAR(300)      NULL,
+    Advertencias      VARCHAR(400)      NULL,
+    Total             DECIMAL(12,2)     NOT NULL CONSTRAINT CK_OrdenCompra_Total CHECK (Total > 0),
+    Estado            VARCHAR(20)       NOT NULL CONSTRAINT CK_OrdenCompra_Estado
+                                        CHECK (Estado IN ('PENDIENTE_APROBACION', 'APROBADA', 'RECHAZADA', 'ENVIADA',
+                                                          'PAGADA', 'RECIBIDA_PARCIAL', 'CERRADA', 'ANULADA')),
+    UsuarioID         INT               NOT NULL CONSTRAINT FK_OrdenCompra_Usuario REFERENCES Usuario (UsuarioID),
+    AprobadaPor       INT               NULL     CONSTRAINT FK_OrdenCompra_Aprobador REFERENCES Usuario (UsuarioID),
+    FechaAprobacion   DATETIME2(0)      NULL,
+    MotivoRechazo     VARCHAR(300)      NULL,
+    DVH               CHAR(64)          NULL
+);
+CREATE INDEX IX_OrdenCompra_Estado ON OrdenCompra (Estado, FechaHora);
+CREATE INDEX IX_OrdenCompra_Solicitud ON OrdenCompra (SolicitudID);
+GO
+
+CREATE TABLE OrdenCompraDetalle (
+    OrdenDetalleID    INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_OrdenCompraDetalle PRIMARY KEY,
+    OrdenCompraID     INT               NOT NULL CONSTRAINT FK_OrdenDetalle_Orden REFERENCES OrdenCompra (OrdenCompraID),
+    ProductoID        INT               NOT NULL CONSTRAINT FK_OrdenDetalle_Producto REFERENCES Productos (ProductoID),
+    Cantidad          INT               NOT NULL CONSTRAINT CK_OrdenDetalle_Cantidad CHECK (Cantidad > 0),
+    PrecioUnitario    DECIMAL(12,2)     NOT NULL CONSTRAINT CK_OrdenDetalle_Precio CHECK (PrecioUnitario > 0),
+    Subtotal          DECIMAL(12,2)     NOT NULL,
+    CantidadRecibida  INT               NOT NULL CONSTRAINT DF_OrdenDetalle_Recibida DEFAULT (0),
+    DVH               CHAR(64)          NULL,
+    CONSTRAINT UX_OrdenDetalle_Producto UNIQUE (OrdenCompraID, ProductoID),
+    CONSTRAINT CK_OrdenDetalle_Recibida CHECK (CantidadRecibida BETWEEN 0 AND Cantidad)
+);
+GO
+
+-- CUN13 Registrar Pago al Proveedor: el pago se hace en el home banking; aquí solo se registra el comprobante.
+CREATE TABLE PagoProveedor (
+    PagoID          INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_PagoProveedor PRIMARY KEY,
+    OrdenCompraID   INT               NOT NULL CONSTRAINT FK_PagoProveedor_Orden REFERENCES OrdenCompra (OrdenCompraID)
+                                      CONSTRAINT UX_PagoProveedor_Orden UNIQUE,
+    Banco           VARCHAR(60)       NOT NULL,
+    NroComprobante  VARCHAR(40)       NOT NULL,
+    FechaPago       DATE              NOT NULL,
+    Importe         DECIMAL(12,2)     NOT NULL CONSTRAINT CK_PagoProveedor_Importe CHECK (Importe > 0),
+    Observaciones   VARCHAR(300)      NULL,      -- motivo cuando el importe difiere del total de la orden
+    UsuarioID       INT               NOT NULL CONSTRAINT FK_PagoProveedor_Usuario REFERENCES Usuario (UsuarioID),
+    DVH             CHAR(64)          NULL,
+    CONSTRAINT UX_PagoProveedor_Comprobante UNIQUE (Banco, NroComprobante)
+);
+GO
+
+-- CUN14 Registrar Recepción de Mercadería. El remito no se repite para el mismo proveedor
+-- (el proveedor está en la orden: se valida en la BLL).
+CREATE TABLE Recepcion (
+    RecepcionID     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Recepcion PRIMARY KEY,
+    OrdenCompraID   INT               NOT NULL CONSTRAINT FK_Recepcion_Orden REFERENCES OrdenCompra (OrdenCompraID),
+    NroRemito       VARCHAR(30)       NOT NULL,
+    FechaHora       DATETIME2(0)      NOT NULL,
+    UsuarioID       INT               NOT NULL CONSTRAINT FK_Recepcion_Usuario REFERENCES Usuario (UsuarioID),
+    Observaciones   VARCHAR(400)      NULL,
+    DVH             CHAR(64)          NULL
+);
+CREATE INDEX IX_Recepcion_Orden ON Recepcion (OrdenCompraID);
+GO
+
+-- Cada producto recibido genera un movimiento INGRESO en la misma transacción.
+CREATE TABLE RecepcionDetalle (
+    RecepcionDetalleID  INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_RecepcionDetalle PRIMARY KEY,
+    RecepcionID         INT               NOT NULL CONSTRAINT FK_RecepcionDetalle_Recepcion REFERENCES Recepcion (RecepcionID),
+    ProductoID          INT               NOT NULL CONSTRAINT FK_RecepcionDetalle_Producto REFERENCES Productos (ProductoID),
+    CantidadRecibida    INT               NOT NULL CONSTRAINT CK_RecepcionDetalle_Cantidad CHECK (CantidadRecibida >= 0),
+    Lote                VARCHAR(40)       NOT NULL,
+    FechaVencimiento    DATE              NOT NULL,
+    Observacion         VARCHAR(200)      NULL,
+    MovimientoID        INT               NULL     CONSTRAINT FK_RecepcionDetalle_Movimiento REFERENCES MovimientoStock (MovimientoID),
+    DVH                 CHAR(64)          NULL
+);
+CREATE INDEX IX_RecepcionDetalle_Recepcion ON RecepcionDetalle (RecepcionID);
+GO
+
+/* ---------------------------------------------------------------------
    TRIGGER DE LA BITÁCORA DE CAMBIOS (T06B)
    Ante cada alta, modificación o eliminación en Productos:
      - pone Act = 0 en las versiones anteriores del producto en Productos_C
@@ -407,15 +529,15 @@ BEGIN
 
     IF @hayInsertados = 1 AND @hayEliminados = 1
        AND NOT (UPDATE(Nombre) OR UPDATE(CategoriaID) OR UPDATE(ProveedorID) OR UPDATE(StockActual)
-                OR UPDATE(StockMinimo) OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta)
+                OR UPDATE(StockMinimo) OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta) OR UPDATE(Margen)
                 OR UPDATE(FechaVencimiento) OR UPDATE(Lote) OR UPDATE(Activo))
         RETURN;
 
-    -- Cambio exclusivo de existencias (CUN14): se registra como MOVIMIENTO.
+    -- Cambio de existencias (venta CUN05, o recepción CUN14 que además actualiza lote y vencimiento): MOVIMIENTO.
     DECLARE @soloStock BIT = 0;
     IF UPDATE(StockActual)
        AND NOT (UPDATE(Nombre) OR UPDATE(CategoriaID) OR UPDATE(ProveedorID) OR UPDATE(StockMinimo)
-                OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta) OR UPDATE(FechaVencimiento) OR UPDATE(Lote))
+                OR UPDATE(PrecioCosto) OR UPDATE(PrecioVenta) OR UPDATE(Margen))
         SET @soloStock = 1;
 
     UPDATE c
@@ -426,10 +548,10 @@ BEGIN
 
     IF @hayInsertados = 1
         INSERT INTO Productos_C (ProductoID, Codigo, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo,
-                                 PrecioCosto, PrecioVenta, FechaVencimiento, Lote, ActivoProducto,
+                                 PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, ActivoProducto,
                                  Operacion, FechaHora, UsuarioID, Act)
         SELECT i.ProductoID, i.Codigo, i.Nombre, i.CategoriaID, i.ProveedorID, i.StockActual, i.StockMinimo,
-               i.PrecioCosto, i.PrecioVenta, i.FechaVencimiento, i.Lote, i.Activo,
+               i.PrecioCosto, i.PrecioVenta, i.Margen, i.FechaVencimiento, i.Lote, i.Activo,
                CASE
                    WHEN d.ProductoID IS NULL THEN 'ALTA'
                    WHEN d.Activo = 1 AND i.Activo = 0 THEN 'BAJA'
@@ -444,17 +566,16 @@ BEGIN
           LEFT JOIN deleted d ON d.ProductoID = i.ProductoID;
     ELSE
         INSERT INTO Productos_C (ProductoID, Codigo, Nombre, CategoriaID, ProveedorID, StockActual, StockMinimo,
-                                 PrecioCosto, PrecioVenta, FechaVencimiento, Lote, ActivoProducto,
+                                 PrecioCosto, PrecioVenta, Margen, FechaVencimiento, Lote, ActivoProducto,
                                  Operacion, FechaHora, UsuarioID, Act)
         SELECT d.ProductoID, d.Codigo, d.Nombre, d.CategoriaID, d.ProveedorID, d.StockActual, d.StockMinimo,
-               d.PrecioCosto, d.PrecioVenta, d.FechaVencimiento, d.Lote, d.Activo,
+               d.PrecioCosto, d.PrecioVenta, d.Margen, d.FechaVencimiento, d.Lote, d.Activo,
                'ELIMINACION', SYSDATETIME(), CAST(SESSION_CONTEXT(N'UsuarioID') AS INT), 1
           FROM deleted d;
 END
 GO
 
--- Activo: registra las versiones de cada producto (postcondición de CUN11, CUN12 y CUN14)
--- aunque la pantalla de la Bitácora de cambios (CUS10) siga deshabilitada.
+-- Activo: registra las versiones de cada producto (postcondición de CUN09 y CUN14) para CUS10.
 
 /* ---------------------------------------------------------------------
    MULTI-IDIOMA (patrón Observer en la GUI)
@@ -579,7 +700,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'ayuda.perfiles.titulo', N'Profiles (families and patents)'),
 (2, 'ayuda.perfiles.texto', N'ADMIN > Profiles: each family is a set of patents and may include other families. The system does not allow cycles between families nor a change that leaves it without an operational administrator.'),
 (2, 'ayuda.bitacoraEventos.titulo', N'Event log'),
-(2, 'ayuda.bitacoraEventos.texto', N'ADMIN > Event log: filter by dates, criticality, module, event and user. Export XML saves the signed events; Deserialize XML opens an exported XML and shows its events in a grid (an altered file is rejected).'),
+(2, 'ayuda.bitacoraEventos.texto', N'ADMIN > Event log: filter by dates, criticality, module, event and user. Export XML saves the signed events; View opens an exported XML and shows its events in a grid (an altered file is rejected).'),
 (2, 'ayuda.bitacoraCambios.titulo', N'Change log'),
 (2, 'ayuda.bitacoraCambios.texto', N'ADMIN > Change log: version history of each product. You can compare two versions and restore a previous one.'),
 (2, 'ayuda.integridad.titulo', N'Check digits'),
@@ -603,7 +724,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'ayuda.reporteAtenciones.titulo', N'CUN07 Generate Consultations Report'),
 (2, 'ayuda.reporteAtenciones.texto', N'REPORTS > Consultations report: choose the period and, optionally, the veterinarian and the species. It shows the consultations and the totals by professional; it can be printed (or PDF) and exported to CSV.'),
 (2, 'ayuda.productos.titulo', N'CUN08 Manage Stock Items'),
-(2, 'ayuda.productos.texto', N'MASTER DATA > Products: search, register and modify products. The sale price is proposed with the category margin. Stock is not edited directly: it is adjusted with a stock movement.'),
+(2, 'ayuda.productos.texto', N'MASTER DATA > Products: search, register and modify products. The sale price is proposed with the category margin. Stock is not edited directly: it is adjusted with a stock movement. If there are products with a low stock alert, the screen opens showing only those (Low stock alert filter). Price history shows the product versions and lets you go back to an earlier one.'),
 (2, 'ayuda.movimientos.titulo', N'CUN09 Register Stock Movement'),
 (2, 'ayuda.movimientos.texto', N'STOCK > Stock movements: register receipts, issues, adjustments or the write-off of an expired batch, always with a reason. If stock reaches the minimum or falls below it, a replenishment alert is raised.'),
 (2, 'ayuda.configuracion.titulo', N'CUN10 Configure Margin and Minimum Stock Alert'),
@@ -668,7 +789,7 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 -- Productos
 (2, 'FrmProductos_60MN', N'Products'), (2, 'FrmProductos_60MN.lblTitulo', N'Products and supplies (Stock)'),
 (2, 'lblBuscar', N'Search'), (2, 'chkInactivos', N'Include deactivated'), (2, 'btnNuevo', N'New product'),
-(2, 'btnMovimiento', N'Movement'),
+(2, 'btnMovimiento', N'Movement'), (2, 'btnHistorial', N'Price history'), (2, 'msg.EnAlertaStock', N'Low stock alert'),
 (2, 'FrmProducto_60MN', N'Product'), (2, 'FrmProducto_60MN.lblNombre', N'Name *'), (2, 'FrmProducto_60MN.lblCategoria', N'Category *'),
 (2, 'lblProveedor', N'Supplier *'), (2, 'lblStockActual', N'Current stock *'), (2, 'lblStockMinimo', N'Minimum stock *'),
 (2, 'lblPrecioCosto', N'Cost price *'), (2, 'lblPrecioVenta', N'Sale price *'), (2, 'btnUsarSugerido', N'Use suggested'),
@@ -755,8 +876,8 @@ INSERT INTO Traduccion (IdiomaID, Clave, Texto) VALUES
 (2, 'FrmBackupRestore_60MN.btnRestaurar', N'Restore database'), (2, 'msg.ArchivoAGenerar', N'File to generate'),
 (2, 'msg.ElegirCarpetaBackup', N'Backup destination folder'),
 -- Bitácora de eventos: exportar / deserializar XML
-(2, 'btnExportarXml', N'Export XML...'), (2, 'btnDeserializarXml', N'Deserialize XML...'),
-(2, 'FrmDeserializarBitacora_60MN', N'Deserialize event log XML'), (2, 'FrmDeserializarBitacora_60MN.lblTitulo', N'Deserialized event log'), (2, 'btnSalir', N'Exit'),
+(2, 'btnExportarXml', N'Export XML...'), (2, 'btnDeserializarXml', N'View'),
+(2, 'FrmDeserializarBitacora_60MN', N'View event log XML'), (2, 'FrmDeserializarBitacora_60MN.lblTitulo', N'Deserialized event log'), (2, 'btnSalir', N'Exit'),
 (2, 'msg.XmlExportadoPor', N'Exported by'),
 (2, 'msg.Si', N'Yes'), (2, 'msg.No', N'No'),
 (2, 'msg.XmlEventos', N'Events'),

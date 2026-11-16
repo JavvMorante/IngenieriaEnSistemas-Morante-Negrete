@@ -37,7 +37,6 @@ namespace VetCare
             mnuBitacoraEventos = new ToolStripMenuItem();
             mnuDigitosVerificadores = new ToolStripMenuItem();
             mnuBitacoraCambios = new ToolStripMenuItem();
-            mnuConfiguracionStock = new ToolStripMenuItem();
             mnuMaestros = new ToolStripMenuItem();
             mnuClientes = new ToolStripMenuItem();
             mnuMascotas = new ToolStripMenuItem();
@@ -46,8 +45,12 @@ namespace VetCare
             mnuPacientes = new ToolStripMenuItem();
             mnuHistoriasClinicas = new ToolStripMenuItem();
             mnuRegistrarAtencion = new ToolStripMenuItem();
-            mnuStock = new ToolStripMenuItem();
-            mnuMovimientosStock = new ToolStripMenuItem();
+            mnuCompras = new ToolStripMenuItem();
+            mnuSolicitudReposicion = new ToolStripMenuItem();
+            mnuOrdenesCompra = new ToolStripMenuItem();
+            mnuAprobarOrdenes = new ToolStripMenuItem();
+            mnuPagosProveedores = new ToolStripMenuItem();
+            mnuRecepcionMercaderia = new ToolStripMenuItem();
             mnuUsuario = new ToolStripMenuItem();
             mnuReLogin = new ToolStripMenuItem();
             mnuCambiarClave = new ToolStripMenuItem();
@@ -58,7 +61,7 @@ namespace VetCare
             mnuVentasRegistradas = new ToolStripMenuItem();
             mnuReportes = new ToolStripMenuItem();
             mnuReporteAtenciones = new ToolStripMenuItem();
-            mnuReporte1 = new ToolStripMenuItem();
+            mnuReporteCompras = new ToolStripMenuItem();
             mnuReporte2 = new ToolStripMenuItem();
             mnuAyuda = new ToolStripMenuItem();
             mnuAyudaEnLinea = new ToolStripMenuItem();
@@ -78,7 +81,7 @@ namespace VetCare
             menuPrincipal.BackColor = Color.FromArgb(0, 102, 102);
             menuPrincipal.Font = new Font("Segoe UI", 10F);
             menuPrincipal.ImageScalingSize = new Size(20, 20);
-            menuPrincipal.Items.AddRange(new ToolStripItem[] { mnuAdmin, mnuMaestros, mnuPacientes, mnuVentas, mnuStock, mnuReportes, mnuUsuario, mnuAyuda });
+            menuPrincipal.Items.AddRange(new ToolStripItem[] { mnuAdmin, mnuMaestros, mnuPacientes, mnuVentas, mnuCompras, mnuReportes, mnuUsuario, mnuAyuda });
             menuPrincipal.Location = new Point(0, 0);
             menuPrincipal.Name = "menuPrincipal";
             menuPrincipal.Padding = new Padding(8, 4, 0, 4);
@@ -88,7 +91,7 @@ namespace VetCare
             //
             // mnuAdmin
             //
-            mnuAdmin.DropDownItems.AddRange(new ToolStripItem[] { mnuUsuarios, mnuPerfiles, mnuBackup, mnuRestore, mnuBitacoraEventos, mnuBitacoraCambios, mnuDigitosVerificadores, mnuConfiguracionStock });
+            mnuAdmin.DropDownItems.AddRange(new ToolStripItem[] { mnuUsuarios, mnuPerfiles, mnuBackup, mnuRestore, mnuBitacoraEventos, mnuBitacoraCambios, mnuDigitosVerificadores });
             mnuAdmin.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             mnuAdmin.ForeColor = Color.White;
             mnuAdmin.Name = "mnuAdmin";
@@ -187,15 +190,6 @@ namespace VetCare
             mnuMascotas.Text = "Mascotas";
             mnuMascotas.Click += mnuMascotas_Click;
             //
-            // mnuConfiguracionStock
-            //
-            mnuConfiguracionStock.Font = new Font("Segoe UI", 10F);
-            mnuConfiguracionStock.Name = "mnuConfiguracionStock";
-            mnuConfiguracionStock.Size = new Size(260, 28);
-            mnuConfiguracionStock.Tag = "STK_CONFIG";
-            mnuConfiguracionStock.Text = "Configuración de stock";
-            mnuConfiguracionStock.Click += mnuConfiguracionStock_Click;
-            //
             // mnuProveedores
             //
             mnuProveedores.Font = new Font("Segoe UI", 10F);
@@ -242,24 +236,60 @@ namespace VetCare
             mnuRegistrarAtencion.Text = "Registrar atención";
             mnuRegistrarAtencion.Click += mnuRegistrarAtencion_Click;
             //
-            // mnuStock
+            // mnuCompras
             //
-            mnuStock.DropDownItems.AddRange(new ToolStripItem[] { mnuMovimientosStock });
-            mnuStock.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            mnuStock.ForeColor = Color.White;
-            mnuStock.Name = "mnuStock";
-            mnuStock.Padding = new Padding(14, 4, 14, 4);
-            mnuStock.Size = new Size(92, 31);
-            mnuStock.Text = "STOCK";
+            mnuCompras.DropDownItems.AddRange(new ToolStripItem[] { mnuSolicitudReposicion, mnuOrdenesCompra, mnuAprobarOrdenes, mnuPagosProveedores, mnuRecepcionMercaderia });
+            mnuCompras.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            mnuCompras.ForeColor = Color.White;
+            mnuCompras.Name = "mnuCompras";
+            mnuCompras.Padding = new Padding(14, 4, 14, 4);
+            mnuCompras.Size = new Size(115, 31);
+            mnuCompras.Text = "COMPRAS";
             //
-            // mnuMovimientosStock
+            // mnuSolicitudReposicion
             //
-            mnuMovimientosStock.Font = new Font("Segoe UI", 10F);
-            mnuMovimientosStock.Name = "mnuMovimientosStock";
-            mnuMovimientosStock.Size = new Size(260, 28);
-            mnuMovimientosStock.Tag = "STK_MOVIMIENTO";
-            mnuMovimientosStock.Text = "Movimientos de stock";
-            mnuMovimientosStock.Click += mnuMovimientosStock_Click;
+            mnuSolicitudReposicion.Font = new Font("Segoe UI", 10F);
+            mnuSolicitudReposicion.Name = "mnuSolicitudReposicion";
+            mnuSolicitudReposicion.Size = new Size(260, 28);
+            mnuSolicitudReposicion.Tag = "CMP_SOLICITUD";
+            mnuSolicitudReposicion.Text = "Solicitud de reposición";
+            mnuSolicitudReposicion.Click += mnuSolicitudReposicion_Click;
+            //
+            // mnuOrdenesCompra
+            //
+            mnuOrdenesCompra.Font = new Font("Segoe UI", 10F);
+            mnuOrdenesCompra.Name = "mnuOrdenesCompra";
+            mnuOrdenesCompra.Size = new Size(260, 28);
+            mnuOrdenesCompra.Tag = "CMP_ORDEN";
+            mnuOrdenesCompra.Text = "Órdenes de compra";
+            mnuOrdenesCompra.Click += mnuOrdenesCompra_Click;
+            //
+            // mnuAprobarOrdenes
+            //
+            mnuAprobarOrdenes.Font = new Font("Segoe UI", 10F);
+            mnuAprobarOrdenes.Name = "mnuAprobarOrdenes";
+            mnuAprobarOrdenes.Size = new Size(260, 28);
+            mnuAprobarOrdenes.Tag = "CMP_APROBAR";
+            mnuAprobarOrdenes.Text = "Aprobar órdenes";
+            mnuAprobarOrdenes.Click += mnuAprobarOrdenes_Click;
+            //
+            // mnuPagosProveedores
+            //
+            mnuPagosProveedores.Font = new Font("Segoe UI", 10F);
+            mnuPagosProveedores.Name = "mnuPagosProveedores";
+            mnuPagosProveedores.Size = new Size(260, 28);
+            mnuPagosProveedores.Tag = "CMP_PAGO";
+            mnuPagosProveedores.Text = "Pagos a proveedores";
+            mnuPagosProveedores.Click += mnuPagosProveedores_Click;
+            //
+            // mnuRecepcionMercaderia
+            //
+            mnuRecepcionMercaderia.Font = new Font("Segoe UI", 10F);
+            mnuRecepcionMercaderia.Name = "mnuRecepcionMercaderia";
+            mnuRecepcionMercaderia.Size = new Size(260, 28);
+            mnuRecepcionMercaderia.Tag = "CMP_RECEPCION";
+            mnuRecepcionMercaderia.Text = "Recepción de mercadería";
+            mnuRecepcionMercaderia.Click += mnuRecepcionMercaderia_Click;
             //
             // mnuUsuario
             //
@@ -333,7 +363,7 @@ namespace VetCare
             //
             // mnuReportes
             //
-            mnuReportes.DropDownItems.AddRange(new ToolStripItem[] { mnuReporteAtenciones, mnuReporte1, mnuReporte2 });
+            mnuReportes.DropDownItems.AddRange(new ToolStripItem[] { mnuReporteAtenciones, mnuReporteCompras, mnuReporte2 });
             mnuReportes.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             mnuReportes.ForeColor = Color.White;
             mnuReportes.Name = "mnuReportes";
@@ -350,14 +380,14 @@ namespace VetCare
             mnuReporteAtenciones.Text = "Reporte de atenciones";
             mnuReporteAtenciones.Click += mnuReporteAtenciones_Click;
             //
-            // mnuReporte1
+            // mnuReporteCompras
             //
-            mnuReporte1.Font = new Font("Segoe UI", 10F);
-            mnuReporte1.Name = "mnuReporte1";
-            mnuReporte1.Size = new Size(260, 28);
-            mnuReporte1.Tag = "STK_REPORTE";
-            mnuReporte1.Text = "Reporte de existencias";
-            mnuReporte1.Click += mnuReporte1_Click;
+            mnuReporteCompras.Font = new Font("Segoe UI", 10F);
+            mnuReporteCompras.Name = "mnuReporteCompras";
+            mnuReporteCompras.Size = new Size(260, 28);
+            mnuReporteCompras.Tag = "REP_COMPRAS";
+            mnuReporteCompras.Text = "Reporte de compras";
+            mnuReporteCompras.Click += mnuReporteCompras_Click;
             //
             // mnuReporte2
             //
@@ -474,7 +504,6 @@ namespace VetCare
         private ToolStripMenuItem mnuBitacoraEventos;
         private ToolStripMenuItem mnuDigitosVerificadores;
         private ToolStripMenuItem mnuBitacoraCambios;
-        private ToolStripMenuItem mnuConfiguracionStock;
         private ToolStripMenuItem mnuMaestros;
         private ToolStripMenuItem mnuClientes;
         private ToolStripMenuItem mnuMascotas;
@@ -483,8 +512,12 @@ namespace VetCare
         private ToolStripMenuItem mnuPacientes;
         private ToolStripMenuItem mnuHistoriasClinicas;
         private ToolStripMenuItem mnuRegistrarAtencion;
-        private ToolStripMenuItem mnuStock;
-        private ToolStripMenuItem mnuMovimientosStock;
+        private ToolStripMenuItem mnuCompras;
+        private ToolStripMenuItem mnuSolicitudReposicion;
+        private ToolStripMenuItem mnuOrdenesCompra;
+        private ToolStripMenuItem mnuAprobarOrdenes;
+        private ToolStripMenuItem mnuPagosProveedores;
+        private ToolStripMenuItem mnuRecepcionMercaderia;
         private ToolStripMenuItem mnuUsuario;
         private ToolStripMenuItem mnuReLogin;
         private ToolStripMenuItem mnuCambiarClave;
@@ -495,7 +528,7 @@ namespace VetCare
         private ToolStripMenuItem mnuVentasRegistradas;
         private ToolStripMenuItem mnuReportes;
         private ToolStripMenuItem mnuReporteAtenciones;
-        private ToolStripMenuItem mnuReporte1;
+        private ToolStripMenuItem mnuReporteCompras;
         private ToolStripMenuItem mnuReporte2;
         private ToolStripMenuItem mnuAyuda;
         private ToolStripMenuItem mnuAyudaEnLinea;

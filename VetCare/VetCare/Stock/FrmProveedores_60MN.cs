@@ -5,7 +5,7 @@ using Entidades_60MN;
 namespace VetCare
 {
     /// <summary>
-    /// CUN11 Gestionar Proveedores (MAESTROS > Proveedores): búsqueda por razón social o CUIT,
+    /// CUN08 Gestionar Proveedores (MAESTROS > Proveedores): búsqueda por razón social o CUIT,
     /// "Productos que provee" del proveedor seleccionado, alta, modificación, baja lógica y
     /// reactivación. Al abrir se listan todos los proveedores activos.
     /// </summary>

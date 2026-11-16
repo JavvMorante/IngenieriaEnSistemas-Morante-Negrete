@@ -4,7 +4,7 @@ using Entidades_60MN;
 namespace VetCare
 {
     /// <summary>
-    /// CUN11 Gestionar Proveedores: alta o modificación de un proveedor. El CUIT solo se
+    /// CUN08 Gestionar Proveedores: alta o modificación de un proveedor. El CUIT solo se
     /// carga en el alta (después no se modifica). Las reglas están en ProveedorBLL_60MN:
     /// la pantalla filtra lo que se tipea y marca en cada campo el error que informa la BLL.
     /// </summary>

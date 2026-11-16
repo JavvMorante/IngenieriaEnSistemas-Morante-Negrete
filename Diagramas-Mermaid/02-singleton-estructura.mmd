@@ -1,0 +1,16 @@
+classDiagram
+    direction LR
+    class Singleton {
+        -static Singleton instancia
+        -static object candado
+        -Singleton() constructor privado
+        +static Instancia() Singleton
+        +operacionDeNegocio()
+    }
+    class Cliente {
+        +usar()
+    }
+    Cliente ..> Singleton : Singleton.Instancia
+    note for Singleton "El constructor privado impide hacer new.\nLa unica via de acceso es la propiedad estatica Instancia."
+    style Singleton fill:#e7f0ea,stroke:#1c6b47,stroke-width:3px
+    style Cliente fill:#f4f0f7,stroke:#6a4d85,stroke-width:2px

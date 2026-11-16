@@ -8,7 +8,7 @@ using Servicios_60MN.Excepciones;
 namespace BLL_60MN
 {
     /// <summary>
-    /// CUN11: uno o más datos del proveedor son inválidos. Errores va por campo
+    /// CUN08: uno o más datos del proveedor son inválidos. Errores va por campo
     /// (nombre de la propiedad de Proveedor_60MN → motivo) para marcarlos en la GUI.
     /// </summary>
     public class DatosProveedorInvalidosException_60MN : NegocioException_60MN
@@ -22,7 +22,7 @@ namespace BLL_60MN
         }
     }
 
-    /// <summary>CUN11 Gestionar Proveedores: búsqueda, alta, modificación y baja lógica.</summary>
+    /// <summary>CUN08 Gestionar Proveedores: búsqueda, alta, modificación y baja lógica.</summary>
     public class ProveedorBLL_60MN
     {
         // Largos máximos (la GUI los usa como MaxLength); menores o iguales que las columnas de Proveedor.

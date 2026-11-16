@@ -54,6 +54,7 @@ namespace BLL_60MN
                 Fila("Stock mínimo", v => v.StockMinimo.ToString()),
                 Fila("Precio de costo", v => v.PrecioCosto.ToString("C2", ar)),
                 Fila("Precio de venta", v => v.PrecioVenta.ToString("C2", ar)),
+                Fila("Margen (%)", v => v.Margen.ToString("0.##", ar)),
                 Fila("Vencimiento", v => v.FechaVencimiento.ToString("dd/MM/yyyy")),
                 Fila("Lote", v => v.Lote),
                 Fila("Activo", v => v.ActivoProducto ? "Sí" : "No"),

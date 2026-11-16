@@ -47,6 +47,26 @@ namespace VetCare
             SessionManager_60MN sesion = SessionManager_60MN.Instancia;
             if (sesion.IntegridadComprometida && sesion.TienePermiso(mnuDigitosVerificadores.Tag as string ?? string.Empty))
                 Abrir<FrmIntegridad_60MN>();
+
+            AbrirProductosEnAlerta();
+        }
+
+        /// <summary>
+        /// Si hay productos en alerta de reposición y el usuario puede ver los productos, abre
+        /// MAESTROS > Productos, que en ese caso muestra primero solo los productos en alerta.
+        /// </summary>
+        private void AbrirProductosEnAlerta()
+        {
+            if (!Mensajes_60MN.TieneAlguno(mnuProductos.Tag as string ?? string.Empty)) return;
+            try
+            {
+                if (new ProductoBLL_60MN().ContarAlertasActivas() > 0)
+                    Abrir<FrmProductos_60MN>();
+            }
+            catch (Exception)
+            {
+                // No impedir el ingreso por no poder consultar las alertas: se ven igual desde Productos.
+            }
         }
 
         /// <summary>Textos de la barra de estado (los arma el código, por eso se re-traducen aquí).</summary>
@@ -135,9 +155,6 @@ namespace VetCare
         /// <summary>CUS10 Consultar Bitácora de Cambios (historial de Productos_C).</summary>
         private void mnuBitacoraCambios_Click(object sender, EventArgs e) => Abrir<FrmBitacoraCambios_60MN>();
 
-        /// <summary>CUN10 Configurar Margen y Alerta de Stock Mínimo.</summary>
-        private void mnuConfiguracionStock_Click(object sender, EventArgs e) => Abrir<FrmConfiguracionStock_60MN>();
-
         // ---------------- MAESTROS ----------------
         /// <summary>CUN01 Gestionar Clientes (y desde la ficha, sus mascotas).</summary>
         private void mnuClientes_Click(object sender, EventArgs e) => Abrir<FrmClientes_60MN>();
@@ -145,10 +162,10 @@ namespace VetCare
         /// <summary>CUN02 Gestionar Mascotas.</summary>
         private void mnuMascotas_Click(object sender, EventArgs e) => Abrir<FrmGestionMascotas_60MN>();
 
-        /// <summary>CUN08 Administrar Existencias (alta y modificación de productos).</summary>
+        /// <summary>CUN09 Administrar Productos (alta, modificación, baja y reactivación).</summary>
         private void mnuProductos_Click(object sender, EventArgs e) => Abrir<FrmProductos_60MN>();
 
-        /// <summary>CUN11 Gestionar Proveedores.</summary>
+        /// <summary>CUN08 Gestionar Proveedores.</summary>
         private void mnuProveedores_Click(object sender, EventArgs e) => Abrir<FrmProveedores_60MN>();
 
         // ---------------- PACIENTES ----------------
@@ -174,10 +191,21 @@ namespace VetCare
             return selector.ShowDialog(this) == DialogResult.OK ? selector.Seleccionada : null;
         }
 
-        // ---------------- STOCK ----------------
-        /// <summary>CUN09 Registrar Movimiento de Stock.</summary>
-        private void mnuMovimientosStock_Click(object sender, EventArgs e) => Abrir<FrmMovimientoStock_60MN>();
+        // ---------------- COMPRAS (PN2 Reposición de Medicamentos e Insumos) ----------------
+        /// <summary>CUN10 Generar Solicitud de Reposición.</summary>
+        private void mnuSolicitudReposicion_Click(object sender, EventArgs e) => Abrir<FrmSolicitudReposicion_60MN>();
 
+        /// <summary>CUN11 Registrar Orden de Compra.</summary>
+        private void mnuOrdenesCompra_Click(object sender, EventArgs e) => Abrir<FrmOrdenCompra_60MN>();
+
+        /// <summary>CUN12 Aprobar Orden de Compra.</summary>
+        private void mnuAprobarOrdenes_Click(object sender, EventArgs e) => Abrir<FrmAprobarOrden_60MN>();
+
+        /// <summary>CUN13 Registrar Pago al Proveedor.</summary>
+        private void mnuPagosProveedores_Click(object sender, EventArgs e) => Abrir<FrmPagoProveedor_60MN>();
+
+        /// <summary>CUN14 Registrar Recepción de Mercadería.</summary>
+        private void mnuRecepcionMercaderia_Click(object sender, EventArgs e) => Abrir<FrmRecepcion_60MN>();
         // ---------------- USUARIO ----------------
 
         /// <summary>Re-Login (CUS06): cierra la sesión y vuelve a la pantalla de Login.</summary>
@@ -238,10 +266,10 @@ namespace VetCare
         /// <summary>CUN07 Generar Reporte de Atenciones.</summary>
         private void mnuReporteAtenciones_Click(object sender, EventArgs e) => Abrir<FrmReporteAtenciones_60MN>();
 
-        /// <summary>CUN12 Generar Reporte de Existencias.</summary>
-        private void mnuReporte1_Click(object sender, EventArgs e) => Abrir<FrmReporteExistencias_60MN>();
+        /// <summary>CUN15 Generar Reporte de Compras.</summary>
+        private void mnuReporteCompras_Click(object sender, EventArgs e) => Abrir<FrmReporteCompras_60MN>();
 
-        /// <summary>CUN13 Generar Reporte Inteligente: demanda estacional de insumos y productos más entregados.</summary>
+        /// <summary>CUN16 Generar Reporte Inteligente: demanda estacional de insumos y productos más entregados.</summary>
         private void mnuReporte2_Click(object sender, EventArgs e) => Abrir<FrmReporteInteligente_60MN>();
 
         /// <summary>Opciones del menú todavía no desarrolladas ("TD").</summary>

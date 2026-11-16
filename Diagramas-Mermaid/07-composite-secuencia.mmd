@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant F as FrmProducto_60MN
+    participant S as SessionManager_60MN
+    participant FA as Familia Administrador
+    participant FO as Familia Operario de stock
+    participant PA as Patente STK_MOVIMIENTO
+    F->>S: TienePermiso("STK_MOVIMIENTO")
+    S->>FA: TienePatente("STK_MOVIMIENTO")
+    Note over FA: No lo sabe: pregunta a sus hijos
+    FA->>FO: TienePatente("STK_MOVIMIENTO")
+    Note over FO: Tampoco: sigue bajando
+    FO->>PA: TienePatente("STK_MOVIMIENTO")
+    Note over PA: Caso base: compara su Codigo
+    PA-->>FO: true
+    FO-->>FA: true
+    FA-->>S: true
+    S-->>F: true

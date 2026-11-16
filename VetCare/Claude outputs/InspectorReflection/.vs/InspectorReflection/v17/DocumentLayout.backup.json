@@ -1,0 +1,222 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\formprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:formprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\formprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:formprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\formprincipal.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:formprincipal.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\formprincipal.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:formprincipal.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\negocio\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:negocio\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\inspeccion\\manejadorpropiedad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:inspeccion\\manejadorpropiedad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\inspeccion\\manejadormiembro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:inspeccion\\manejadormiembro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\inspeccion\\manejadormetodo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:inspeccion\\manejadormetodo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\inspeccion\\manejadoratributo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:inspeccion\\manejadoratributo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\inspeccion\\inspectorclase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:inspeccion\\inspectorclase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|c:\\users\\jmora\\desktop\\repofacultad\\ingenieriaensistemas-morante-negrete\\vetcare\\claude outputs\\inspectorreflection\\inspeccion\\infomiembro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B1E4C52-3A9D-4E86-9C0F-5D2A8E61B7F3}|InspectorReflection.csproj|solutionrelative:inspeccion\\infomiembro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 8,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAUAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:50:37.422Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FormPrincipal.resx",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.resx",
+              "RelativeDocumentMoniker": "FormPrincipal.resx",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.resx",
+              "RelativeToolTip": "FormPrincipal.resx",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2026-11-10T22:54:08.291Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ManejadorMiembro.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorMiembro.cs",
+              "RelativeDocumentMoniker": "Inspeccion\\ManejadorMiembro.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorMiembro.cs",
+              "RelativeToolTip": "Inspeccion\\ManejadorMiembro.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:52:57.667Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ManejadorMetodo.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorMetodo.cs",
+              "RelativeDocumentMoniker": "Inspeccion\\ManejadorMetodo.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorMetodo.cs",
+              "RelativeToolTip": "Inspeccion\\ManejadorMetodo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:52:46.826Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ManejadorAtributo.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorAtributo.cs",
+              "RelativeDocumentMoniker": "Inspeccion\\ManejadorAtributo.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorAtributo.cs",
+              "RelativeToolTip": "Inspeccion\\ManejadorAtributo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:52:35.947Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "InspectorClase.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\InspectorClase.cs",
+              "RelativeDocumentMoniker": "Inspeccion\\InspectorClase.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\InspectorClase.cs",
+              "RelativeToolTip": "Inspeccion\\InspectorClase.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:52:03.288Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "InfoMiembro.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\InfoMiembro.cs",
+              "RelativeDocumentMoniker": "Inspeccion\\InfoMiembro.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\InfoMiembro.cs",
+              "RelativeToolTip": "Inspeccion\\InfoMiembro.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:51:41.635Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "FormPrincipal.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.cs",
+              "RelativeDocumentMoniker": "FormPrincipal.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.cs [Dise\u00F1o]",
+              "RelativeToolTip": "FormPrincipal.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:50:39.881Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FormPrincipal.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.cs",
+              "RelativeDocumentMoniker": "FormPrincipal.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.cs",
+              "RelativeToolTip": "FormPrincipal.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:51:29.935Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ManejadorPropiedad.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorPropiedad.cs",
+              "RelativeDocumentMoniker": "Inspeccion\\ManejadorPropiedad.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Inspeccion\\ManejadorPropiedad.cs",
+              "RelativeToolTip": "Inspeccion\\ManejadorPropiedad.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:53:14.353Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Producto.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Negocio\\Producto.cs",
+              "RelativeDocumentMoniker": "Negocio\\Producto.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\Negocio\\Producto.cs",
+              "RelativeToolTip": "Negocio\\Producto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:53:24.402Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "FormPrincipal.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.Designer.cs",
+              "RelativeDocumentMoniker": "FormPrincipal.Designer.cs",
+              "ToolTip": "C:\\Users\\jmora\\Desktop\\RepoFacultad\\IngenieriaEnSistemas-Morante-Negrete\\VetCare\\Claude outputs\\InspectorReflection\\FormPrincipal.Designer.cs",
+              "RelativeToolTip": "FormPrincipal.Designer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T22:53:51.012Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

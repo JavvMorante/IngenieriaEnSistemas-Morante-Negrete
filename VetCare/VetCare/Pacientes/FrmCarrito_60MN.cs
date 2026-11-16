@@ -63,16 +63,32 @@ namespace VetCare
         /// <summary>Paso 2 (desde VENTAS > Carrito): el cliente de la venta y, si corresponde, la atención.</summary>
         private void btnElegirCliente_Click(object sender, EventArgs e)
         {
+            // Elegir el cliente no debe perder el producto que estaba seleccionado en la grilla.
+            int? productoId = (dgvProductos.CurrentRow?.DataBoundItem as Producto_60MN)?.Id;
             using FrmBuscarCliente_60MN selector = new FrmBuscarCliente_60MN("msg.ElegirClienteVenta", "Elija el cliente de la venta");
-            if (selector.ShowDialog(this) != DialogResult.OK || selector.Seleccionado == null) return;
+            DialogResult resultado = selector.ShowDialog(this);
             try
             {
-                MostrarCliente(ventaBLL.ObtenerCliente(selector.Seleccionado.Id));
+                if (resultado == DialogResult.OK && selector.Seleccionado != null)
+                    MostrarCliente(ventaBLL.ObtenerCliente(selector.Seleccionado.Id));
             }
             catch (Exception ex)
             {
                 Mensajes_60MN.MostrarError(ex);
             }
+            SeleccionarProducto(productoId);
+        }
+
+        private void SeleccionarProducto(int? productoId)
+        {
+            if (!productoId.HasValue) return;
+            foreach (DataGridViewRow fila in dgvProductos.Rows)
+                if (fila.DataBoundItem is Producto_60MN p && p.Id == productoId.Value)
+                {
+                    dgvProductos.CurrentCell = fila.Cells[0];
+                    dgvProductos.Focus();
+                    return;
+                }
         }
 
         /// <summary>

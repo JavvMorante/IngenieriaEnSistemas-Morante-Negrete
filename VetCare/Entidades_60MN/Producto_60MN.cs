@@ -28,6 +28,9 @@ namespace Entidades_60MN
 
         public decimal PrecioVenta { get; set; }
 
+        /// <summary>Margen de ganancia (%) del producto (CUN09). La categoría solo lo propone en el alta.</summary>
+        public decimal Margen { get; set; }
+
         public DateTime FechaVencimiento { get; set; }
 
         public string Lote { get; set; } = string.Empty;
@@ -43,7 +46,7 @@ namespace Entidades_60MN
 
         public bool Vencido => DiasParaVencer < 0;
 
-        /// <summary>Stock actual valorizado a precio de costo (CUN15).</summary>
+        /// <summary>Stock actual valorizado a precio de costo.</summary>
         public decimal Valorizacion => StockActual * PrecioCosto;
 
         public override string ToString() => $"{Codigo} - {Nombre} (Lote {Lote})";

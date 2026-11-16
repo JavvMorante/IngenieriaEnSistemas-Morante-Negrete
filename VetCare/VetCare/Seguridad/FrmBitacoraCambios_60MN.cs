@@ -5,7 +5,7 @@ namespace VetCare
 {
     /// <summary>
     /// CUS10 Consultar Bitácora de Cambios: historial de Productos_C, que
-    /// alimenta el trigger TR_Productos_BitacoraCambios desde CUN11, CUN12 y CUN14.
+    /// alimenta el trigger TR_Productos_BitacoraCambios desde CUN09, CUN05 y CUN14.
     /// </summary>
     public partial class FrmBitacoraCambios_60MN : FormBase_60MN
     {
@@ -15,6 +15,13 @@ namespace VetCare
         {
             InitializeComponent();
             dgvCambios.AutoGenerateColumns = false;
+        }
+
+        /// <summary>Abierto desde MAESTROS > Productos (Historial de precios): filtrado por el código del producto.</summary>
+        public FrmBitacoraCambios_60MN(string codigoProducto) : this()
+        {
+            txtCodigo.Text = codigoProducto;
+            StartPosition = FormStartPosition.CenterParent;
         }
 
         private void FrmBitacoraCambios_60MN_Load(object sender, EventArgs e)

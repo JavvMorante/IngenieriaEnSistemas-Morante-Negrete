@@ -44,6 +44,8 @@ namespace VetCare
             lblPrecioCosto = new Label();
             nudPrecioCosto = new NumericUpDown();
             lblPrecioVenta = new Label();
+            lblMargenPorcentaje = new Label();
+            nudMargen = new NumericUpDown();
             nudPrecioVenta = new NumericUpDown();
             btnUsarSugerido = new Button();
             lblMargen = new Label();
@@ -58,6 +60,7 @@ namespace VetCare
             ((System.ComponentModel.ISupportInitialize)nudStockActual).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudStockMinimo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudPrecioCosto).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudMargen).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudPrecioVenta).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
@@ -142,7 +145,7 @@ namespace VetCare
             lblStockActual.Name = "lblStockActual";
             lblStockActual.Size = new Size(99, 20);
             lblStockActual.TabIndex = 8;
-            lblStockActual.Text = "Stock actual *";
+            lblStockActual.Text = "Stock actual";
             //
             // nudStockActual
             //
@@ -191,32 +194,51 @@ namespace VetCare
             nudPrecioCosto.ThousandsSeparator = true;
             nudPrecioCosto.ValueChanged += PrecioBase_Changed;
             //
+            // lblMargenPorcentaje
+            //
+            lblMargenPorcentaje.AutoSize = true;
+            lblMargenPorcentaje.Location = new Point(24, 304);
+            lblMargenPorcentaje.Name = "lblMargenPorcentaje";
+            lblMargenPorcentaje.Size = new Size(95, 20);
+            lblMargenPorcentaje.TabIndex = 14;
+            lblMargenPorcentaje.Text = "Margen (%) *";
+            //
+            // nudMargen
+            //
+            nudMargen.DecimalPlaces = 2;
+            nudMargen.Location = new Point(190, 301);
+            nudMargen.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            nudMargen.Name = "nudMargen";
+            nudMargen.Size = new Size(120, 27);
+            nudMargen.TabIndex = 15;
+            nudMargen.ValueChanged += PrecioBase_Changed;
+            //
             // lblPrecioVenta
             //
             lblPrecioVenta.AutoSize = true;
-            lblPrecioVenta.Location = new Point(24, 304);
+            lblPrecioVenta.Location = new Point(24, 344);
             lblPrecioVenta.Name = "lblPrecioVenta";
             lblPrecioVenta.Size = new Size(122, 20);
-            lblPrecioVenta.TabIndex = 14;
+            lblPrecioVenta.TabIndex = 16;
             lblPrecioVenta.Text = "Precio de venta *";
             //
             // nudPrecioVenta
             //
             nudPrecioVenta.DecimalPlaces = 2;
-            nudPrecioVenta.Location = new Point(190, 301);
+            nudPrecioVenta.Location = new Point(190, 341);
             nudPrecioVenta.Maximum = new decimal(new int[] { 100000000, 0, 0, 0 });
             nudPrecioVenta.Name = "nudPrecioVenta";
             nudPrecioVenta.Size = new Size(150, 27);
-            nudPrecioVenta.TabIndex = 15;
+            nudPrecioVenta.TabIndex = 17;
             nudPrecioVenta.ThousandsSeparator = true;
             nudPrecioVenta.ValueChanged += nudPrecioVenta_ValueChanged;
             //
             // btnUsarSugerido
             //
-            btnUsarSugerido.Location = new Point(350, 298);
+            btnUsarSugerido.Location = new Point(350, 338);
             btnUsarSugerido.Name = "btnUsarSugerido";
             btnUsarSugerido.Size = new Size(140, 32);
-            btnUsarSugerido.TabIndex = 16;
+            btnUsarSugerido.TabIndex = 18;
             btnUsarSugerido.Text = "Usar sugerido";
             btnUsarSugerido.UseVisualStyleBackColor = true;
             btnUsarSugerido.Click += btnUsarSugerido_Click;
@@ -224,59 +246,59 @@ namespace VetCare
             // lblMargen
             //
             lblMargen.ForeColor = Color.DimGray;
-            lblMargen.Location = new Point(190, 334);
+            lblMargen.Location = new Point(190, 374);
             lblMargen.Name = "lblMargen";
             lblMargen.Size = new Size(300, 24);
-            lblMargen.TabIndex = 17;
+            lblMargen.TabIndex = 19;
             //
             // lblVencimiento
             //
             lblVencimiento.AutoSize = true;
-            lblVencimiento.Location = new Point(24, 370);
+            lblVencimiento.Location = new Point(24, 410);
             lblVencimiento.Name = "lblVencimiento";
             lblVencimiento.Size = new Size(150, 20);
-            lblVencimiento.TabIndex = 18;
+            lblVencimiento.TabIndex = 20;
             lblVencimiento.Text = "Fecha de vencimiento *";
             //
             // dtpVencimiento
             //
             dtpVencimiento.Format = DateTimePickerFormat.Short;
-            dtpVencimiento.Location = new Point(190, 366);
+            dtpVencimiento.Location = new Point(190, 406);
             dtpVencimiento.Name = "dtpVencimiento";
             dtpVencimiento.Size = new Size(150, 27);
-            dtpVencimiento.TabIndex = 19;
+            dtpVencimiento.TabIndex = 21;
             //
             // lblLote
             //
             lblLote.AutoSize = true;
-            lblLote.Location = new Point(24, 410);
+            lblLote.Location = new Point(24, 450);
             lblLote.Name = "lblLote";
             lblLote.Size = new Size(48, 20);
-            lblLote.TabIndex = 20;
+            lblLote.TabIndex = 22;
             lblLote.Text = "Lote *";
             //
             // txtLote
             //
-            txtLote.Location = new Point(190, 407);
+            txtLote.Location = new Point(190, 447);
             txtLote.MaxLength = 20;
             txtLote.Name = "txtLote";
             txtLote.Size = new Size(150, 27);
-            txtLote.TabIndex = 21;
+            txtLote.TabIndex = 23;
             //
             // lblNota
             //
             lblNota.ForeColor = Color.DimGray;
-            lblNota.Location = new Point(24, 444);
+            lblNota.Location = new Point(24, 484);
             lblNota.Name = "lblNota";
             lblNota.Size = new Size(466, 44);
-            lblNota.TabIndex = 22;
+            lblNota.TabIndex = 24;
             //
             // btnAceptar
             //
-            btnAceptar.Location = new Point(260, 494);
+            btnAceptar.Location = new Point(260, 534);
             btnAceptar.Name = "btnAceptar";
             btnAceptar.Size = new Size(110, 34);
-            btnAceptar.TabIndex = 23;
+            btnAceptar.TabIndex = 25;
             btnAceptar.Text = "Aceptar";
             btnAceptar.UseVisualStyleBackColor = true;
             btnAceptar.Click += btnAceptar_Click;
@@ -284,10 +306,10 @@ namespace VetCare
             // btnCancelar
             //
             btnCancelar.DialogResult = DialogResult.Cancel;
-            btnCancelar.Location = new Point(380, 494);
+            btnCancelar.Location = new Point(380, 534);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(110, 34);
-            btnCancelar.TabIndex = 24;
+            btnCancelar.TabIndex = 26;
             btnCancelar.Text = "Cancelar";
             btnCancelar.UseVisualStyleBackColor = true;
             //
@@ -302,7 +324,7 @@ namespace VetCare
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancelar;
-            ClientSize = new Size(520, 546);
+            ClientSize = new Size(520, 586);
             Controls.Add(btnCancelar);
             Controls.Add(btnAceptar);
             Controls.Add(lblNota);
@@ -314,6 +336,8 @@ namespace VetCare
             Controls.Add(btnUsarSugerido);
             Controls.Add(nudPrecioVenta);
             Controls.Add(lblPrecioVenta);
+            Controls.Add(nudMargen);
+            Controls.Add(lblMargenPorcentaje);
             Controls.Add(nudPrecioCosto);
             Controls.Add(lblPrecioCosto);
             Controls.Add(nudStockMinimo);
@@ -339,6 +363,7 @@ namespace VetCare
             ((System.ComponentModel.ISupportInitialize)nudStockActual).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudStockMinimo).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudPrecioCosto).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudMargen).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudPrecioVenta).EndInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider).EndInit();
             ResumeLayout(false);
@@ -363,6 +388,8 @@ namespace VetCare
         private NumericUpDown nudPrecioCosto;
         private Label lblPrecioVenta;
         private NumericUpDown nudPrecioVenta;
+        private Label lblMargenPorcentaje;
+        private NumericUpDown nudMargen;
         private Button btnUsarSugerido;
         private Label lblMargen;
         private Label lblVencimiento;

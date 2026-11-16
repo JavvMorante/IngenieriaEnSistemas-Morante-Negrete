@@ -1,0 +1,51 @@
+Módulo 1: Arquitectura en Capas (Punto T01)
+
+División de la solución en 7 proyectos independientes con responsabilidad única (Presentación, BLL, DAL, Entidades, Contratos, Servicios y Seguridad).
+
+Regla estricta de que los formularios no se comunican directamente con la base de datos, sino a través de la capa de Lógica de Negocio (BLL) y Acceso a Datos (DAL).
+
+Seguridad como proyecto transversal (Seguridad_60MN) para bitácora, criptografía y dígitos verificadores.
+
+Módulo 2: Seguridad y Criptografía (Punto T03.1 y T03.2)
+
+Encriptación Irreversible: Implementación de SHA-256 con sal aleatoria por usuario para las contraseñas, previniendo ataques por tablas rainbow.
+
+Encriptación Reversible: Uso de algoritmo AES con clave maestra en el archivo de configuración para proteger datos sensibles como DNI, Email y la descripción de la bitácora.
+
+Módulo 3: Integridad de Datos - Dígitos Verificadores (Punto DVH y DVV)
+
+DVH (Dígito Verificador Horizontal): Firma criptográfica HMAC-SHA256 por cada fila de las 10 tablas protegidas para detectar modificaciones directas en la base de datos.
+
+DVV (Dígito Verificador Vertical): Validación global de los DVH de toda la tabla para detectar inserciones o borrados no autorizados de registros.
+
+Módulo 4: Autenticación, Control de Intentos y Usuario de Emergencia (Punto CUS05)
+
+Secuencia de validaciones en el Login: verificación de usuario de emergencia, integridad de la fila, estado activo/bloqueado, validación de hash de contraseña y carga de patentes/familias.
+
+Control de bloqueo de cuenta al 4to intento fallido consecutivo con mensaje de advertencia.
+
+Usuario de Emergencia: Resguardo en archivo XML firmado con HMAC, utilizable exclusivamente cuando no existe ningún administrador activo en el sistema.
+
+Módulo 5: Patrones de Diseño Aplicados (Punto Patrones)
+
+Composite: Estructura jerárquica de permisos basada en Componente, Hoja (Patente) y Compuesto (Familia), con validación de ciclos (ContieneFamilia).
+
+Singleton: Aplicado en SessionManager y GestorIdioma para asegurar instancia única y control de concurrencia mediante lock.
+
+Observer & Template Method: Implementado en FormBase para la actualización dinámica y en vivo del multi-idioma en todos los formularios abiertos de la aplicación.
+
+Strategy / State / Data Mapper: Justificación y codificación de los patrones comportamentales y de mapeo de entidades requeridos en la arquitectura.
+
+Módulo 6: Bitácoras de Eventos y de Cambios (Punto T06A y T06B)
+
+Bitácora de Eventos (T06A): Registro centralizado de acciones del sistema y de negocio (como login, logout y operaciones críticas) con niveles de criticidad del 1 al 5 y descripciones cifradas con AES.
+
+Bitácora de Cambios (T06B): Auditoría a nivel de base de datos aplicada sobre una tabla con movimiento (proveedores, productos o clientes) mediante el uso de triggers.
+
+Pantalla de Bitácora: Interfaz de consulta con paginación, exportación de lo filtrado o de la totalidad a formato PDF, y el funcionamiento del Botón LIMPIAR (al activarlo, restablece y limpia todas las opciones de filtrado vigentes para mostrar nuevamente en la grilla los datos iniciales de arranque).
+
+Módulo 7: Despliegue y Ayuda del Sistema (Punto Final / T07)
+
+Instalador de Software: Generación del instalador contemplando el resguardo preventivo (backup automático) de la base de datos para evitar pisar información existente al reinstalar.
+
+Sistema de Ayuda: Documentación de soporte interactivo contextualizada por pantalla o accesible mediante eventos del mouse en cada formulario.

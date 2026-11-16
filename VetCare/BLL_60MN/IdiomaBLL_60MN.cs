@@ -46,22 +46,15 @@ namespace BLL_60MN
         /// <summary>
         /// Idioma con el que queda la sesión recién iniciada:
         /// - usuario de emergencia (no tiene fila en la base): siempre el idioma base;
-        /// - si eligió un idioma en el combo del Login: ese, y se guarda como su idioma;
         /// - si no: su último idioma guardado (o el base si nunca eligió uno).
         /// Aplicarlo notifica a todas las pantallas abiertas (Observer).
         /// </summary>
-        public void AplicarIdiomaAlIngresar(Idioma_60MN? elegidoEnLogin)
+        public void AplicarIdiomaAlIngresar()
         {
             SessionManager_60MN sesion = SessionManager_60MN.Instancia;
             if (!sesion.EstaLogueado || sesion.EsEmergencia)
             {
                 AplicarBase();
-                return;
-            }
-
-            if (elegidoEnLogin != null)
-            {
-                CambiarIdiomaUsuario(elegidoEnLogin);
                 return;
             }
 
@@ -75,7 +68,7 @@ namespace BLL_60MN
         }
 
         /// <summary>
-        /// Cambio de idioma elegido por el usuario (combo del Login o USUARIO > Cambiar idioma):
+        /// Cambio de idioma elegido por el usuario (USUARIO > Cambiar idioma):
         /// se aplica, se guarda contra SU usuario (actualizando DVH y DVV, porque IdiomaID está
         /// protegido por el dígito verificador) y queda en la bitácora.
         /// </summary>

@@ -9,7 +9,7 @@ namespace DAL_60MN
         private const string SelectBase = @"
 SELECT h.ProductoCID, h.ProductoID, h.Codigo, h.Nombre, h.CategoriaID, c.Nombre AS Categoria, h.ProveedorID, pr.RazonSocial AS Proveedor,
        h.StockActual, h.StockMinimo, h.PrecioCosto, h.PrecioVenta, h.FechaVencimiento, h.Lote, h.ActivoProducto,
-       h.Operacion, h.FechaHora, COALESCE(u.Usuario, '(desconocido)') AS Usuario, h.Act
+       h.Operacion, h.FechaHora, COALESCE(u.Usuario, '(desconocido)') AS Usuario, h.Act, h.Margen
   FROM Productos_C h
   LEFT JOIN Categoria c  ON c.CategoriaID = h.CategoriaID
   LEFT JOIN Proveedor pr ON pr.ProveedorID = h.ProveedorID
@@ -54,7 +54,8 @@ SELECT h.ProductoCID, h.ProductoID, h.Codigo, h.Nombre, h.CategoriaID, c.Nombre 
             Operacion = r.GetString(15),
             FechaHora = r.GetDateTime(16),
             Usuario = r.GetString(17),
-            Act = r.GetBoolean(18)
+            Act = r.GetBoolean(18),
+            Margen = r.GetDecimal(19)
         };
     }
 }
