@@ -22,6 +22,11 @@
 #define MyAppExeName "VetCare.exe"
 #define BaseDir "C:\Users\jmora\Desktop\RepoFacultad\IngenieriaEnSistemas-Morante-Negrete"
 #define ReleaseDir BaseDir + "\VetCare\VetCare\bin\Release\net48"
+#if FileExists(BaseDir + "\BDScript\VetCareBD_60MN.sql")
+  #define ScriptInicial BaseDir + "\BDScript\VetCareBD_60MN.sql"
+#else
+  #define ScriptInicial BaseDir + "\temporal\BDScript\VetCareBD_60MN.sql"
+#endif
 #define DoubleAmp(Value) StringChange(Value, "&", "&&")
 
 [Setup]
@@ -60,7 +65,7 @@ Name: "{app}\respaldos"
 ; Paso 2: ejecutable, DLL de los 7 proyectos, VetCare.exe.config y UsuarioEmergencia_60MN.xml
 Source: "{#ReleaseDir}\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Scripts de base de datos (no se instalan: se extraen a {tmp} y se ejecutan)
-Source: "{#BaseDir}\BDScript\VetCareBD_60MN.sql"; DestName: "VetCareBD_60MN_inicial.sql"; Flags: dontcopy
+Source: "{#ScriptInicial}"; DestName: "VetCareBD_60MN_inicial.sql"; Flags: dontcopy
 Source: "Scripts\VetCareBD_60MN_migracion.sql"; Flags: dontcopy
 
 [Icons]
@@ -74,22 +79,66 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#DoubleAmp(M
 [Code]
 const
   NombreBD = 'VetCareBD_60MN';
+  ClaveInstancias = 'SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL';
 
 var
   PaginaSQL: TInputQueryWizardPage;
   BaseExistia: Boolean;
   RutaBackup: String;
+  Instancias: TArrayOfString;   { instancias de SQL Server instaladas en este equipo }
+  ProveedorOK: String;          { proveedor OLE DB con el que se logró conectar }
+
+{ ---------- Instancias de SQL Server instaladas (registro de Windows) ----------
+  "MSSQLSERVER" es la instancia predeterminada y se escribe "."; las demás
+  son instancias con nombre y se escriben ".\NOMBRE" (por ejemplo .\SQLEXPRESS01). }
+procedure DetectarInstancias;
+var
+  Nombres: TArrayOfString;
+  I: Integer;
+begin
+  SetArrayLength(Instancias, 0);
+  if not RegGetValueNames(HKLM64, ClaveInstancias, Nombres) then
+    if not RegGetValueNames(HKLM32, ClaveInstancias, Nombres) then
+      Exit;
+  SetArrayLength(Instancias, GetArrayLength(Nombres));
+  for I := 0 to GetArrayLength(Nombres) - 1 do
+    if CompareText(Nombres[I], 'MSSQLSERVER') = 0 then
+      Instancias[I] := '.'
+    else
+      Instancias[I] := '.\' + Nombres[I];
+end;
+
+function ListaInstancias: String;
+var
+  I: Integer;
+begin
+  Result := '';
+  for I := 0 to GetArrayLength(Instancias) - 1 do
+  begin
+    if Result <> '' then
+      Result := Result + ', ';
+    Result := Result + Instancias[I];
+  end;
+  if Result = '' then
+    Result := '(no se encontró ninguna instancia instalada en este equipo)';
+end;
 
 { ---------- Paso 1: página para elegir la instancia de SQL Server ---------- }
 procedure InitializeWizard;
 begin
+  DetectarInstancias;
   PaginaSQL := CreateInputQueryPage(wpSelectDir,
     'Servidor de base de datos',
     'Instancia de SQL Server donde se instalará la base ' + NombreBD + '.',
-    'Ingrese la instancia de SQL Server (por ejemplo .\SQLEXPRESS01). ' +
+    'Ingrese la instancia de SQL Server. Use "." solo si SQL Server está instalado como instancia ' +
+    'predeterminada; si es una instancia con nombre, escríbala como .\NOMBRE (por ejemplo .\SQLEXPRESS01).' + #13#10 +
+    'Instancias encontradas en este equipo: ' + ListaInstancias + #13#10#13#10 +
     'Se usa autenticación de Windows. Si la base ya existe, antes de modificarla se generará un backup automático.');
   PaginaSQL.Add('Instancia de SQL Server:', False);
-  PaginaSQL.Values[0] := '.\SQLEXPRESS01';
+  if GetArrayLength(Instancias) > 0 then
+    PaginaSQL.Values[0] := Instancias[0]
+  else
+    PaginaSQL.Values[0] := '.\SQLEXPRESS01';
 end;
 
 function Instancia: String;
@@ -97,12 +146,48 @@ begin
   Result := Trim(PaginaSQL.Values[0]);
 end;
 
+{ Cadena de conexión OLE DB. Se prueban, en orden, el driver actual de Microsoft
+  (MSOLEDBSQL19 y MSOLEDBSQL) y el proveedor antiguo de Windows (SQLOLEDB). }
+function CadenaConexion(const Proveedor, Servidor, BaseDatos: String): String;
+begin
+  Result := 'Provider=' + Proveedor + ';Data Source=' + Servidor +
+            ';Initial Catalog=' + BaseDatos + ';Integrated Security=SSPI;';
+  if Proveedor = 'MSOLEDBSQL19' then
+    Result := Result + 'Use Encryption for Data=Optional;Trust Server Certificate=True;';
+end;
+
+function Conectar(const Servidor, BaseDatos: String): Variant;
+var
+  Proveedores: array[0..2] of String;
+  I: Integer;
+  UltimoError: String;
+begin
+  Proveedores[0] := 'MSOLEDBSQL19';
+  Proveedores[1] := 'MSOLEDBSQL';
+  Proveedores[2] := 'SQLOLEDB';
+  UltimoError := '';
+  for I := 0 to 2 do
+    if (ProveedorOK = '') or (ProveedorOK = Proveedores[I]) then
+    begin
+      try
+        Result := CreateOleObject('ADODB.Connection');
+        Result.ConnectionTimeout := 10;
+        Result.CommandTimeout := 0;
+        Result.Open(CadenaConexion(Proveedores[I], Servidor, BaseDatos));
+        ProveedorOK := Proveedores[I];
+        Log('Conectado a ' + Servidor + ' con el proveedor ' + ProveedorOK);
+        Exit;
+      except
+        UltimoError := GetExceptionMessage;
+        Log('Sin conexión con ' + Proveedores[I] + ': ' + UltimoError);
+      end;
+    end;
+  RaiseException(UltimoError);
+end;
+
 function AbrirConexion(const BaseDatos: String): Variant;
 begin
-  Result := CreateOleObject('ADODB.Connection');
-  Result.ConnectionTimeout := 15;
-  Result.CommandTimeout := 0;
-  Result.Open('Provider=SQLOLEDB;Data Source=' + Instancia + ';Initial Catalog=' + BaseDatos + ';Integrated Security=SSPI;');
+  Result := Conectar(Instancia, BaseDatos);
 end;
 
 function ConsultarEscalar(Con: Variant; const Sql: String): Variant;
@@ -114,10 +199,27 @@ begin
   Rs.Close;
 end;
 
-{ Valida la conexión antes de dejar avanzar }
-function NextButtonClick(CurPageID: Integer): Boolean;
+{ Prueba una instancia; devuelve el mensaje de error o '' si conecta }
+function ProbarInstancia(const Servidor: String): String;
 var
   Con: Variant;
+begin
+  Result := '';
+  ProveedorOK := '';
+  try
+    Con := Conectar(Servidor, 'master');
+    Con.Close;
+  except
+    Result := GetExceptionMessage;
+  end;
+end;
+
+{ Valida la conexión antes de dejar avanzar. Si la instancia escrita no responde
+  pero hay otra instalada en el equipo que sí, ofrece usarla. }
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  Error, Alternativa: String;
+  I: Integer;
 begin
   Result := True;
   if CurPageID = PaginaSQL.ID then
@@ -128,13 +230,33 @@ begin
       Result := False;
       Exit;
     end;
-    try
-      Con := AbrirConexion('master');
-      Con.Close;
-    except
-      MsgBox('No se pudo conectar a la instancia "' + Instancia + '".' + #13#10#13#10 + GetExceptionMessage, mbError, MB_OK);
-      Result := False;
+    Error := ProbarInstancia(Instancia);
+    if Error = '' then
+      Exit;
+
+    Alternativa := '';
+    for I := 0 to GetArrayLength(Instancias) - 1 do
+      if (CompareText(Instancias[I], Instancia) <> 0) and (ProbarInstancia(Instancias[I]) = '') then
+      begin
+        Alternativa := Instancias[I];
+        Break;
+      end;
+
+    if (Alternativa <> '') and
+       (MsgBox('No se pudo conectar a la instancia "' + Instancia + '".' + #13#10#13#10 +
+               'En este equipo está instalada la instancia "' + Alternativa + '" y la conexión funciona.' + #13#10 +
+               '¿Desea usarla?', mbConfirmation, MB_YESNO) = IDYES) then
+    begin
+      PaginaSQL.Values[0] := Alternativa;
+      Exit;
     end;
+
+    ProveedorOK := '';
+    MsgBox('No se pudo conectar a la instancia "' + Instancia + '".' + #13#10#13#10 + Error + #13#10#13#10 +
+           'Instancias encontradas en este equipo: ' + ListaInstancias + #13#10 +
+           'Verifique que el servicio de SQL Server esté iniciado y que su usuario de Windows tenga acceso.',
+           mbError, MB_OK);
+    Result := False;
   end;
 end;
 
